@@ -1,0 +1,10 @@
+{
+  "name": "meshql",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces run build"
+  }
+}
