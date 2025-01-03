@@ -2,9 +2,12 @@
   "name": "meshql",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "core/*",
+    "mongo/*",
+    "authproviders/*"
   ],
   "scripts": {
-    "build": "yarn workspaces run build"
+    "build": "yarn workspaces run build",
+    "test": "yarn test"
   }
 }

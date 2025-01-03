@@ -31,7 +31,7 @@ class JWTSubAuthorizer implements Auth {
             creds === null ||
             data.authorized_readers.length === 0 || //everyone can read
             data.authorized_readers.includes(creds)
-        ); 
+        );
     }
 
 }

@@ -1,0 +1,12 @@
+{
+  "name": "@meshql/restlette",
+  "version": "0.1.0",
+  "description": "ReST Endpoints for mesh",
+  "main": "index.ts",
+  "author": "Tom Marsh",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}

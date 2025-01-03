@@ -6,6 +6,9 @@
   "author": "Tom Marsh",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "test": "jest"
+  },
   "devDependencies": {
     "@types/handlebars": "^4.1.0",
     "@types/jest": "^29.5.14",
