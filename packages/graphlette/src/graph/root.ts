@@ -48,9 +48,9 @@ const vector = (repo: Repo, dtoFactory: DTOFactory, authorizer: Auth, queryTempl
     return async (args: any, context: any): Promise<Record<string, any>[]> => {
         let token = authorizer.getAuthToken(context)
         let timestamp = getTimestamp(args);
-        let payloads: Record<string, any>[] =  await repo.findAll(qt, args, token, timestamp)
-
-        return dtoFactory.fillMany(payloads, token, timestamp).map((v: Record<string, any>) => v.payload)
+        let results: Record<string, any>[] =  await repo.findAll(qt, args, token, timestamp)
+        let payloads = results.map((v: Record<string, any>) => v.payload)
+        return dtoFactory.fillMany(payloads, token, timestamp);
     }
 }
 
@@ -61,12 +61,10 @@ const singleton = (repo: Repo, dtoFactory: DTOFactory, authorizer: Auth, queryTe
         let timestamp = getTimestamp(args);
         let payload = await repo.find(qt, args, token, timestamp)
 
-        let dto = dtoFactory.fillOne(
-            payload,
+        return dtoFactory.fillOne(
+            payload.payload,
             token,
             timestamp,
         );
-
-        return dto.payload;
     }
 }

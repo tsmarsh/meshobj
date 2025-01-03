@@ -59,6 +59,6 @@ const assignResolver = (id: string = "id", queryName: string, url: URL) : Record
         );
         let header =
             typeof self._authHeader === "undefined" ? undefined : self._authHeader;
-        return callSubgraph(url, query, queryName, header);
+        return await callSubgraph(url, query, queryName, header);
     };
 };

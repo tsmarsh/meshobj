@@ -1,4 +1,4 @@
-import {describe, beforeAll, afterAll, test, expect} from "@jest/globals";
+import {describe, test, expect} from "@jest/globals";
 
 import {Mock, It} from "moq.ts";
 
@@ -6,8 +6,13 @@ import {buildSchema, graphql} from "graphql";
 import {context} from "../src/graph/root";
 import {Repo} from "../src/repository/repo";
 import {Auth} from "@meshql/auth";
+import fetchMock from "fetch-mock";
 
 const createdAt = new Date();
+
+const auth = new Mock<Auth>()
+    .setup(async i => i.getAuthToken(It.IsAny())).returnsAsync("TOKEN")
+    .setup(async i => i.isAuthorized(It.IsAny(), It.IsAny())).returnsAsync(true).object()
 
 describe("GraphQL Configuration", () => {
     describe("Generating a simple root", () => {
@@ -42,10 +47,6 @@ describe("GraphQL Configuration", () => {
                 "payload": {"foo": "bar", "eggs": 6},
                 createdAt,
             }).object();
-
-        let auth = new Mock<Auth>()
-            .setup(async i => i.getAuthToken(It.IsAny())).returnsAsync("TOKEN")
-            .setup(async i => i.isAuthorized(It.IsAny(), It.IsAny())).returnsAsync(true).object()
 
         test("should create a simple root", async () => {
             const query = /* GraphQL */ `
@@ -149,4 +150,83 @@ describe("GraphQL Configuration", () => {
             expect(resultIds).toEqual(expect.arrayContaining(["chick_1", "chick_2"]));
         });
     });
+
+    describe("Generating a simple singleton root with a dependency", () => {
+        const simple = {
+            singletons: [
+                {
+                    name: "getById",
+                    id: "id",
+                    query: '{"id": "{{id}}"}',
+                },
+            ],
+            resolvers: [
+                {
+                    name: "coop",
+                    id: "coop_id",
+                    queryName: "getById",
+                    url: "http://localhost:3000",
+                },
+            ],
+        };
+
+        const schema = buildSchema(/* GraphQL */ `
+            type Coop {
+                name: String
+            }
+            type Test {
+                id: ID
+                name: String
+                eggs: Int
+                coop: Coop
+            }
+            type Query {
+                getById(id: String): Test
+            }
+        `);
+
+        let repo = new Mock<Repo>()
+            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({
+                id: "chuck",
+                payload: {
+                    name: "chucky",
+                    eggs: 1,
+                    coop_id: "101010",
+                    id: "chuck",
+                },
+                createdAt,
+            }).object();
+
+        test("should call the dependency", async () => {
+            const url: string = new URL(simple.resolvers[0].url).toString();
+
+            fetchMock.mockGlobal().post(url, {
+                data: { getById: { name: "mega" } },
+            });
+
+            const query = /* GraphQL */ `
+                {
+                    getById(id: "chuck") {
+                        id
+                        name
+                        coop {
+                            name
+                        }
+                    }
+                }
+            `;
+
+            const { root, dtoFactory } = context(repo, auth, simple);
+            const response: any = await graphql({ schema, source: query, rootValue: root });
+
+            if (response.errors) {
+                console.error(response.errors);
+                throw new Error("GraphQL returned errors");
+            }
+
+            expect(response.data?.getById?.coop?.name).toBe("mega");
+            expect(response.data?.getById?.id).toBe("chuck");
+        });
+    });
+
 });

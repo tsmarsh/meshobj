@@ -3,7 +3,7 @@ import Log4js from "log4js";
 import {
     DocumentNode,
     FieldNode,
-    GraphQLSchema,
+    GraphQLSchema, isOutputType,
     parse,
     print, SelectionNode,
     SelectionSetNode,
@@ -35,34 +35,32 @@ export const callSubgraph = async (url: URL, query: string, queryName: string, a
         headers.Authorization = authHeader;
     }
 
-    return fetch(url, {
+    let response: Response | void = await fetch(url.toString(), {
         method: "POST",
         headers,
         body,
     }).catch((err) => {
         logger.error(err);
-        return {}
     })
-        .then(async (response: Response | {}) => {
-            if (response instanceof Response) {
-                const text: string = await response.text();
-                let json;
-                try {
-                    json = JSON.parse(text);
-                } catch (err) {
-                    logger.error(`This isn't json: ${text}`);
-                    logger.error(`Error parsing json from response: ${err}`);
-                    json = {errors: [{message: text}]};
-                }
 
-                if (Object.hasOwnProperty.call(json, "errors")) {
-                    logger.error(json);
-                    throw new Error(json["errors"][0]["message"]);
-                }
-                return json["data"][queryName];
-            }
-            return {}
-        });
+    if (response instanceof Response) {
+        const text: string = await response.text();
+        let json;
+        try {
+            json = JSON.parse(text);
+        } catch (err) {
+            logger.error(`This isn't json: ${text}`);
+            logger.error(`Error parsing json from response: ${err}`);
+            json = {errors: [{message: text}]};
+        }
+
+        if (Object.hasOwnProperty.call(json, "errors")) {
+            logger.error(json);
+            throw new Error(json["errors"][0]["message"]);
+        }
+        return json["data"][queryName];
+    }
+    return {};
 };
 export const processSelectionSet = (selectionSet: SelectionSetNode): string => {
     return selectionSet.selections.filter((n): n is FieldNode => n.kind === "Field").reduce(
