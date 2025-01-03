@@ -94,5 +94,5 @@ export const remove = (repo: Repo, authorizer: Auth) => async (req: Request, res
 export const list = (repo: Repo, context: string, authorizer: Auth) => async (req: Request, res: Response) => {
     const results = await repo.list((query) => authorizer.secureRead(req, query));
 
-    res.json(results.map((r) => `${context}/${r}`));
+    res.json(results.map((r) => `${context}/${r.id}`));
 };

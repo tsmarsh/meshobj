@@ -67,18 +67,18 @@ describe("simple restlette", () => {
         expect(actual.name).toBe("chuck");
     });
 
-    // test("should list all documents", async () => {
-    //     const response = await fetch("http://localhost:40020/hens", {
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     });
-    //
-    //     const actual = await response.json();
-    //
-    //     expect(actual.length).toBe(1);
-    //     expect(actual[0]).toBe(`/hens/${id}`);
-    // });
+    test("should list all documents", async () => {
+        const response = await fetch(`http://localhost:${port}/hens`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const actual = await response.json();
+
+        expect(actual.length).toBe(1);
+        expect(actual[0]).toBe(`/hens/666`);
+    });
     //
     // test("should update a document", async () => {
     //     const response = await fetch(`http://localhost:40020/hens/${id}`, {
