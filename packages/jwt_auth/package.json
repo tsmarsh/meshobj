@@ -1,0 +1,15 @@
+{
+  "name": "@meshql/jwt_auth",
+  "version": "0.1.0",
+  "description": "A dangerously simple jwt implementation",
+  "main": "index.ts",
+  "author": "Tom Marsh",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
+}
