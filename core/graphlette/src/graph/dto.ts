@@ -2,6 +2,7 @@ import { processContext, callSubgraph } from "./subgraph";
 
 import Log4js from "log4js";
 import {GraphQLArgs} from "graphql/graphql";
+import {Resolver} from "./types";
 
 let logger = Log4js.getLogger("gridql/DTOFactory");
 

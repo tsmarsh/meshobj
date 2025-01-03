@@ -2,30 +2,41 @@ import {Auth} from "@meshql/auth";
 import {Request, Response} from "express";
 
 import {Repo} from "./repo";
+import {context} from "@meshql/graphlette/src/graph/root";
 
-export const bulk_create = (repo: Repo, context: string, authorizer: Auth) => async (req: Request, res: Response) => {
-    const docs = req.body;
+export class Bulk<I, T> {
+    private _authorizer: Auth;
+    private _repo: Repo<I, T>;
+    private _context: string;
+    constructor(authorizer: Auth, repo: Repo<I, T>, context: string) {
+        this._authorizer = authorizer;
+        this._repo = repo;
+        this._context = context;
+    }
+    async bulk_create(req: Request, res: Response): Promise<void> {
+        const docs = req.body;
 
-    const secured_docs = docs.map((payload: any) => authorizer.secureData(req, {payload}));
-    const created = await repo.createMany(secured_docs);
+        const created = await this._repo.createMany(docs);
 
-    created.OK = created.OK.map((id) => `${context}/${id}`);
-    res.json(created);
-};
+        created.map(({id}) => `${context}/${id}`);
 
-export const bulk_read = (repo: Repo, authorizer: Auth) => async (req: Request, res: Response) => {
-    const ids = (req.query.ids as string).split(",");
+        res.json(created);
+    };
 
-    const found = await repo.readMany(ids, (data) => authorizer.secureData(req, data));
+    async bulk_read(req: Request, res: Response): Promise<void> {
+        const ids = (req.query.ids as string).split(",");
 
-    const authorized_docs = found.filter((r) => authorizer.isAuthorized(req, r));
-    res.json(authorized_docs);
-};
+        const found = await this._repo.readMany(ids);
 
-export const bulk_delete = (repo: Repo) => async (req: Request, res: Response) => {
-    const ids = (req.query.ids as string).split(",");
+        const authorized_docs = found.filter((r) => this._authorizer.isAuthorized(req, r));
+        res.json(authorized_docs);
+    };
 
-    await repo.removeMany(ids);
+    async bulk_delete(req: Request, res: Response): Promise<void> {
+        const ids = (req.query.ids as string).split(",");
 
-    res.json({OK: ids});
-};
+        await this._repo.removeMany(ids);
+
+        res.json({OK: ids});
+    };
+}

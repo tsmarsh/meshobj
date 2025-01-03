@@ -1,22 +1,23 @@
-type Singleton = {
+export type Singleton = {
     query: string;
     name: string;
     id?: string;
 }
 
-type Vector = {
+export type Vector = {
     query: string;
     name: string;
     id?: string;
 }
 
-type Resolver = {
+export type Resolver = {
     name: string;
     id: string;
     queryName: string;
     url: string;
 }
-type RootConfig = {
+
+export type RootConfig = {
     singletons?: Singleton[];
     vectors?: Vector[];
     resolvers?: Resolver[]

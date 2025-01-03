@@ -2,24 +2,19 @@ import Log4js from "log4js";
 import {init} from "../index";
 
 import {describe, test, expect, beforeAll, afterAll} from "@jest/globals";
-import express, {Application, Express} from "express";
-import {Auth} from "@meshql/auth";
-import {Mock, It} from "moq.ts";
-import {Repo} from "../src/repo";
+import express, {Express} from "express";
+import {Auth, NoOp} from "@meshql/auth";
+import {Repo, InMemory} from "../src/repo";
+import {Bulk} from "../src/bulk";
+import {Crud} from "../src/crud";
 
 let server: any;
 
 const port = 40200;
 
-const auth: Auth = new Mock<Auth>()
-    .setup(async i => i.getAuthToken(It.IsAny())).returnsAsync("TOKEN")
-    .setup(async i => i.secureData(It.IsAny(), It.IsAny())).returnsAsync({"id": "666", "payload": { "name": "chuck", "eggs": 6 }})
-    .setup(async i => i.isAuthorized(It.IsAny(), It.IsAny())).returnsAsync(true).object()
+const auth: Auth = new NoOp();
 
-const repo: Repo = new Mock<Repo>()
-    .setup(async i => i.create(It.IsAny())).returnsAsync({"id": "666", "payload": { "name": "chuck", "eggs": 6 }})
-    .setup(async i => i.list(It.IsAny())).returnsAsync([{"id": "666", "payload": { "name": "chuck", "eggs": 6 }}])
-    .setup(async i => i.read(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({"id": "666", "payload": { "name": "chuck", "eggs": 6 }}).object();
+const repo: Repo<number, Record<string, any>> = new InMemory();
 
 Log4js.configure({
     appenders: {
@@ -33,9 +28,14 @@ Log4js.configure({
 });
 
 beforeAll(async () => {
+    await repo.create({"id": "666", "payload": { "name": "chuck", "eggs": 6 }});
     const app: Express = express();
     app.use(express.json())
-    let application = init(app, auth, repo, "/hens");
+    let context = "/hens";
+
+    let bulk:Bulk<number, Record<string, any>> = new Bulk(auth, repo, context);
+    let crud:Crud<number> = new Crud(auth, repo, context);
+    let application = init(app, crud, bulk, context);
 
     server = application.listen(port);
 });
@@ -79,32 +79,32 @@ describe("simple restlette", () => {
         expect(actual.length).toBe(1);
         expect(actual[0]).toBe(`/hens/666`);
     });
-    //
-    // test("should update a document", async () => {
-    //     const response = await fetch(`http://localhost:40020/hens/${id}`, {
-    //         method: "PUT",
-    //         body: JSON.stringify({ name: "chuck", eggs: 9 }),
-    //         redirect: "follow",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     });
-    //
-    //     const actual = await response.json();
-    //
-    //     expect(actual.eggs).toBe(9);
-    //     expect(actual.name).toBe("chuck");
-    // });
-    //
-    // test("should delete a document", async () => {
-    //     const response = await fetch(`http://localhost:40020/hens/${id}`, {
-    //         method: "DELETE",
-    //         redirect: "follow",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     });
-    //
-    //     expect(response.status).toBe(200);
-    // });
+
+    test("should update a document", async () => {
+        const response = await fetch(`http://localhost:${port}/hens/666`, {
+            method: "PUT",
+            body: JSON.stringify({ name: "chuck", eggs: 9 }),
+            redirect: "follow",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const actual = await response.json();
+
+        expect(actual.eggs).toBe(9);
+        expect(actual.name).toBe("chuck");
+    });
+
+    test("should delete a document", async () => {
+        const response = await fetch(`http://localhost:40200/hens/666`, {
+            method: "DELETE",
+            redirect: "follow",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        expect(response.status).toBe(200);
+    });
 });

@@ -7,6 +7,7 @@ import {context} from "../src/graph/root";
 import {Repo} from "../src/repository/repo";
 import {Auth} from "@meshql/auth";
 import fetchMock from "fetch-mock";
+import {RootConfig} from "../src/graph/types";
 
 const createdAt = new Date();
 

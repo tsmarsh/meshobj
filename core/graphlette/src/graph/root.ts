@@ -2,7 +2,7 @@ import {Repo} from "../repository/repo";
 import {DTOFactory} from "./dto";
 import {Auth} from "@meshql/auth";
 import HandleBars from "handlebars";
-
+import {RootConfig} from "./types"
 
 export const context = (repo: Repo, authorizer: Auth, config: RootConfig) => {
     let dtoF = new DTOFactory(config.resolvers);
