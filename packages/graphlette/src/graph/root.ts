@@ -50,7 +50,7 @@ const vector = (repo: Repo, dtoFactory: DTOFactory, authorizer: Auth, queryTempl
         let timestamp = getTimestamp(args);
         let payloads: Record<string, any>[] =  await repo.findAll(qt, args, token, timestamp)
 
-        return dtoFactory.fillMany(payloads, token, timestamp)
+        return dtoFactory.fillMany(payloads, token, timestamp).map((v: Record<string, any>) => v.payload)
     }
 }
 
