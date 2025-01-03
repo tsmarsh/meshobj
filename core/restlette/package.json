@@ -6,7 +6,21 @@
   "author": "Tom Marsh",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "serve": "tsc ./server.ts"
+  },
   "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "moq.ts": "^10.0.8",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "express-jsdoc-swagger": "^1.8.0",
+    "log4js": "^6.9.1",
+    "swagger-ui-express": "^5.0.1"
   }
 }
