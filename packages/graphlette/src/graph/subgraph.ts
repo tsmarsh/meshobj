@@ -21,7 +21,7 @@ type HeadersType = {
     Authorization?: string;
 }
 
-export const callSubgraph = async (url: URL, query: string, queryName: string, authHeader: string | null): Promise<Record<string, any>> => {
+async function callSibling(query: string, url: URL, authHeader: string | null) {
     const body: string = JSON.stringify({query: query});
 
     logger.trace("Subgraph Call: ", url, body);
@@ -42,7 +42,10 @@ export const callSubgraph = async (url: URL, query: string, queryName: string, a
     }).catch((err) => {
         logger.error(err);
     })
+    return response;
+}
 
+async function processResponse(response: Response | void, queryName: string) {
     if (response instanceof Response) {
         const text: string = await response.text();
         let json;
@@ -61,7 +64,13 @@ export const callSubgraph = async (url: URL, query: string, queryName: string, a
         return json["data"][queryName];
     }
     return {};
+}
+
+export const callSubgraph = async (url: URL, query: string, queryName: string, authHeader: string | null): Promise<Record<string, any>> => {
+    let response = await callSibling(query, url, authHeader);
+    return await processResponse(response, queryName);
 };
+
 export const processSelectionSet = (selectionSet: SelectionSetNode): string => {
     return selectionSet.selections.filter((n): n is FieldNode => n.kind === "Field").reduce(
         (previousValue: string, field: FieldNode) => previousValue + processFieldNode(field),
