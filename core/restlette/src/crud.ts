@@ -8,19 +8,19 @@ const logger = Log4js.getLogger("meshql/restlette");
 
 export class Crud<I> {
     private _authorizer: Auth;
-    private _repo: Repository<I, Record<string, any>>;
+    private _repo: Repository<I>;
     private readonly _context: string;
 
-    constructor(authorizer: Auth, repo: Repository<I, Record<string, any>>, context: string) {
+    constructor(authorizer: Auth, repo: Repository<I>, context: string) {
         this._authorizer = authorizer;
         this._repo = repo;
         this._context = context;
     }
 
      create = async (req: Request, res: Response) => {
-        const doc: Record<string, any> = req.body;
+        const doc: Envelope<I> = {payload: req.body};
 
-        const result: Envelope<I, Record<string, any>> = await this._repo.create(doc);
+        const result: Envelope<I> = await this._repo.create(doc);
 
         if (result !== null) {
             const auth_response = authorizeResponse(req, res);
@@ -39,7 +39,7 @@ export class Crud<I> {
         const result = await this._repo.read(id);
 
         if (result !== null && result !== undefined) {
-            res.header("X-Canonical-Id", result.id);
+            res.header("X-Canonical-Id", String(result.id));
             if (await this._authorizer.isAuthorized(authToken, result)) {
                 authorizeResponse(req, res).json(result.payload);
             } else {
@@ -51,12 +51,11 @@ export class Crud<I> {
     };
 
     update = async (req: Request, res: Response) => {
-        const payload = req.body;
         const id = req.params.id;
 
-        payload.id = id;
+        const payload: Envelope<I> = {id: req.params.id, payload: req.body};
 
-        const current = await this._repo.read(id);
+        const current:Envelope<I> = await this._repo.read(id);
 
         if (current !== null && current !== undefined) {
             if (await this._authorizer.isAuthorized(req, current)) {

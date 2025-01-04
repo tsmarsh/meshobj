@@ -26,7 +26,7 @@ Log4js.configure({
 
 beforeAll(async () => {
     const auth: Auth = new NoOp();
-    const repo: Repository<number, Record<string, any>> = new InMemory();
+    const repo: Repository<number> = new InMemory();
     await repo.create({"id": "666", "payload": { "name": "chuck", "eggs": 6 }});
     const app: Express = express();
     app.use(express.json())

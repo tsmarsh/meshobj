@@ -25,19 +25,25 @@ export type RootConfig = {
 
 export type Id<I> = string | number;
 
-export type Envelope<I, D> = {
-    id: Id<I>,
-    payload: D
+export type Payload = Record<string, any>;
+
+export type Envelope<I> = {
+    id?: Id<I>;
+    payload: Payload;
+    createdAt?: Date;
+    deleted?: boolean;
 }
 
-export interface Repository <I, D>{
-    create: (payload: D) => Promise<Envelope<I, D>>;
-    read: (id: Id<I>) => Promise<D>;
-    list: () => Promise<Envelope<I, D>[]>;
-    remove: (id: Id<I>) => Promise<boolean>;
-    createMany: (payloads: D[]) => Promise<Envelope<I, D>[]>;
-    readMany: (ids: Id<I>[]) => Promise<Envelope<I, D>[]>;
-    removeMany: (ids: Id<I>[]) => Promise<Record<Id<I>, boolean>>;
+
+
+export interface Repository <I>{
+    create: (envelope: Envelope<I>, tokens: string[] = []) => Promise<Envelope<I>>;
+    read: (id: Id<I>, tokens: string[] = [], createdAt: Date = new Date()) => Promise<Envelope<I>>;
+    list: (tokens: string[] = []) => Promise<Envelope<I>[]>;
+    remove: (id: Id<I>, tokens: string[] = []) => Promise<boolean>;
+    createMany: (payloads: Envelope<I>[], tokens: string[] = []) => Promise<Envelope<I>[]>;
+    readMany: (ids: Id<I>[], tokens: string[] = []) => Promise<Envelope<I>[]>;
+    removeMany: (ids: Id<I>[], tokens: string[] = []) => Promise<Record<Id<I>, boolean>>;
 }
 
 export interface Searcher {
