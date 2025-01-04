@@ -15,11 +15,10 @@ export class Crud<I> {
         this._authorizer = authorizer;
         this._repo = repo;
         this._context = context;
-
     }
 
-    async create(req: Request, res: Response) {
-        const doc:{payload: Record<string, any>} = {payload: req.body};
+     create = async (req: Request, res: Response) => {
+        const doc: Record<string, any> = req.body;
 
         const result: Envelope<I, Record<string, any>> = await this._repo.create(doc);
 
@@ -34,14 +33,14 @@ export class Crud<I> {
         }
     };
 
-    async read(req: Request, res: Response) {
+    read = async (req: Request, res: Response)=> {
         const id = req.params.id;
         let authToken = await this._authorizer.getAuthToken(request);
         const result = await this._repo.read(id);
 
         if (result !== null && result !== undefined) {
             res.header("X-Canonical-Id", result.id);
-            if (await this._authorizer.isAuthorized(req, result)) {
+            if (await this._authorizer.isAuthorized(authToken, result)) {
                 authorizeResponse(req, res).json(result.payload);
             } else {
                 res.status(403).json({});
@@ -51,20 +50,22 @@ export class Crud<I> {
         }
     };
 
-    async update(req: Request, res: Response) {
+    update = async (req: Request, res: Response) => {
         const payload = req.body;
         const id = req.params.id;
+
+        payload.id = id;
 
         const current = await this._repo.read(id);
 
         if (current !== null && current !== undefined) {
             if (await this._authorizer.isAuthorized(req, current)) {
-                const result = await this._repo.create({payload, id});
+                const result = await this._repo.create(payload);
 
                 const secured_response = authorizeResponse(req, res);
 
                 logger.debug(`Updated: ${result}`);
-                secured_response.redirect(303, `${this._context}/${id}`);
+                secured_response.redirect(303, `${this._context}/${result.id}`);
             } else {
                 res.status(403).json({});
             }
@@ -73,7 +74,7 @@ export class Crud<I> {
         }
     };
 
-    async remove(req: Request, res: Response) {
+    remove = async (req: Request, res: Response) => {
         const id = req.params.id;
         const result = await this._repo.read(id);
 
@@ -90,7 +91,7 @@ export class Crud<I> {
         }
     };
 
-    async list(req: Request, res: Response) {
+    list = async (req: Request, res: Response) => {
         const results = await this._repo.list();
 
         res.json(results.map((r) => `${this._context}/${r.id}`));

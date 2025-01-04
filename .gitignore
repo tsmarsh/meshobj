@@ -13,3 +13,4 @@ core/merminator/test/config
 
 /docker/db-events/test/queue/
 .aider*
+bun.lockb

@@ -12,10 +12,6 @@ let server: any;
 
 const port = 40200;
 
-const auth: Auth = new NoOp();
-
-const repo: Repo<number, Record<string, any>> = new InMemory();
-
 Log4js.configure({
     appenders: {
         out: {
@@ -28,6 +24,8 @@ Log4js.configure({
 });
 
 beforeAll(async () => {
+    const auth: Auth = new NoOp();
+    const repo: Repo<number, Record<string, any>> = new InMemory();
     await repo.create({"id": "666", "payload": { "name": "chuck", "eggs": 6 }});
     const app: Express = express();
     app.use(express.json())
@@ -44,9 +42,9 @@ afterAll(async () => {
     await server.close();
 });
 
-describe("simple restlette", () => {
+describe("simple restlette", function() {
 
-    test("should create a document", async () => {
+    test("should create a document", async function() {
         const henData = {name: "chuck", eggs: 6};
         const hen = JSON.stringify(henData);
 
@@ -76,12 +74,12 @@ describe("simple restlette", () => {
 
         const actual = await response.json();
 
-        expect(actual.length).toBe(1);
-        expect(actual[0]).toBe(`/hens/666`);
+        expect(actual.length).toBe(2);
+        expect(actual[0]).toBe(`/hens/10`);
     });
 
     test("should update a document", async () => {
-        const response = await fetch(`http://localhost:${port}/hens/666`, {
+        const response = await fetch(`http://localhost:${port}/hens/10`, {
             method: "PUT",
             body: JSON.stringify({ name: "chuck", eggs: 9 }),
             redirect: "follow",
@@ -97,7 +95,7 @@ describe("simple restlette", () => {
     });
 
     test("should delete a document", async () => {
-        const response = await fetch(`http://localhost:40200/hens/666`, {
+        const response = await fetch(`http://localhost:40200/hens/10`, {
             method: "DELETE",
             redirect: "follow",
             headers: {
