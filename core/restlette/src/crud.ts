@@ -2,16 +2,16 @@ import {Auth} from "@meshql/auth";
 import {request, Request, Response} from "express";
 import {authorizeResponse} from "./auth";
 import Log4js from "log4js";
-import {Envelope, Repo} from "./repo";
+import {Envelope, Repository} from "@meshql/common";
 
 const logger = Log4js.getLogger("meshql/restlette");
 
 export class Crud<I> {
     private _authorizer: Auth;
-    private _repo: Repo<I, Record<string, any>>;
+    private _repo: Repository<I, Record<string, any>>;
     private readonly _context: string;
 
-    constructor(authorizer: Auth, repo: Repo<I, Record<string, any>>, context: string) {
+    constructor(authorizer: Auth, repo: Repository<I, Record<string, any>>, context: string) {
         this._authorizer = authorizer;
         this._repo = repo;
         this._context = context;

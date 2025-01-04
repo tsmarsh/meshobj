@@ -2,7 +2,7 @@ import { processContext, callSubgraph } from "./subgraph";
 
 import Log4js from "log4js";
 import {GraphQLArgs} from "graphql/graphql";
-import {Resolver} from "./types";
+import {Resolver} from "@meshql/common"
 
 let logger = Log4js.getLogger("gridql/DTOFactory");
 
@@ -23,8 +23,8 @@ export class DTOFactory {
         }
     }
 
-    fillOne(data: Record<string, any>, authHeader: any, timestamp: number) : Record<string, any>{
-        let copy: { [key: string]: any } = { _authHeader: authHeader, _timestamp: timestamp };
+    fillOne(data: Record<string, any>, timestamp: number) : Record<string, any>{
+        let copy: { [key: string]: any } = {_timestamp: timestamp };
 
         for (const f in this.resolvers) {
             if (typeof this.resolvers[f] === "function") {
@@ -36,8 +36,8 @@ export class DTOFactory {
         return copy;
     }
 
-    fillMany(data: Record<string, any>, authHeader: any, timestamp: number) : Record<string, any>[]{
-        return data.map((d: Record<string, any>) => this.fillOne(d, authHeader, timestamp));
+    fillMany(data: Record<string, any>, timestamp: number) : Record<string, any>[]{
+        return data.map((d: Record<string, any>) => this.fillOne(d, timestamp));
     }
 }
 

@@ -1,23 +1,7 @@
 import {ReadSecurer} from "@meshql/auth";
+import {Envelope, Id, Repository} from "@meshql/common";
 
-export type Id<I> = string | number;
-
-export type Envelope<I, D> = {
-    id: Id<I>,
-    payload: D
-}
-
-export interface Repo <I, D>{
-    create: (payload: D) => Promise<Envelope<I, D>>;
-    read: (id: Id<I>) => Promise<D>;
-    list: () => Promise<Envelope<I, D>[]>;
-    remove: (id: Id<I>) => Promise<boolean>;
-    createMany: (payloads: D[]) => Promise<Envelope<I, D>[]>;
-    readMany: (ids: Id<I>[]) => Promise<Envelope<I, D>[]>;
-    removeMany: (ids: Id<I>[]) => Promise<Record<Id<I>, boolean>>;
-}
-
-export class InMemory implements Repo<number, Record<string, any>>{
+export class InMemory implements Repository<number, Record<string, any>>{
     db:Record<Id<number>, Envelope<number, Record<string, any>>> = {}
     sequence = 10;
 

@@ -4,10 +4,10 @@ import {Mock, It} from "moq.ts";
 
 import {buildSchema, graphql} from "graphql";
 import {context} from "../src/graph/root";
-import {Repo} from "../src/repository/repo";
+import {Repository, RootConfig, Searcher} from "@meshql/common";
 import {Auth} from "@meshql/auth";
 import fetchMock from "fetch-mock";
-import {RootConfig} from "../src/graph/types";
+
 
 const createdAt = new Date();
 
@@ -42,8 +42,8 @@ describe("GraphQL Configuration", () => {
             }
         `);
 
-        let repo = new Mock<Repo>()
-            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({
+        let repo = new Mock<Searcher>()
+            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({
                 "id": "test_id",
                 "payload": {"foo": "bar", "eggs": 6},
                 createdAt,
@@ -108,8 +108,8 @@ describe("GraphQL Configuration", () => {
         `);
 
 
-        const repo = new Mock<Repo>()
-            .setup(async i => i.findAll(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync([
+        const repo = new Mock<Searcher>()
+            .setup(async i => i.findAll(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync([
                 {
                     id: "chick_1",
                     payload: { name: "henry", eggs: 3, breed: "chicken", id: "chick_1",},
@@ -186,8 +186,8 @@ describe("GraphQL Configuration", () => {
             }
         `);
 
-        let repo = new Mock<Repo>()
-            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({
+        let repo = new Mock<Searcher>()
+            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({
                 id: "chuck",
                 payload: {
                     name: "chucky",

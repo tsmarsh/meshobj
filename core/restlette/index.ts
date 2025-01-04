@@ -1,8 +1,6 @@
 import express, {Application} from "express";
 
 import Log4js from "log4js";
-import {Auth} from "@meshql/auth";
-import {Repo} from "./src/repo"
 
 import {Bulk} from "./src/bulk";
 import {Crud} from "./src/crud";

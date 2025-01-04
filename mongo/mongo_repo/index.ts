@@ -1,4 +1,5 @@
-import {DTOFactory, Repo} from "@meshql/graphlette"
+import {DTOFactory} from "@meshql/graphlette"
+import {Searcher, Repository} from "@meshql/common";
 
 import {Auth} from "@meshql/auth";
 import {getLogger} from "log4js";
@@ -22,7 +23,7 @@ type QueryArgs = {
     req: Request;
 }
 
-class MongoRepo implements Repo {
+class MongoRepo implements Searcher {
     private authorizer: Auth;
     private db: Collection;
     private dtoFactory: DTOFactory;

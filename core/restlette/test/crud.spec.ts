@@ -4,7 +4,8 @@ import {init} from "../index";
 import {describe, test, expect, beforeAll, afterAll} from "@jest/globals";
 import express, {Express} from "express";
 import {Auth, NoOp} from "@meshql/auth";
-import {Repo, InMemory} from "../src/repo";
+import {InMemory} from "../src/repo";
+import {Repository} from "@meshql/common";
 import {Bulk} from "../src/bulk";
 import {Crud} from "../src/crud";
 
@@ -25,7 +26,7 @@ Log4js.configure({
 
 beforeAll(async () => {
     const auth: Auth = new NoOp();
-    const repo: Repo<number, Record<string, any>> = new InMemory();
+    const repo: Repository<number, Record<string, any>> = new InMemory();
     await repo.create({"id": "666", "payload": { "name": "chuck", "eggs": 6 }});
     const app: Express = express();
     app.use(express.json())
