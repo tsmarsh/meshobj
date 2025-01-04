@@ -7,6 +7,7 @@ export class InMemory implements Repository<number>{
     async create(payload: Envelope<number>, tokens: string[] = []): Promise<Envelope<number>> {
         let id = this.sequence++;
         payload["id"] = id;
+        payload["createdAt"] = new Date();
         this.db[id] = payload;
         return payload;
     }
@@ -35,7 +36,7 @@ export class InMemory implements Repository<number>{
     async removeMany(ids: Id<number>[], tokens: string[] = []): Promise<Record<number, boolean>> {
         let r:Record<Id<number>, boolean> = {};
 
-        for (let id in ids){
+        for (let id of ids){
             r[id] = await this.remove(id);
         }
         return r

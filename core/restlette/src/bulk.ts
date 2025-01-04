@@ -4,11 +4,11 @@ import {Request, Response} from "express";
 import {Repository} from "@meshql/common";
 import {context} from "@meshql/graphlette/src/graph/root";
 
-export class Bulk<I, T> {
+export class Bulk<I> {
     private _authorizer: Auth;
-    private _repo: Repository<I, T>;
+    private _repo: Repository<I>;
     private _context: string;
-    constructor(authorizer: Auth, repo: Repository<I, T>, context: string) {
+    constructor(authorizer: Auth, repo: Repository<I>, context: string) {
         this._authorizer = authorizer;
         this._repo = repo;
         this._context = context;

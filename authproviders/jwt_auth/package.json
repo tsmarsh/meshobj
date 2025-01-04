@@ -6,6 +6,9 @@
   "author": "Tom Marsh",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "test": "jest --passWithNoTests"
+  },
   "devDependencies": {
     "ts-node": "^10.9.2"
   },

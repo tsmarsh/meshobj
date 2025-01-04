@@ -1,3 +1,5 @@
+export * from "./certification/repository.cert"
+
 export type Singleton = {
     query: string;
     name: string;
@@ -37,13 +39,13 @@ export type Envelope<I> = {
 
 
 export interface Repository <I>{
-    create: (envelope: Envelope<I>, tokens: string[] = []) => Promise<Envelope<I>>;
-    read: (id: Id<I>, tokens: string[] = [], createdAt: Date = new Date()) => Promise<Envelope<I>>;
-    list: (tokens: string[] = []) => Promise<Envelope<I>[]>;
-    remove: (id: Id<I>, tokens: string[] = []) => Promise<boolean>;
-    createMany: (payloads: Envelope<I>[], tokens: string[] = []) => Promise<Envelope<I>[]>;
-    readMany: (ids: Id<I>[], tokens: string[] = []) => Promise<Envelope<I>[]>;
-    removeMany: (ids: Id<I>[], tokens: string[] = []) => Promise<Record<Id<I>, boolean>>;
+    create: (envelope: Envelope<I>, tokens?: string[]) => Promise<Envelope<I>>;
+    read: (id: Id<I>, tokens?: string[], createdAt?: Date) => Promise<Envelope<I>>;
+    list: (tokens?: string[]) => Promise<Envelope<I>[]>;
+    remove: (id: Id<I>, tokens?: string[]) => Promise<boolean>;
+    createMany: (payloads: Envelope<I>[], tokens?: string[]) => Promise<Envelope<I>[]>;
+    readMany: (ids: Id<I>[], tokens?: string[]) => Promise<Envelope<I>[]>;
+    removeMany: (ids: Id<I>[], tokens?: string[]) => Promise<Record<Id<I>, boolean>>;
 }
 
 export interface Searcher {

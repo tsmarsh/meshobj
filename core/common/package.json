@@ -7,5 +7,8 @@
   "private": false,
   "devDependencies": {
     "ts-node": "^10.9.2"
+  },
+  "scripts": {
+    "test": "jest --passWithNoTests"
   }
 }

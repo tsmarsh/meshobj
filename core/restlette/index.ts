@@ -26,7 +26,7 @@ const options = (context: string) => {
     }
 };
 
-export function init<I, T>(app: Application, crud: Crud<I>, bulk: Bulk<I, T>, context: string,): Application {
+export function init<I>(app: Application, crud: Crud<I>, bulk: Bulk<I>, context: string,): Application {
     logger.info(`API Docs are available on: ${context}/api-docs`);
 
     app.use(express.json());

@@ -32,7 +32,7 @@ beforeAll(async () => {
     app.use(express.json())
     let context = "/hens";
 
-    let bulk:Bulk<number, Record<string, any>> = new Bulk(auth, repo, context);
+    let bulk:Bulk<number> = new Bulk(auth, repo, context);
     let crud:Crud<number> = new Crud(auth, repo, context);
     let application = init(app, crud, bulk, context);
 
