@@ -39,6 +39,8 @@ export type Envelope<I> = {
     deleted?: boolean;
 }
 
+
+
 export interface Repository <I>{
     create: (envelope: Envelope<I>, tokens?: string[]) => Promise<Envelope<I>>;
     read: (id: Id<I>, tokens?: string[], createdAt?: Date) => Promise<Envelope<I>>;
