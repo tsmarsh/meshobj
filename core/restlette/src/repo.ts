@@ -1,4 +1,3 @@
-import {ReadSecurer} from "@meshql/auth";
 import {Envelope, Id, Repository} from "@meshql/common";
 
 export class InMemory implements Repository<number, Record<string, any>>{
