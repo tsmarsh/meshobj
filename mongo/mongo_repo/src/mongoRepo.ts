@@ -49,15 +49,16 @@ export class PayloadRepository implements Repository<string>{
         return docs;
     };
 
-    read = async (id: string, tokens: string[], createdAt: Date = new Date()): Promise<Envelope<string>> => {
+    read = async (id: Id<string>, tokens: string[] = [], createdAt: Date = new Date()): Promise<Envelope<string>> => {
         let results: Envelope<string>[] = [];
 
-        let filter :{id, createdAt, deleted, authorized_readers?}   = {
+        let filter: any = {
             id,
             createdAt: {$lt: createdAt},
             deleted: {$exists: false},
         }
-        if(tokens?.length > 0){
+
+        if(tokens.length > 0){
             filter.authorized_readers = { $in: tokens }
         }
         try {
@@ -72,8 +73,8 @@ export class PayloadRepository implements Repository<string>{
         return results[0];
     };
 
-    readMany = async (ids: string[], tokens: string[] = []): Promise<Envelope<string>[]> => {
-        const match:{id, deleted, authorized_readers?} = {
+    readMany = async (ids: Id<string>[], tokens: string[] = []): Promise<Envelope<string>[]> => {
+        const match: any = {
             id: {$in: ids},
             deleted: {$exists: false}
         };
@@ -107,7 +108,7 @@ export class PayloadRepository implements Repository<string>{
         return results.map((d) => {return {id: d.id, createdAt: d.createdAt, payload: d.payload}});
     };
 
-    remove = async (id: string, tokens: string[] = []): Promise<boolean> => {
+    remove = async (id: Id<string>, tokens: string[] = []): Promise<boolean> => {
         await this.db.updateMany(secureRead(tokens, {id}), {$set: {deleted: true}});
         return true;
     };
@@ -118,7 +119,7 @@ export class PayloadRepository implements Repository<string>{
                                 {$set: {deleted: true}});
         //hack: should compare match to modified then figure out what didn't get removed
         let result: Record<Id<string>, boolean> = {}
-        for(let id in ids){
+        for(let id of ids){
             result[id] = true
         }
         return result;

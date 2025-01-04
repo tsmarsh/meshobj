@@ -25,7 +25,7 @@ export class Crud<I> {
         if (result !== null) {
             const auth_response = authorizeResponse(req, res);
 
-            logger.debug(`Created: ${result}`);
+            logger.debug(`Created: ${JSON.stringify(result)}`);
             auth_response.redirect(303, `${this._context}/${result.id}`);
         } else {
             logger.error(`Failed to create: ${JSON.stringify(doc)}`);
@@ -63,7 +63,7 @@ export class Crud<I> {
 
                 const secured_response = authorizeResponse(req, res);
 
-                logger.debug(`Updated: ${result}`);
+                logger.debug(`Updated: ${JSON.stringify(result)}`);
                 secured_response.redirect(303, `${this._context}/${result.id}`);
             } else {
                 res.status(403).json({});

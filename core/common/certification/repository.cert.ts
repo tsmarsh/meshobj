@@ -4,13 +4,18 @@ export function numvelop(payload: Payload) :Envelope<number> {return {payload}}
 export function strinvelop(payload: Payload) :Envelope<string> {return {payload}}
 
 export function RepositoryCertification<I>(
-    createRepository: () => Repository<I>,
+    createRepository: () => Promise<Repository<I>>,
+    tearDown: () => Promise<void>,
     enveloper: (payload: Payload) => Envelope<I>
 ) {
     let repository: Repository<I>;
 
-    beforeEach(() => {
-        repository = createRepository();
+    beforeEach(async () => {
+        repository = await createRepository();
+    });
+
+    afterAll( async () => {
+        await tearDown();
     });
 
     test('create should store and return the envelope', async () => {
