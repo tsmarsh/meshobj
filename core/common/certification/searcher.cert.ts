@@ -40,7 +40,15 @@ export function SearcherCertification<I>(createStore: (data: Envelope<string>[])
 
         const result = await searcher.find(templates["findById"], {id});
 
-        expect(result.name).toEqual("Bruce")
+        expect(result.name).toEqual(saved[0].payload.name);
         expect(result.count).toEqual(1)
     });
+
+    test("should find by name", async () => {
+        const id = saved[3].payload.name;
+
+        const result = await searcher.find(templates["findByName"], {id});
+
+        expect(result.name).toEqual(saved[3].payload.name);
+    })
 }
