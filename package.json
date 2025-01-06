@@ -3,7 +3,7 @@
   "private": true,
   "workspaces": [
     "core/*",
-    "mongo/*",
+    "storage/*",
     "authproviders/*"
   ],
   "scripts": {
