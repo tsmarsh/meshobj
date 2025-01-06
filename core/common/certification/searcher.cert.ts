@@ -51,4 +51,25 @@ export function SearcherCertification<I>(createStore: (data: Envelope<string>[])
 
         expect(result.name).toEqual(saved[3].payload.name);
     })
+
+    test("should find all by type", async () => {
+        const id = "A";
+
+        const result = await searcher.findAll(templates["findAllByType"], {id});
+
+        expect(result.length).toEqual(4);
+        let charlie = result.filter((f) => f.name === "Charlie")[0];
+        expect(charlie.count).toEqual(2);
+    });
+
+    test("should find all by type and name", async () => {
+        const type = "B";
+        const name = "Henry";
+
+        const result = await searcher.findAll(templates["findByNameAndType"], {name, type});
+
+        expect(result.length).toEqual(1);
+        expect(result[0].name).toEqual("Henry");
+    });
+
 }
