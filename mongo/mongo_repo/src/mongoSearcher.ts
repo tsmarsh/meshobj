@@ -51,7 +51,8 @@ export class MongoSearcher implements Searcher<string> {
                 logger.debug(`Nothing found for: ${args}`);
                 return [];
             });
-        let result = doc[0];
+        if(doc.length > 0) {
+            let result = doc[0];
 
             if (await this.authorizer.isAuthorized(creds, result)) {
                 result.payload.id = result.id;
@@ -59,9 +60,12 @@ export class MongoSearcher implements Searcher<string> {
                     result.payload,
                     timestamp,
                 );
-            } else {
-                return {};
             }
+        }
+
+        return {};
+
+
     };
 
     async findAll(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>[]> {
@@ -94,7 +98,7 @@ export class MongoSearcher implements Searcher<string> {
             .toArray();
 
         if (args !== undefined) {
-            results = results.filter((r:Document) => this.authorizer.isAuthorized(creds, r));
+            results = results.filter((r: Document) => this.authorizer.isAuthorized(creds, r));
         }
         return results.map((d) => {
             let r = d as Schema

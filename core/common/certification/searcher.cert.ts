@@ -35,6 +35,14 @@ export function SearcherCertification<I>(createStore: (data: Envelope<string>[])
         await tearDown();
     })
 
+    test("should return empty result for non-existent ID", async () => {
+        const id = "non-existent-id";
+
+        const result = await searcher.find(templates["findById"], { id });
+
+        expect(result).toEqual({}); // Ensure undefined is returned for invalid ID.
+    });
+
     test("should find by id", async () => {
         const id = saved[0].id!
 
@@ -72,4 +80,18 @@ export function SearcherCertification<I>(createStore: (data: Envelope<string>[])
         expect(result[0].name).toEqual("Henry");
     });
 
+
+    test("should return empty array for non-existent type", async () => {
+        const id = "C"; // Type "C" does not exist in the test data.
+
+        const result = await searcher.findAll(templates["findAllByType"], { id });
+
+        expect(result).toEqual([]); // Verify an empty array is returned for no matches.
+    });
+
+    test("should handle search with empty query parameters", async () => {
+        const result = await searcher.findAll(templates["findByNameAndType"], {});
+
+        expect(result).toEqual([]); // Verify no results for empty query.
+    });
 }
