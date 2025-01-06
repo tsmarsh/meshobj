@@ -1,4 +1,7 @@
+import {TemplateDelegate} from "handlebars";
+
 export * from "./certification/repository.cert"
+export * from "./certification/searcher.cert"
 
 export type Singleton = {
     query: string;
@@ -36,8 +39,6 @@ export type Envelope<I> = {
     deleted?: boolean;
 }
 
-
-
 export interface Repository <I>{
     create: (envelope: Envelope<I>, tokens?: string[]) => Promise<Envelope<I>>;
     read: (id: Id<I>, tokens?: string[], createdAt?: Date) => Promise<Envelope<I>>;
@@ -48,7 +49,7 @@ export interface Repository <I>{
     removeMany: (ids: Id<I>[], tokens?: string[]) => Promise<Record<Id<I>, boolean>>;
 }
 
-export interface Searcher {
-    find(queryTemplate: Handlebars.Template, args: Record<string, any>, timestamp?: number): Promise<Record<string, any>>;
-    findAll(queryTemplate: Handlebars.Template, args: Record<string, any>, timestamp?: number): Promise<Record<string, any>[]>;
+export interface Searcher<I> {
+    find<I>(queryTemplate: TemplateDelegate, args: Record<string, any>, creds?: string[], timestamp?: number): Promise<Record<string, any>>;
+    findAll<I>(queryTemplate: TemplateDelegate, args: Record<string, any>, creds?: string[],timestamp?: number): Promise<Record<string, any>[]>;
 }

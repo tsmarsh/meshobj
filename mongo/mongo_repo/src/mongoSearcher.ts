@@ -1,26 +1,26 @@
-import {Searcher} from "@meshql/common";
+import {Envelope, Searcher} from "@meshql/common";
 import {Auth} from "@meshql/auth";
 import {Collection, Document, WithId} from "mongodb";
 import {DTOFactory} from "@meshql/graphlette";
 import HandleBars from "handlebars";
 import Handlebars from "handlebars";
 import {getLogger} from "log4js";
-import {QueryArgs, Schema} from "./types";
+import {Schema} from "./types";
 
 let logger = getLogger("meshql/mongosearcher");
 
-export class MongoSearcher implements Searcher {
+export class MongoSearcher implements Searcher<string> {
     private authorizer: Auth;
-    private db: Collection;
+    private db: Collection<Envelope<string>>;
     private dtoFactory: DTOFactory;
 
-    constructor(db: Collection, dtoFactory: DTOFactory, authorizer: Auth) {
+    constructor(db: Collection<Envelope<string>>, dtoFactory: DTOFactory, authorizer: Auth) {
         this.authorizer = authorizer;
         this.db = db;
         this.dtoFactory = dtoFactory;
     }
 
-    processQueryTemplate(parameters: any, queryTemplate: HandleBars.Template): any {
+    processQueryTemplate(parameters: Record<string, any>, queryTemplate: HandleBars.TemplateDelegate): any {
         let query = queryTemplate(parameters);
         let json;
 
@@ -39,24 +39,21 @@ export class MongoSearcher implements Searcher {
         return json;
     };
 
-    async find(queryTemplate: Handlebars.Template, args: QueryArgs, timestamp: number = Date.now()): Promise<Record<string, any>> {
+    async find(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: [string], timestamp: number = Date.now()): Promise<Record<string, any>> {
         let query = this.processQueryTemplate(args, queryTemplate);
 
         query.createdAt = {
             $lt: new Date(timestamp),
         };
 
-        this.db.find(query).sort({createdAt: -1}).toArray()
+        let doc = await this.db.find(query).sort({createdAt: -1}).toArray()
             .catch(() => {
                 logger.debug(`Nothing found for: ${args}`);
                 return [];
-            }).then((doc: WithId<Document>[]) => {
-            let result = doc as Schema;
+            });
+        let result = doc[0];
 
-            if (
-                args === undefined ||
-                this.authorizer.isAuthorized(args.req, result)
-            ) {
+            if (await this.authorizer.isAuthorized(creds, result)) {
                 result.payload.id = result.id;
                 return this.dtoFactory.fillOne(
                     result.payload,
@@ -65,10 +62,9 @@ export class MongoSearcher implements Searcher {
             } else {
                 return {};
             }
-        })
     };
 
-    async findAll(queryTemplate: Handlebars.Template, args: QueryArgs, timestamp: number = Date.now()): Promise<Record<string, any>> {
+    async findAll(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>[]> {
         let time_filter = {
             $lt: new Date(timestamp),
         };
@@ -98,7 +94,7 @@ export class MongoSearcher implements Searcher {
             .toArray();
 
         if (args !== undefined) {
-            results = results.filter((r:Document) => this.authorizer.isAuthorized(args.req, r));
+            results = results.filter((r:Document) => this.authorizer.isAuthorized(creds, r));
         }
         return results.map((d) => {
             let r = d as Schema

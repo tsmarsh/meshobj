@@ -30,7 +30,7 @@ describe("GraphQL Configuration", () => {
             ],
         };
 
-        const schema = buildSchema(/* GraphQL */ `
+        const schema = buildSchema(`
             type Test {
                 id: ID
                 foo: String
@@ -42,7 +42,7 @@ describe("GraphQL Configuration", () => {
             }
         `);
 
-        let repo = new Mock<Searcher>()
+        let repo = new Mock<Searcher<string>>()
             .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({
                 "id": "test_id",
                 "payload": {"foo": "bar", "eggs": 6},
@@ -108,7 +108,7 @@ describe("GraphQL Configuration", () => {
         `);
 
 
-        const repo = new Mock<Searcher>()
+        const repo = new Mock<Searcher<string>>()
             .setup(async i => i.findAll(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync([
                 {
                     id: "chick_1",
@@ -186,7 +186,7 @@ describe("GraphQL Configuration", () => {
             }
         `);
 
-        let repo = new Mock<Searcher>()
+        let repo = new Mock<Searcher<string>>()
             .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({
                 id: "chuck",
                 payload: {
