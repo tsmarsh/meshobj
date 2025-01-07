@@ -10,15 +10,19 @@ export class Crud<I> {
     private _authorizer: Auth;
     private _repo: Repository<I>;
     private readonly _context: string;
+    private readonly _tokens: string[];
 
-    constructor(authorizer: Auth, repo: Repository<I>, context: string) {
+    constructor(authorizer: Auth, repo: Repository<I>, context: string, tokens: string[] = []) {
         this._authorizer = authorizer;
         this._repo = repo;
         this._context = context;
+        this._tokens = tokens;
     }
 
      create = async (req: Request, res: Response) => {
-        const doc: Envelope<I> = {payload: req.body};
+         let auth_tokens = await this.calculateTokens(req);
+
+         const doc: Envelope<I> = {payload: req.body, authorized_tokens: auth_tokens};
 
         const result: Envelope<I> = await this._repo.create(doc);
 
@@ -32,6 +36,10 @@ export class Crud<I> {
             res.sendStatus(400);
         }
     };
+
+    private async calculateTokens(req: Request): Promise<string[]> {
+        return this._tokens.length > 0 ? this._tokens : await this._authorizer.getAuthToken(req);
+    }
 
     read = async (req: Request, res: Response)=> {
         const id = req.params.id;
@@ -53,13 +61,15 @@ export class Crud<I> {
     update = async (req: Request, res: Response) => {
         const id = req.params.id;
 
-        const payload: Envelope<I> = {id: req.params.id, payload: req.body};
+        let authToken = await this._authorizer.getAuthToken(request);
+
+        const envelope: Envelope<I> = {id: req.params.id, payload: req.body, authorized_tokens: await this.calculateTokens(req)};
 
         const current:Envelope<I> = await this._repo.read(id);
 
         if (current !== null && current !== undefined) {
-            if (await this._authorizer.isAuthorized(req, current)) {
-                const result = await this._repo.create(payload);
+            if (await this._authorizer.isAuthorized(authToken, current)) {
+                const result = await this._repo.create(envelope);
 
                 const secured_response = authorizeResponse(req, res);
 
@@ -76,9 +86,10 @@ export class Crud<I> {
     remove = async (req: Request, res: Response) => {
         const id = req.params.id;
         const result = await this._repo.read(id);
+        const tokens = await this._authorizer.getAuthToken(request);
 
         if (result !== null && result !== undefined) {
-            if (await this._authorizer.isAuthorized(req, result)) {
+            if (await this._authorizer.isAuthorized(tokens, result)) {
                 await this._repo.remove(id);
                 logger.debug(`Deleted: ${id}`);
                 res.json({deleted: id});
