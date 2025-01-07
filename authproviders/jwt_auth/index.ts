@@ -33,5 +33,4 @@ class JWTSubAuthorizer implements Auth {
             data.authorized_readers.includes(creds)
         );
     }
-
 }
