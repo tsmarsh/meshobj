@@ -16,7 +16,7 @@ export class SQLiteRepository implements Repository<string> {
             CREATE TABLE IF NOT EXISTS ${this.collection} (
                 id TEXT PRIMARY KEY,
                 payload TEXT,
-                createdAt TEXT,
+                createdAt INTEGER,
                 deleted INTEGER DEFAULT 0
             )
         `);
@@ -24,17 +24,17 @@ export class SQLiteRepository implements Repository<string> {
 
     create = async (envelope: Envelope<string>): Promise<Envelope<string>> => {
         const id = envelope.id ?? crypto.randomUUID();
-        const createdAt = envelope.createdAt ?? new Date();
+        const createdAt = envelope.createdAt ? envelope.createdAt.getTime() : Date.now();
 
         await this.db.run(
             `INSERT INTO ${this.collection} (id, payload, createdAt, deleted) VALUES (?, ?, ?, ?)`,
             id,
             JSON.stringify(envelope.payload),
-            createdAt.toISOString(),
+            createdAt,
             0
         );
 
-        return { ...envelope, id, createdAt, deleted: false };
+        return { ...envelope, id, createdAt: new Date(createdAt), deleted: false };
     }
 
     read = async (id: Id<string>): Promise<Envelope<string>> => {
@@ -67,12 +67,12 @@ export class SQLiteRepository implements Repository<string> {
     }
 
     async createMany(payloads: Envelope<string>[]): Promise<Envelope<string>[]> {
-        const now = new Date();
+        const now = Date.now();
 
         let created: Envelope<string>[] = [];
         await this.db.run("BEGIN TRANSACTION");
         for (const envelope of payloads) {
-            created.push(await this.create({ ...envelope, createdAt: now }));
+            created.push(await this.create({ ...envelope, createdAt: new Date(now) }));
         }
         await this.db.run("COMMIT");
 

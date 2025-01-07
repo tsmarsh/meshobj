@@ -21,4 +21,5 @@ const tearDown = async (): Promise<void> => {
         db.close();
     }));
 }
+
 RepositoryCertification(createRepository, tearDown, strinvelop);

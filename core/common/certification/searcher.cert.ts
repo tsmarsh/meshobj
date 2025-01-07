@@ -71,10 +71,7 @@ export function SearcherCertification<I>(createStore: (data: Envelope<string>[])
     });
 
     test("should find all by type and name", async () => {
-        const type = "B";
-        const name = "Henry";
-
-        const result = await searcher.findAll(templates["findByNameAndType"], {name, type});
+        const result = await searcher.findAll(templates["findByNameAndType"], {name: "Henry", type: "B"});
 
         expect(result.length).toEqual(1);
         expect(result[0].name).toEqual("Henry");

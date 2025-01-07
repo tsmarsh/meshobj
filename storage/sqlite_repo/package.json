@@ -1,0 +1,15 @@
+{
+  "name": "sqlite_repo",
+  "version": "0.1.0",
+  "description": "SQLite3 Repository for MeshQL",
+  "main": "index.ts",
+  "author": "Tom Marsh",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@types/typescript": "^2.0.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "typescript": "^5.7.2"
+  }
+}
