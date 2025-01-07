@@ -37,6 +37,7 @@ export type Envelope<I> = {
     payload: Payload;
     createdAt?: Date;
     deleted?: boolean;
+    authorized_tokens?: string[]
 }
 
 

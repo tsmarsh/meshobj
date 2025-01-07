@@ -1,15 +1,17 @@
 import {Auth} from "@meshql/auth";
 import {getLogger} from "log4js";
 import jwt from "jsonwebtoken";
+import {Envelope} from "@meshql/common";
+import {Request} from "express";
 
 let logger = getLogger("meshql/jwtauth");
 
-class JWTSubAuthorizer implements Auth {
-    async getAuthToken(context: any): Promise<any> {
+export class JWTSubAuthorizer implements Auth {
+    async getAuthToken(context: Request): Promise<string[]> {
         const authHeader = context.headers?.authorization;
 
         if (authHeader === null || authHeader === undefined) {
-            return null;
+            return [];
         }
 
         if (authHeader.startsWith("Bearer ")) {
@@ -20,17 +22,14 @@ class JWTSubAuthorizer implements Auth {
             return dToken["sub"];
         } else {
             logger.error("Missing Bearer Token");
-            return null;
+            return [];
         }
     }
 
-    async isAuthorized(creds: any, data: Record<string, any>): Promise<boolean> {
-        if (data === undefined) throw new Error("Nothing to Authorize");
+    async isAuthorized(credentials: string[], data: Envelope<any>): Promise<boolean> {
         return (
-            creds === undefined || //internal or a test (hasn't gone through gateway)
-            creds === null ||
-            data.authorized_readers.length === 0 || //everyone can read
-            data.authorized_readers.includes(creds)
+            data.authorized_tokens?.length === 0 || //everyone can read
+            data.authorized_tokens?.some((t) => credentials.includes(t))
         );
     }
 }

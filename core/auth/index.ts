@@ -1,19 +1,14 @@
+import {Envelope} from "@meshql/common";
+import {Request} from "express";
+
 export interface Auth {
-    getAuthToken(context: any): Promise<any>;
-    isAuthorized(creds: any, data: Record<string, any>): Promise<boolean>;
+    getAuthToken(context: Request): Promise<string[]>;
+    isAuthorized(credentials: string[], data: Envelope<any>): Promise<boolean>;
 }
 
 export class NoOp implements Auth {
-    secureData(creds: any, data: any): any {
-        return data;
-    }
-
-    secureRead(creds: any, query: any): any {
-        return query;
-    }
-
-    async getAuthToken(context: any): Promise<any> {
-        return "TOKEN";
+    async getAuthToken(context: Request): Promise<string[]> {
+        return ["TOKEN"];
     }
 
     async isAuthorized(creds: any, data: Record<string, any>): Promise<boolean> {
