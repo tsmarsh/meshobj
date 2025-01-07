@@ -12,7 +12,7 @@ import fetchMock from "fetch-mock";
 const createdAt = new Date();
 
 const auth = new Mock<Auth>()
-    .setup(async i => i.getAuthToken(It.IsAny())).returnsAsync("TOKEN")
+    .setup(async i => i.getAuthToken(It.IsAny())).returnsAsync(["TOKEN"])
     .setup(async i => i.isAuthorized(It.IsAny(), It.IsAny())).returnsAsync(true).object()
 
 describe("GraphQL Configuration", () => {
@@ -122,7 +122,7 @@ describe("GraphQL Configuration", () => {
             ]).object();
 
         const auth = new Mock<Auth>()
-            .setup(async i => i.getAuthToken(It.IsAny())).returnsAsync("TOKEN")
+            .setup(async i => i.getAuthToken(It.IsAny())).returnsAsync(["TOKEN"])
             .setup(async i => i.isAuthorized(It.IsAny(), It.IsAny())).returnsAsync(true).object()
 
         test("should create a simple vector root", async () => {
