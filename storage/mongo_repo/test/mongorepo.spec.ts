@@ -3,21 +3,25 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import {PayloadRepository} from "../src/mongoRepo";
 import {MongoClient} from "mongodb";
 
-const mongos: {server: MongoMemoryServer, client: MongoClient}[] = []
+let mongod: MongoMemoryServer;
+const mongos: MongoClient[] = []
 const createRepository = async () : Promise<Repository<string>> => {
-    let mongod: MongoMemoryServer = await MongoMemoryServer.create();
+    if(!mongod) {
+        mongod = await MongoMemoryServer.create();
+    }
+
     let client: MongoClient = new MongoClient(mongod.getUri());
     await client.connect();
 
     let db = client.db("test")
-    mongos.push({server: mongod, client})
-    return new PayloadRepository(db.collection("certification"));
+    mongos.push(client)
+    return new PayloadRepository(db.collection(crypto.randomUUID()));
 }
 
 const tearDown = async (): Promise<void> => {
-    await Promise.all(mongos.map(({server, client}) => {
+    await Promise.all(mongos.map((client) => {
         client.close()
-        server.stop()
     }));
+    await mongod.stop()
 }
 RepositoryCertification(createRepository, tearDown, strinvelop);

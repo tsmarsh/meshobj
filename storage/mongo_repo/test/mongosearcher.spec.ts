@@ -7,15 +7,18 @@ import {DTOFactory} from "@meshql/graphlette";
 import {NoOp, Auth} from "@meshql/auth";
 import {compile} from "handlebars";
 
-const mongos: {server: MongoMemoryServer, client: MongoClient}[] = []
+let mongod: MongoMemoryServer;
+const mongos: MongoClient[] = []
 
 const createSearcher = async (data: Envelope<string>[]): Promise<{saved: Envelope<string>[], searcher: Searcher<string>}> => {
-    let mongod: MongoMemoryServer = await MongoMemoryServer.create();
+    if(!mongod) {
+        mongod = await MongoMemoryServer.create();
+    }
     let client: MongoClient = new MongoClient(mongod.getUri());
     await client.connect();
-    mongos.push({server: mongod, client})
+    mongos.push(client)
     let db = client.db("test")
-    let collection: Collection<Envelope<string>> = db.collection("test");
+    let collection: Collection<Envelope<string>> = db.collection(crypto.randomUUID());
 
     let dtoFactory = new DTOFactory([]);
     let auth: Auth = new NoOp();
@@ -28,10 +31,10 @@ const createSearcher = async (data: Envelope<string>[]): Promise<{saved: Envelop
 }
 
 const tearDown = async (): Promise<void> => {
-    await Promise.all(mongos.map(({server, client}) => {
+    await Promise.all(mongos.map((client) => {
         client.close()
-        server.stop()
     }));
+    mongod.stop()
 }
 
 const findById = `{"id": "{{id}}"}`
