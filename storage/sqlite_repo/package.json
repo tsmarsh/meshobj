@@ -1,5 +1,5 @@
 {
-  "name": "sqlite_repo",
+  "name": "@meshql/ sqlite_repo",
   "version": "0.1.0",
   "description": "SQLite3 Repository for MeshQL",
   "main": "index.ts",

@@ -37,8 +37,7 @@ export class SQLiteSearcher implements Searcher<string> {
                 return this.dtoFactory.fillOne(result.payload, timestamp);
             }
         } else {
-            console.log("args: ", args);
-            console.log("sql", sql);
+            console.log("Find one: sql", sql, "args: ", args);
         }
 
         return {};
@@ -51,8 +50,7 @@ export class SQLiteSearcher implements Searcher<string> {
         const rows = await this.db.all(sql, []);
         const envelopes: Envelope<string>[] = rows.map((i) => i.payload = JSON.parse(i.payload));
         if(envelopes.length === 0) {
-            console.log("args: ", args);
-            console.log("sql", sql);
+            console.log("Find all: sql", sql, "args: ", args);
         }
 
         const authorizedResults = rows.filter((row) => this.authorizer.isAuthorized(creds, row));
