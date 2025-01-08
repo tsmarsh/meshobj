@@ -251,7 +251,7 @@ describe("Crud", () => {
 
         beforeAll(async () => {
             const auth: Auth = {
-                async getAuthToken(context: e.Request): Promise<string[]> {
+                async getAuthToken(context: Record<string, any>): Promise<string[]> {
                     return [context.headers?.authorization ?? "fd"];
                 }, async isAuthorized(credentials: string[], data: Record<string, any>): Promise<boolean> {
                     return credentials[0] === "token";

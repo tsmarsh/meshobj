@@ -2,12 +2,12 @@ import {Envelope} from "@meshql/common";
 import {Request} from "express";
 
 export interface Auth {
-    getAuthToken(context: Request): Promise<string[]>;
+    getAuthToken(context: Record<string, any>): Promise<string[]>;
     isAuthorized(credentials: string[], data: Envelope<any>): Promise<boolean>;
 }
 
 export class NoOp implements Auth {
-    async getAuthToken(context: Request): Promise<string[]> {
+    async getAuthToken(context: Record<string, any>): Promise<string[]> {
         return ["TOKEN"];
     }
 

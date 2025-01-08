@@ -46,7 +46,7 @@ const getTimestamp = (args: Record<string, any>): number => {
 
 function vector<T> (repo: Searcher<T>, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: String){
     let qt = HandleBars.compile(queryTemplate)
-    return async (args: any, context: Request): Promise<Record<string, any>[]> => {
+    return async (args: any, context: any): Promise<Record<string, any>[]> => {
         let creds = await authorizer.getAuthToken(context);
         let timestamp = getTimestamp(args);
         let results: Record<string, any>[] =  await repo.findAll(qt, args, creds, timestamp)
@@ -57,7 +57,7 @@ function vector<T> (repo: Searcher<T>, dtoFactory: DTOFactory, authorizer: Auth,
 
 function singleton<T> (repo: Searcher<T>, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: String) {
     let qt = HandleBars.compile(queryTemplate)
-    return async (args: any, context: Request):Promise<Record<string, any>> => {
+    return async (args: any, context: any):Promise<Record<string, any>> => {
         let creds = await authorizer.getAuthToken(context);
         let timestamp = getTimestamp(args);
         let payload = await repo.find(qt, args, creds, timestamp)
