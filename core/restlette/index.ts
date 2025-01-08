@@ -2,7 +2,6 @@ import express, {Application} from "express";
 
 import Log4js from "log4js";
 
-import {Bulk} from "./src/bulk";
 import {Crud} from "./src/crud";
 import expressJSDocSwagger from "express-jsdoc-swagger";
 
@@ -26,14 +25,13 @@ const options = (context: string) => {
     }
 };
 
-export function init<I>(app: Application, crud: Crud<I>, bulk: Bulk<I>, context: string,): Application {
+export function init<I>(app: Application, crud: Crud<I>, context: string,): Application {
     logger.info(`API Docs are available on: ${context}/api-docs`);
 
     app.use(express.json());
 
-    app.post(`${context}/bulk`, bulk.bulk_create);
-    app.get(`${context}/bulk`, bulk.bulk_read);
-    app.delete(`${context}/bulk`, bulk.bulk_delete);
+    app.post(`${context}/bulk`, crud.bulk_create);
+    app.get(`${context}/bulk`, crud.bulk_read);
 
     app.post(`${context}`, crud.create);
     app.get(`${context}`, crud.list);

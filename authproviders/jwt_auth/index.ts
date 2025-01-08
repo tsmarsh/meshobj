@@ -27,9 +27,10 @@ export class JWTSubAuthorizer implements Auth {
     }
 
     async isAuthorized(credentials: string[], data: Envelope<any>): Promise<boolean> {
+
         return (
-            data.authorized_tokens?.length === 0 || //everyone can read
-            data.authorized_tokens?.some((t) => credentials.includes(t))
+            data.authorized_tokens || data.authorized_tokens.length === 0 || //everyone can read
+            data.authorized_tokens.some((t) => credentials.includes(t))
         );
     }
 }
