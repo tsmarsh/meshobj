@@ -98,7 +98,7 @@ export class MongoSearcher implements Searcher<string> {
             .toArray();
 
         if (args !== undefined) {
-            results = results.filter((r: Document) => this.authorizer.isAuthorized(creds, r));
+            results = results.filter((r: Document) => this.authorizer.isAuthorized(creds, r as Envelope<string>));
         }
         return results.map((d) => {
             let r = d as Schema

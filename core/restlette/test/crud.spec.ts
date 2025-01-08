@@ -4,7 +4,7 @@ import {init} from "../index";
 import {describe, test, expect, beforeAll, afterAll} from "@jest/globals";
 import express, {Application, Express} from "express";
 import {Auth, NoOp} from "@meshql/auth";
-import {InMemory} from "../src/repo";
+import {InMemory} from "../../../storage/memory/repo";
 import {Envelope, Repository, Validator} from "@meshql/common";
 import {Crud} from "../src/crud";
 import {JSONSchemaValidator} from "../src/validation";

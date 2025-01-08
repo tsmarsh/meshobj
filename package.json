@@ -12,5 +12,8 @@
   },
   "dependencies": {
     "pnpm": "^9.15.3"
+  },
+  "devDependencies": {
+    "lcov-result-merger": "^5.0.1"
   }
 }

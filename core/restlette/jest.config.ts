@@ -5,4 +5,7 @@ module.exports = {
         "^.+\\.tsx?$": "ts-jest", // Transform .ts and .tsx files with ts-jest
     },
     moduleFileExtensions: ["ts", "tsx", "js", "json", "node"],
+    collectCoverage: true,
+    coverageDirectory: "coverage",
+    coverageReporters: ["json-summary", "lcov"],
 };
