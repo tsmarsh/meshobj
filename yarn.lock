@@ -3485,6 +3485,11 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
+pnpm@^9.15.3:
+  version "9.15.3"
+  resolved "https://registry.yarnpkg.com/pnpm/-/pnpm-9.15.3.tgz#120e76442c589bb9a3267dbbefa5658c9943fcae"
+  integrity sha512-H3m8JFpm6wsHxdTYMTEkB3RkLKqobvfQQ0q0fA0W9msE4h4MCG62HmLHfvxNf37Aca+tN5avZIkvrmZQkXOJOg==
+
 prebuild-install@^7.1.1:
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/prebuild-install/-/prebuild-install-7.1.2.tgz#a5fd9986f5a6251fbc47e1e5c65de71e68c0a056"

@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "devDependencies": {
     "@types/handlebars": "^4.1.0",

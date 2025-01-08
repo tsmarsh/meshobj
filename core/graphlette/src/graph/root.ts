@@ -2,8 +2,9 @@ import {DTOFactory} from "./dto";
 import {Auth} from "@meshql/auth";
 import HandleBars from "handlebars";
 import {Searcher, RootConfig} from "@meshql/common";
+import {Request} from "express";
 
-export const context = (repo: Searcher, authorizer: Auth, config: RootConfig) => {
+export function context<T> (repo: Searcher<T>, authorizer: Auth, config: RootConfig) {
     let dtoF = new DTOFactory(config.resolvers);
     let rt = root(repo, dtoF, authorizer, config);
 
@@ -13,7 +14,7 @@ export const context = (repo: Searcher, authorizer: Auth, config: RootConfig) =>
     };
 };
 
-export const root = (repo: Searcher, dtoFactory: DTOFactory, authorizer:Auth, { singletons, vectors }: RootConfig) => {
+export function root<T>(repo: Searcher<T>, dtoFactory: DTOFactory, authorizer:Auth, { singletons, vectors }: RootConfig){
     let base: { [key: string]: any } = {};
 
     if (singletons !== undefined) {
@@ -29,7 +30,8 @@ export const root = (repo: Searcher, dtoFactory: DTOFactory, authorizer:Auth, { 
     }
 
     return base;
-};
+}
+
 const getTimestamp = (args: Record<string, any>): number => {
     let atArg = "at";
     let at;
@@ -42,25 +44,26 @@ const getTimestamp = (args: Record<string, any>): number => {
     return at;
 }
 
-const vector = (repo: Searcher, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: String) => {
+function vector<T> (repo: Searcher<T>, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: String){
     let qt = HandleBars.compile(queryTemplate)
-    return async (args: any, context: any): Promise<Record<string, any>[]> => {
-        let token = authorizer.getAuthToken(context)
+    return async (args: any, context: Request): Promise<Record<string, any>[]> => {
+        let creds = await authorizer.getAuthToken(context);
         let timestamp = getTimestamp(args);
-        let results: Record<string, any>[] =  await repo.findAll(qt, args, timestamp)
-        let payloads = results.map((v: Record<string, any>) => v.payload)
+        let results: Record<string, any>[] =  await repo.findAll(qt, args, creds, timestamp)
+        let payloads = results.map((v: Record<string, any>) => v)
         return dtoFactory.fillMany(payloads, timestamp);
     }
 }
 
-const singleton = (repo: Searcher, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: String) => {
+function singleton<T> (repo: Searcher<T>, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: String) {
     let qt = HandleBars.compile(queryTemplate)
-    return async (args: any, context: any):Promise<Record<string, any>> => {
+    return async (args: any, context: Request):Promise<Record<string, any>> => {
+        let creds = await authorizer.getAuthToken(context);
         let timestamp = getTimestamp(args);
-        let payload = await repo.find(qt, args, timestamp)
+        let payload = await repo.find(qt, args, creds, timestamp)
 
         return dtoFactory.fillOne(
-            payload.payload,
+            payload,
             timestamp,
         );
     }

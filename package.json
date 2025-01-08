@@ -9,5 +9,8 @@
   "scripts": {
     "build": "yarn workspaces run build",
     "test": "yarn workspaces run test"
+  },
+  "dependencies": {
+    "pnpm": "^9.15.3"
   }
 }

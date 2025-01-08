@@ -43,11 +43,9 @@ describe("GraphQL Configuration", () => {
         `);
 
         let repo = new Mock<Searcher<string>>()
-            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({
-                "id": "test_id",
-                "payload": {"foo": "bar", "eggs": 6},
-                createdAt,
-            }).object();
+            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync(
+                {"foo": "bar", "eggs": 6},
+            ).object();
 
         test("should create a simple root", async () => {
             const query = /* GraphQL */ `
@@ -109,16 +107,9 @@ describe("GraphQL Configuration", () => {
 
 
         const repo = new Mock<Searcher<string>>()
-            .setup(async i => i.findAll(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync([
-                {
-                    id: "chick_1",
-                    payload: { name: "henry", eggs: 3, breed: "chicken", id: "chick_1",},
-                    createdAt,
-                },{
-                    id: "chick_2",
-                    payload: { name: "harry", eggs: 4, breed: "chicken", id: "chick_2", },
-                    createdAt,
-                }
+            .setup(async i => i.findAll(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync([
+                { name: "henry", eggs: 3, breed: "chicken", id: "chick_1",},
+                 { name: "harry", eggs: 4, breed: "chicken", id: "chick_2", }
             ]).object();
 
         const auth = new Mock<Auth>()
@@ -187,16 +178,14 @@ describe("GraphQL Configuration", () => {
         `);
 
         let repo = new Mock<Searcher<string>>()
-            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync({
-                id: "chuck",
-                payload: {
+            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync(
+                {
                     name: "chucky",
                     eggs: 1,
                     coop_id: "101010",
                     id: "chuck",
-                },
-                createdAt,
-            }).object();
+                }
+            ).object();
 
         test("should call the dependency", async () => {
             const url: string = new URL(simple.resolvers[0].url).toString();

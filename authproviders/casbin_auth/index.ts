@@ -1,28 +1,37 @@
 import {Enforcer, newEnforcer} from "casbin";
 import {Auth} from "@meshql/auth";
-import {JWTSubAuthorizer} from "@meshql/jwt_auth";
 import {Envelope} from "@meshql/common";
 
 
-class CasbinAuth implements Auth {
-
+export class CasbinAuth implements Auth {
     enforcer: Enforcer;
-    jwtAuth = new JWTSubAuthorizer();
+    jwtAuth: Auth;
 
-    async constructor(...params: any[]) {
-        this.enforcer = await newEnforcer(params);
+    // Private constructor to prevent direct instantiation
+    private constructor(enforcer: Enforcer, jwtAuth: Auth) {
+        this.enforcer = enforcer;
+        this.jwtAuth = jwtAuth;
     }
 
-    async getAuthToken(context): Promise<any> {
-        let sub = await this.jwtAuth.getAuthToken(context);
-        return await this.enforcer.getRolesForUser(sub[0])
+    static async create(params: any[], auth: Auth): Promise<CasbinAuth> {
+        const enforcer = await newEnforcer(...params);
+        return new CasbinAuth(enforcer, auth);
+    }
+
+    async getAuthToken(context: any): Promise<any> {
+        const sub = await this.jwtAuth.getAuthToken(context);
+        return await this.enforcer.getRolesForUser(sub[0]);
     }
 
     async isAuthorized(credentials: string[], data: Envelope<any>): Promise<boolean> {
-        return (
-            data.authorized_tokens?.length === 0 || //everyone can read
-            data.authorized_tokens?.some((t) => credentials.includes(t))
-        );
+        const authorizedTokens = data.authorized_tokens;
+
+        // Allow access if authorized_tokens is empty or undefined (this can only happen in a non-prod environment)
+        if (!authorizedTokens || authorizedTokens.length === 0) {
+            return true;
+        }
+
+        return authorizedTokens.some((token) => credentials.includes(token));
     }
 
 }
