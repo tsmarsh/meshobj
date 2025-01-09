@@ -1,6 +1,6 @@
 {
   "name": "@meshql/memory_repo",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Mongo impls of the repositories",
   "main": "index.ts",
   "author": "Tom Marsh",

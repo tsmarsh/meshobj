@@ -2,13 +2,12 @@ import Log4js from "log4js";
 import {init} from "../index";
 
 import {describe, test, expect, beforeAll, afterAll} from "@jest/globals";
-import express, {Application, Express} from "express";
 import {Auth, NoOp} from "@meshql/auth";
-import {InMemory} from "../../../storage/memory/repo";
+import {InMemory} from "@meshql/memory_repo";
 import {Envelope, Repository, Validator} from "@meshql/common";
 import {Crud} from "../src/crud";
-import {JSONSchemaValidator} from "../src/validation";
-import e from "express";
+import {JSONSchemaValidator} from "../src/validation"
+import Fastify, {FastifyInstance} from "fastify";
 
 Log4js.configure({
     appenders: {
@@ -25,8 +24,7 @@ Log4js.configure({
 
 describe("Crud", () => {
     describe("A happy restlette", function() {
-
-        let server: any;
+        let server: FastifyInstance;
 
         const port = 40200;
 
@@ -37,16 +35,16 @@ describe("Crud", () => {
         beforeAll(async () => {
             const auth: Auth = new NoOp();
             const repo: Repository<number> = new InMemory();
-            await repo.create({"id": "666", "payload": { "name": "chuck", "eggs": 6 }});
-            const app: Express = express();
-            app.use(express.json())
-            let context = "/hens";
-            let validator: Validator = async (data: Record<string, any>) => true;
+            await repo.create({ id: "666", payload: { name: "chuck", eggs: 6 } });
+            server = Fastify();
 
-            let crud:Crud<number> = new Crud(auth, repo, validator, context);
-            let application = init(app, crud, context);
+            const context = "/hens";
+            const validator: Validator = async (data: Record<string, any>) => true;
 
-            server = application.listen(port);
+            const crud: Crud<number> = new Crud(auth, repo, validator, context);
+            init(server, crud, context);
+
+            await server.listen({ port });
         });
 
         test("should create a document", async function() {
@@ -102,10 +100,7 @@ describe("Crud", () => {
         test("should delete a document", async () => {
             const response = await fetch(`http://localhost:40200/hens/10`, {
                 method: "DELETE",
-                redirect: "follow",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                redirect: "follow"
             });
 
             expect(response.status).toBe(200);
@@ -113,8 +108,7 @@ describe("Crud", () => {
     });
 
     describe("negative tests for simple restlette", function() {
-
-        let server: any;
+        let server: FastifyInstance;
 
         const port = 40300;
 
@@ -125,26 +119,25 @@ describe("Crud", () => {
         beforeAll(async () => {
             const auth: Auth = new NoOp();
             const repo: Repository<number> = new InMemory();
-            await repo.create({"id": "666", "payload": { "name": "chuck", "eggs": 6 }});
-            const app: Express = express();
-            app.use(express.json())
-            let context = "/hens";
-            let validator: Validator = JSONSchemaValidator({
-                    $id: "henSchema",
-                    type: "object",
-                    properties: {
-                        name: { type: "string", minLength: 1 },
-                        eggs: { type: "integer", minimum: 0 },
-                    },
-                    required: ["name", "eggs"],
-                    additionalProperties: false,
-                }
-            )
+            await repo.create({ id: "666", payload: { name: "chuck", eggs: 6 } });
+            server = Fastify();
 
-            let crud:Crud<number> = new Crud(auth, repo, validator, context);
-            let application = init(app, crud, context);
+            const context = "/hens";
+            const validator: Validator = JSONSchemaValidator({
+                $id: "henSchema",
+                type: "object",
+                properties: {
+                    name: { type: "string", minLength: 1 },
+                    eggs: { type: "integer", minimum: 0 },
+                },
+                required: ["name", "eggs"],
+                additionalProperties: false,
+            });
 
-            server = application.listen(port);
+            const crud: Crud<number> = new Crud(auth, repo, validator, context);
+            init(server, crud, context);
+
+            await server.listen({ port });
         });
 
         test("should return 404 for non-existent document", async () => {
@@ -240,8 +233,7 @@ describe("Crud", () => {
     });
 
     describe("authorization tests", function(){
-        let server: any;
-
+        let server: FastifyInstance;
         const port = 40400;
         let hen: Envelope<number>;
 
@@ -253,23 +245,25 @@ describe("Crud", () => {
             const auth: Auth = {
                 async getAuthToken(context: Record<string, any>): Promise<string[]> {
                     return [context.headers?.authorization ?? "fd"];
-                }, async isAuthorized(credentials: string[], data: Record<string, any>): Promise<boolean> {
+                },
+                async isAuthorized(credentials: string[], data: Record<string, any>): Promise<boolean> {
                     return credentials[0] === "token";
-                }
+                },
+            };
 
-            }
             const repo: Repository<number> = new InMemory();
-            hen = await repo.create({"id": "666", "payload": { "name": "chuck", "eggs": 6 }});
-            const app: Express = express();
-            app.use(express.json())
-            let context = "/hens";
-            let validator: Validator = async (data) => true;
+            hen = await repo.create({ id: "666", payload: { name: "chuck", eggs: 6 } });
+            server = Fastify();
 
-            let crud:Crud<number> = new Crud(auth, repo, validator, context);
-            let application = init(app, crud, context);
+            const context = "/hens";
+            const validator: Validator = async (data) => true;
 
-            server = application.listen(port);
+            const crud: Crud<number> = new Crud(auth, repo, validator, context);
+            init(server, crud, context);
+
+            await server.listen({ port });
         });
+
 
         test("should return 200 for authorized access", async () => {
             const response = await fetch(`http://localhost:${port}/hens/${hen.id}`, {
