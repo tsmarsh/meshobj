@@ -190,10 +190,7 @@ describe("Crud", () => {
 
         test("should return 404 for deleting a non-existent document", async () => {
             const response = await fetch(`http://localhost:${port}/hens/999`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                method: "DELETE"
             });
 
             expect(response.status).toBe(404);
@@ -220,7 +217,7 @@ describe("Crud", () => {
             expect(response.status).toBe(400);
         });
 
-        test("should return 404 for unsupported HTTP method", async () => {
+        test("should return 400 for unsupported HTTP method", async () => {
             const response = await fetch(`http://localhost:${port}/hens/10`, {
                 method: "PATCH", // Unsupported method
                 headers: {
@@ -228,7 +225,7 @@ describe("Crud", () => {
                 },
             });
 
-            expect(response.status).toBe(404);
+            expect(response.status).toBe(400);
         });
     });
 
