@@ -1,5 +1,6 @@
 export {DTOFactory} from "./src/graph/dto"
-export {context} from "./src/graph/root"
+export {context, root} from "./src/graph/root"
+export {callSubgraph} from "./src/graph/subgraph"
 
 import { FastifyInstance } from "fastify";
 import mercurius from "mercurius";

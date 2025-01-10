@@ -1,6 +1,6 @@
 import {RootConfig} from "@meshql/common";
 
-export type StorageConfig = {type: "mongo" | "string" } & (MongoConfig | SQLConfig);
+export type StorageConfig = {type: "mongo" | "sql" | "memory"} & (MongoConfig | SQLConfig);
 
 export type MongoConfig = {
     uri: string;
@@ -35,5 +35,4 @@ export type Config = {
     graphlettes: Graphlette[];
     port: number;
     restlettes: Restlette[];
-    url: string;
 }
