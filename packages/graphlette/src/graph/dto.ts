@@ -6,12 +6,6 @@ import {Resolver} from "@meshql/common"
 
 let logger = Log4js.getLogger("gridql/DTOFactory");
 
-export type DTOConfig = {
-    id: any;
-    queryName: string;
-    url: URL;
-}
-
 export class DTOFactory {
     resolvers: { [key: string]: any } = {};
 

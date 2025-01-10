@@ -15,7 +15,7 @@ export function context<T> (repo: Searcher<T>, authorizer: Auth, config: RootCon
 };
 
 export function root<T>(repo: Searcher<T>, dtoFactory: DTOFactory, authorizer:Auth, { singletons, vectors }: RootConfig){
-    let base: { [key: string]: any } = {};
+    let base: Record<string, any> = {};
 
     if (singletons !== undefined) {
         for (const s of singletons) {
