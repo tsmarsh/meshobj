@@ -1,6 +1,6 @@
 import {Auth} from "@meshql/auth";
 import {getLogger} from "log4js";
-import jwt from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
 import {Envelope} from "@meshql/common";
 import {Request} from "express";
 

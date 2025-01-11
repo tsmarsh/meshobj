@@ -27,7 +27,7 @@ export type Restlette = {
     tokens?: string[];
     path: string;
     storage: StorageConfig;
-    schema: string;
+    schema: Record<string, any>;
 }
 
 export type Config = {

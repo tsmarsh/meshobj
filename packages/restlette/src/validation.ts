@@ -5,6 +5,7 @@ import addFormats from "ajv-formats";
 export function JSONSchemaValidator(schema: Record<string, any> ):Validator {
     const ajv = new Ajv();
     addFormats(ajv);
+    ajv.addKeyword("faker")
     let validate = ajv.compile(schema);
 
     return async (data) =>
