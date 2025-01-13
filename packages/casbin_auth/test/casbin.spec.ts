@@ -1,40 +1,42 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { CasbinAuth } from "../index";
 import { Enforcer, newEnforcer } from "casbin";
 import { Auth } from "@meshql/auth";
 import { Envelope } from "@meshql/common";
 
-jest.mock("casbin", () => ({
-    newEnforcer: jest.fn(),
+// Mock casbin module
+vi.mock("casbin", () => ({
+    newEnforcer: vi.fn(),
 }));
 
 describe("CasbinAuth", () => {
-    let mockEnforcer: jest.Mocked<Enforcer>;
-    let mockAuth: jest.Mocked<Auth>;
+    let mockEnforcer: vi.Mocked<Enforcer>;
+    let mockAuth: vi.Mocked<Auth>;
 
     beforeEach(() => {
         // Mock Enforcer methods
         mockEnforcer = {
-            getRolesForUser: jest.fn(),
-        } as unknown as jest.Mocked<Enforcer>;
+            getRolesForUser: vi.fn(),
+        } as unknown as vi.Mocked<Enforcer>;
 
         // Mock newEnforcer to return the mocked Enforcer
-        (newEnforcer as jest.Mock).mockResolvedValue(mockEnforcer);
+        (newEnforcer as vi.Mock).mockResolvedValue(mockEnforcer);
 
         // Mock Auth methods
         mockAuth = {
-            getAuthToken: jest.fn(),
-            isAuthorized: jest.fn(),
-        } as jest.Mocked<Auth>;
+            getAuthToken: vi.fn(),
+            isAuthorized: vi.fn(),
+        } as vi.Mocked<Auth>;
 
         mockAuth.getAuthToken.mockResolvedValue(["user1"]);
         mockAuth.isAuthorized.mockResolvedValue(true);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
-    test("should initialize CasbinAuth correctly", async () => {
+    it("should initialize CasbinAuth correctly", async () => {
         const casbinAuth = await CasbinAuth.create(["model.conf", "policy.csv"], mockAuth);
 
         expect(casbinAuth).toBeDefined();
@@ -42,7 +44,7 @@ describe("CasbinAuth", () => {
         expect(newEnforcer).toHaveBeenCalledWith("model.conf", "policy.csv");
     });
 
-    test("should retrieve roles for a user via getAuthToken", async () => {
+    it("should retrieve roles for a user via getAuthToken", async () => {
         mockAuth.getAuthToken.mockResolvedValueOnce(["user1"]);
         mockEnforcer.getRolesForUser.mockResolvedValueOnce(["role1", "role2"]);
 
@@ -55,7 +57,7 @@ describe("CasbinAuth", () => {
         expect(roles).toEqual(["role1", "role2"]);
     });
 
-    test("should authorize correctly when credentials match tokens", async () => {
+    it("should authorize correctly when credentials match tokens", async () => {
         const casbinAuth = await CasbinAuth.create(["model.conf", "policy.csv"], mockAuth);
 
         const envelope: Envelope<any> = {
@@ -68,7 +70,7 @@ describe("CasbinAuth", () => {
         expect(isAuthorized).toBe(true);
     });
 
-    test("should deny authorization when credentials do not match tokens", async () => {
+    it("should deny authorization when credentials do not match tokens", async () => {
         const casbinAuth = await CasbinAuth.create(["model.conf", "policy.csv"], mockAuth);
 
         const envelope: Envelope<any> = {
@@ -81,7 +83,7 @@ describe("CasbinAuth", () => {
         expect(isAuthorized).toBe(false);
     });
 
-    test("should authorize everyone when authorized_tokens is empty", async () => {
+    it("should authorize everyone when authorized_tokens is empty", async () => {
         const casbinAuth = await CasbinAuth.create(["model.conf", "policy.csv"], mockAuth);
 
         const envelope: Envelope<any> = {

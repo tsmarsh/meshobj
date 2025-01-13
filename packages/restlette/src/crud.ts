@@ -1,7 +1,7 @@
 import { Auth } from "@meshql/auth";
 import Log4js from "log4js";
 import { Envelope, Repository, Validator } from "@meshql/common";
-import {FastifyReply, FastifyRequest} from "fastify";
+import { Request, Response } from "express";
 
 const logger = Log4js.getLogger("meshql/restlette");
 
@@ -20,12 +20,12 @@ export class Crud<I> {
         this._validator = validator;
     }
 
-    create = async (req: FastifyRequest, reply: FastifyReply) => {
+    create = async (req: Request, res: Response) => {
         const authTokens = await this.calculateTokens(req);
         const payload = req.body as any;
 
         if (!(await this._validator(payload))) {
-            reply.status(400).send("Invalid document");
+            res.status(400).send("Invalid document");
             return;
         }
 
@@ -34,41 +34,41 @@ export class Crud<I> {
 
         if (result) {
             logger.debug(`Created: ${JSON.stringify(result)}`);
-            reply.status(303).header("Location", `${this._context}/${result.id}`).send();
+            res.status(303).location(`${this._context}/${result.id}`).send();
         } else {
             logger.error(`Failed to create: ${JSON.stringify(doc)}`);
-            reply.status(400).send();
+            res.status(400).send();
         }
     };
 
-    private async calculateTokens(req: FastifyRequest): Promise<string[]> {
+    private async calculateTokens(req: Request): Promise<string[]> {
         return this._tokens.length > 0 ? this._tokens : await this._authorizer.getAuthToken(req);
     }
 
-    read = async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    read = async (req: Request, res: Response) => {
         const id = req.params.id;
         const authToken = await this._authorizer.getAuthToken(req);
         const result = await this._repo.read(id);
 
         if (result) {
-            reply.header("X-Canonical-Id", String(result.id));
+            res.setHeader("X-Canonical-Id", String(result.id));
             if (await this._authorizer.isAuthorized(authToken, result)) {
-                reply.send(result.payload);
+                res.send(result.payload);
             } else {
-                reply.status(403).send({});
+                res.status(403).send({});
             }
         } else {
-            reply.status(404).send({});
+            res.status(404).send({});
         }
     };
 
-    update = async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    update = async (req: Request, res: Response) => {
         const id = req.params.id;
         const authToken = await this._authorizer.getAuthToken(req);
         const payload = req.body as any;
 
         if (!(await this._validator(payload))) {
-            reply.status(400).send("Invalid document");
+            res.status(400).send("Invalid document");
             return;
         }
 
@@ -84,16 +84,16 @@ export class Crud<I> {
             if (await this._authorizer.isAuthorized(authToken, current)) {
                 const result = await this._repo.create(envelope);
                 logger.debug(`Updated: ${JSON.stringify(result)}`);
-                reply.status(303).header("Location", `${this._context}/${result.id}`).send();
+                res.status(303).location(`${this._context}/${result.id}`).send();
             } else {
-                reply.status(403).send({});
+                res.status(403).send({});
             }
         } else {
-            reply.status(404).send({});
+            res.status(404).send({});
         }
     };
 
-    remove = async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    remove = async (req: Request, res: Response) => {
         const id = req.params.id;
         const result = await this._repo.read(id);
         const tokens = await this._authorizer.getAuthToken(req);
@@ -103,24 +103,24 @@ export class Crud<I> {
                 const success = await this._repo.remove(id);
                 if (success) {
                     logger.debug(`Deleted: ${id}`);
-                    reply.send({ deleted: id });
+                    res.send({ deleted: id });
                 } else {
-                    reply.status(404).send({});
+                    res.status(404).send({});
                 }
             } else {
-                reply.status(403).send({});
+                res.status(403).send({});
             }
         } else {
-            reply.status(404).send({});
+            res.status(404).send({});
         }
     };
 
-    list = async (_req: FastifyRequest, reply: FastifyReply) => {
+    list = async (_req: Request, res: Response) => {
         const results = await this._repo.list();
-        reply.send(results.map((r) => `${this._context}/${r.id}`));
+        res.send(results.map((r) => `${this._context}/${r.id}`));
     };
 
-    bulk_create = async (req: FastifyRequest, reply: FastifyReply) => {
+    bulk_create = async (req: Request, res: Response) => {
         const docs = req.body as Record<string, any>[];
         const authorizedTokens = await this.calculateTokens(req);
 
@@ -131,16 +131,16 @@ export class Crud<I> {
         ).filter(Boolean) as Envelope<I>[];
 
         const created = await this._repo.createMany(envelopes);
-        reply.send(created.map(({ id }) => `${this._context}/${id}`));
+        res.send(created.map(({ id }) => `${this._context}/${id}`));
     };
 
-    bulk_read = async (req: FastifyRequest, reply: FastifyReply) => {
-        const ids = (req.query as {ids: string}).ids.split(",");
+    bulk_read = async (req: Request, res: Response) => {
+        const ids = (req.query.ids as string).split(",");
         const authToken = await this._authorizer.getAuthToken(req);
 
         const found = await this._repo.readMany(ids);
         const authorizedDocs = found.filter((r) => this._authorizer.isAuthorized(authToken, r));
 
-        reply.send(authorizedDocs.map((r) => r.payload));
+        res.send(authorizedDocs.map((r) => r.payload));
     };
 }

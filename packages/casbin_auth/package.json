@@ -1,5 +1,6 @@
 {
   "name": "@meshql/casbin_auth",
+  "type": "module",
   "version": "0.1.0",
   "description": "Simple authorizer for casbin",
   "main": "index.ts",
@@ -7,13 +8,12 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "@types/jest": "^29.5.14",
     "@types/typescript": "^2.0.0",
-    "jest": "^29.7.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   },
   "scripts": {
-    "test": "jest --coverage"
+    "test": "vitest --run --coverage"
   },
   "dependencies": {
     "casbin": "^5.36.0"

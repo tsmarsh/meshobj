@@ -1,19 +1,19 @@
-import {describe, test, expect} from "@jest/globals";
-
-import {Mock, It} from "moq.ts";
-
-import {buildSchema, graphql} from "graphql";
-import {context} from "../src/graph/root";
-import {Repository, RootConfig, Searcher} from "@meshql/common";
-import {Auth} from "@meshql/auth";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { Mock, It } from "moq.ts";
+import { buildSchema, graphql } from "graphql";
+import { context } from "../src/graph/root";
+import { RootConfig, Searcher } from "@meshql/common";
+import { Auth } from "@meshql/auth";
 import fetchMock from "fetch-mock";
-
 
 const createdAt = new Date();
 
 const auth = new Mock<Auth>()
-    .setup(async i => i.getAuthToken(It.IsAny())).returnsAsync(["TOKEN"])
-    .setup(async i => i.isAuthorized(It.IsAny(), It.IsAny())).returnsAsync(true).object()
+    .setup(async (i) => i.getAuthToken(It.IsAny()))
+    .returnsAsync(["TOKEN"])
+    .setup(async (i) => i.isAuthorized(It.IsAny(), It.IsAny()))
+    .returnsAsync(true)
+    .object();
 
 describe("GraphQL Configuration", () => {
     describe("Generating a simple root", () => {
@@ -31,23 +31,23 @@ describe("GraphQL Configuration", () => {
         };
 
         const schema = buildSchema(`
-            type Test {
-                id: ID
-                foo: String
-                eggs: Int
-            }
-            type Query {
-                getById(id: String): Test
-                getByFoo(foo: String): Test
-            }
-        `);
+      type Test {
+        id: ID
+        foo: String
+        eggs: Int
+      }
+      type Query {
+        getById(id: String): Test
+        getByFoo(foo: String): Test
+      }
+    `);
 
-        let repo = new Mock<Searcher<string>>()
-            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync(
-                {"foo": "bar", "eggs": 6},
-            ).object();
+        const repo = new Mock<Searcher<string>>()
+            .setup(async (i) => i.find(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()))
+            .returnsAsync({ foo: "bar", eggs: 6 })
+            .object();
 
-        test("should create a simple root", async () => {
+        it("should create a simple root", async () => {
             const query = /* GraphQL */ `
                 {
                     getById(id: "test_id") {
@@ -56,16 +56,13 @@ describe("GraphQL Configuration", () => {
                 }
             `;
 
+            const { root } = context(repo, auth, simple);
 
-
-            const {root} = context(repo, auth, simple);
-
-            const response: Record<string, any> = await graphql({
+            const response = await graphql({
                 schema,
                 source: query,
                 rootValue: root,
             });
-
 
             if (response.errors) {
                 console.error(response.errors);
@@ -105,19 +102,15 @@ describe("GraphQL Configuration", () => {
             }
         `);
 
-
         const repo = new Mock<Searcher<string>>()
-            .setup(async i => i.findAll(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync([
-                { name: "henry", eggs: 3, breed: "chicken", id: "chick_1",},
-                 { name: "harry", eggs: 4, breed: "chicken", id: "chick_2", }
-            ]).object();
+            .setup(async (i) => i.findAll(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()))
+            .returnsAsync([
+                { name: "henry", eggs: 3, breed: "chicken", id: "chick_1" },
+                { name: "harry", eggs: 4, breed: "chicken", id: "chick_2" },
+            ])
+            .object();
 
-        const auth = new Mock<Auth>()
-            .setup(async i => i.getAuthToken(It.IsAny())).returnsAsync(["TOKEN"])
-            .setup(async i => i.isAuthorized(It.IsAny(), It.IsAny())).returnsAsync(true).object()
-
-        test("should create a simple vector root", async () => {
-
+        it("should create a simple vector root", async () => {
             const query = /* GraphQL */ `
                 {
                     getByBreed(breed: "chicken") {
@@ -128,7 +121,7 @@ describe("GraphQL Configuration", () => {
             `;
 
             const { root } = context(repo, auth, vector);
-            const response:any = await graphql({ schema, source: query, rootValue: root });
+            const response: any = await graphql({ schema, source: query, rootValue: root });
 
             if (response.errors) {
                 console.error(response.errors);
@@ -177,17 +170,17 @@ describe("GraphQL Configuration", () => {
             }
         `);
 
-        let repo = new Mock<Searcher<string>>()
-            .setup(async i => i.find(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny())).returnsAsync(
-                {
-                    name: "chucky",
-                    eggs: 1,
-                    coop_id: "101010",
-                    id: "chuck",
-                }
-            ).object();
+        const repo = new Mock<Searcher<string>>()
+            .setup(async (i) => i.find(It.IsAny(), It.IsAny(), It.IsAny(), It.IsAny()))
+            .returnsAsync({
+                name: "chucky",
+                eggs: 1,
+                coop_id: "101010",
+                id: "chuck",
+            })
+            .object();
 
-        test("should call the dependency", async () => {
+        it("should call the dependency", async () => {
             const url: string = new URL(simple.resolvers[0].url).toString();
 
             fetchMock.mockGlobal().post(url, {
@@ -206,7 +199,7 @@ describe("GraphQL Configuration", () => {
                 }
             `;
 
-            const { root, dtoFactory } = context(repo, auth, simple);
+            const { root } = context(repo, auth, simple);
             const response: any = await graphql({ schema, source: query, rootValue: root });
 
             if (response.errors) {
@@ -218,5 +211,4 @@ describe("GraphQL Configuration", () => {
             expect(response.data?.getById?.id).toBe("chuck");
         });
     });
-
 });

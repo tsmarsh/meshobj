@@ -1,54 +1,207 @@
-import { FastifyInstance } from "fastify";
+import express, { Router } from "express";
 import Log4js from "log4js";
+import swaggerUi from "swagger-ui-express";
 import { Crud } from "./src/crud";
-import fastifySwagger from "@fastify/swagger";
-import fastifySwaggerUi from "@fastify/swagger-ui";
 
 const logger = Log4js.getLogger("meshql/restlette");
 
-// Initialization
-const swaggerOptions = (context: string) => ({
-    swagger: {
-        info: {
-            version: "0.1.0",
-            title: `${context} API`,
-            description: `API for mutating ${context}`,
+const schemas = (apiPath: string, schema: Record<string, any>): Record<string, any> => {
+    const paths: Record<string, any> = {};
+
+    paths[`${apiPath}/bulk`] = {
+        post: {
+            description: "Bulk create items",
+            tags: [apiPath],
+            requestBody: {
+                content: {
+                    "application/json": {
+                        schema: { type: "array", items: schema },
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description: "Successful response",
+                    content: {
+                        "application/json": {
+                            schema: { type: "array", items: schema },
+                        },
+                    },
+                },
+            },
         },
-        host: "localhost:3000",
-        basePath: `/${context}`,
+        get: {
+            description: "Bulk read items",
+            tags: [apiPath],
+            responses: {
+                200: {
+                    description: "Successful response",
+                    content: {
+                        "application/json": {
+                            schema: { type: "array", items: schema },
+                        },
+                    },
+                },
+            },
+        },
+    };
+
+    paths[apiPath] = {
+        post: {
+            description: "Create an item",
+            tags: [apiPath],
+            requestBody: {
+                content: {
+                    "application/json": {
+                        schema,
+                    },
+                },
+            },
+            responses: {
+                201: {
+                    description: "Item created successfully",
+                    content: {
+                        "application/json": {
+                            schema,
+                        },
+                    },
+                },
+            },
+        },
+        get: {
+            description: "List items",
+            tags: [apiPath],
+            responses: {
+                200: {
+                    description: "Successful response",
+                    content: {
+                        "application/json": {
+                            schema: { type: "array", items: schema },
+                        },
+                    },
+                },
+            },
+        },
+    };
+
+    paths[`${apiPath}/{id}`] = {
+        get: {
+            description: "Read an item",
+            tags: [apiPath],
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    required: true,
+                    schema: { type: "string" },
+                },
+            ],
+            responses: {
+                200: {
+                    description: "Successful response",
+                    content: {
+                        "application/json": {
+                            schema,
+                        },
+                    },
+                },
+            },
+        },
+        put: {
+            description: "Update an item",
+            tags: [apiPath],
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    required: true,
+                    schema: { type: "string" },
+                },
+            ],
+            requestBody: {
+                content: {
+                    "application/json": {
+                        schema,
+                    },
+                },
+            },
+            responses: {
+                200: {
+                    description: "Item updated successfully",
+                    content: {
+                        "application/json": {
+                            schema,
+                        },
+                    },
+                },
+            },
+        },
+        delete: {
+            description: "Remove an item",
+            tags: [apiPath],
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    required: true,
+                    schema: { type: "string" },
+                },
+            ],
+            responses: {
+                204: {
+                    description: "Item removed successfully",
+                },
+            },
+        },
+    };
+
+    return paths;
+};
+
+const swaggerOptions = (apiPath: string, port: number, schema: Record<string, any>) => ({
+    openapi: "3.0.0",
+    info: {
+        version: "0.1.0",
+        title: `${apiPath} API`,
+        description: `API for mutating ${apiPath}`,
     },
-    exposeRoute: true,
-    routePrefix: `/${context}/api-docs`,
+    servers: [
+        {
+            url: `http://localhost:${port}${apiPath}`,
+        },
+    ],
+    paths: schemas(apiPath, schema),
 });
 
 export function init<I>(
-    app: FastifyInstance,
+    app: express.Application,
     crud: Crud<I>,
-    context: string
-): FastifyInstance {
-    logger.info(`API Docs are available at: ${context}/api-docs`);
+    apiPath: string,
+    port: number,
+    jsonSchema: Record<string, any>
+): express.Application {
+    logger.info(`API Docs are available at: http://localhost:${port}${apiPath}/api-docs`);
 
-    // Register Swagger for API documentation
-    app.register(fastifySwagger, swaggerOptions(context));
-    app.register(fastifySwaggerUi, {
-        routePrefix: `${context}/api-docs`,
-        uiConfig: {
-            docExpansion: "list",
-            deepLinking: false,
-        },
-        staticCSP: true,
-        transformSpecificationClone: true,
-    });
+    const swaggerDoc = swaggerOptions(apiPath, port, jsonSchema);
+    const router = createRestletteRouter(apiPath, crud);
 
-    // Routes
-    app.post(`${context}/bulk`, crud.bulk_create);
-    app.get(`${context}/bulk`, crud.bulk_read);
-
-    app.post(`${context}`, crud.create);
-    app.get(`${context}`, crud.list);
-    app.get(`${context}/:id`, crud.read);
-    app.put(`${context}/:id`, crud.update);
-    app.delete(`${context}/:id`, crud.remove);
+    app.use(apiPath, router);
+    app.get(`${apiPath}/api-docs/swagger.json`, (req:Request, res:Response) => res.json(swaggerDoc));
+    app.use(`${apiPath}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
     return app;
+}
+
+function createRestletteRouter<I>(apiPath: string, crud: Crud<I>): Router {
+    const router = Router();
+
+    router.post("/bulk", crud.bulk_create);
+    router.get("/bulk", crud.bulk_read);
+    router.post("/", crud.create);
+    router.get("/", crud.list);
+    router.get("/:id", crud.read);
+    router.put("/:id", crud.update);
+    router.delete("/:id", crud.remove);
+
+    return router;
 }
