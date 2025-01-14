@@ -1,7 +1,8 @@
-import {Repository, Envelope, Id, Payload} from "../index";
+import { describe, it, beforeEach, afterAll, expect } from 'vitest';
+import { Repository, Envelope, Id, Payload } from "../index";
 
-export function numvelop(payload: Payload) :Envelope<number> {return {payload}}
-export function strinvelop(payload: Payload) :Envelope<string> {return {payload}}
+export function numvelop(payload: Payload): Envelope<number> { return { payload }; }
+export function strinvelop(payload: Payload): Envelope<string> { return { payload }; }
 
 export function RepositoryCertification<I>(
     createRepository: () => Promise<Repository<I>>,
@@ -14,86 +15,103 @@ export function RepositoryCertification<I>(
         repository = await createRepository();
     });
 
-    afterAll( async () => {
+    afterAll(async () => {
         await tearDown();
     });
 
-    test('create should store and return the envelope', async () => {
-        let data: Payload = {name: "Create Test", count: 3}
-        let now = new Date();
-        
-        let envelope = enveloper(data)
+    describe('Repository Certification Tests', () => {
+        it('create should store and return the envelope', async () => {
+            const data: Payload = { name: "Create Test", count: 3 };
+            const now = new Date();
 
-        let result = await repository.create(envelope);
-        expect(result.id).not.toBeNull()
-        expect(result.createdAt?.getTime()).toBeGreaterThanOrEqual(now.getTime());
-        expect(result.deleted).toBeFalsy()
-    });
+            const envelope = enveloper(data);
 
-    test('read should retrieve an existing envelope by ID', async () => {
-        let data: Payload = {name: "Read Test", count: 51}
-        let envelope = enveloper(data)
+            const result = await repository.create(envelope);
+            expect(result.id).not.toBeNull();
+            expect(result.createdAt?.getTime()).toBeGreaterThanOrEqual(now.getTime());
+            expect(result.deleted).toBeFalsy();
+        });
 
-        let create_result: Envelope<I> = await repository.create(envelope);
-        let id: Id<I> = create_result.id!;
-        
+        it('read should retrieve an existing envelope by ID', async () => {
+            const data: Payload = { name: "Read Test", count: 51 };
+            const envelope = enveloper(data);
 
-        let result = await repository.read(id);
+            const create_result: Envelope<I> = await repository.create(envelope);
+            const id: Id<I> = create_result.id!;
 
-        expect(result.payload.name).toEqual("Read Test");
-    });
+            const result = await repository.read(id);
 
-    test('list should retrieve all created envelopes', async () => {
-        const envelopes = [{name: "test1", count: 4}, {name: "test2", count: 45}, {name: "test3", count: 2}].map(enveloper);
+            expect(result.payload.name).toEqual("Read Test");
+        });
 
-        await Promise.all(envelopes.map((e) => repository.create(e)));
+        it('list should retrieve all created envelopes', async () => {
+            const envelopes = [
+                { name: "test1", count: 4 },
+                { name: "test2", count: 45 },
+                { name: "test3", count: 2 }
+            ].map(enveloper);
 
-        const result = await repository.list();
-        expect(result).toHaveLength(envelopes.length);
-    });
+            await Promise.all(envelopes.map((e) => repository.create(e)));
 
-    test('remove should delete an envelope by ID', async () => {
-        let data: Payload = {name: "Read Test", count: 51}
-        let envelope = enveloper(data)
+            const result = await repository.list();
+            expect(result).toHaveLength(envelopes.length);
+        });
 
-        let create_result: Envelope<I> = await repository.create(envelope);
-        let id: Id<I> = create_result.id!;
+        it('remove should delete an envelope by ID', async () => {
+            const data: Payload = { name: "Read Test", count: 51 };
+            const envelope = enveloper(data);
 
-        const result = await repository.remove(id);
-        expect(result).toBe(true);
+            const create_result: Envelope<I> = await repository.create(envelope);
+            const id: Id<I> = create_result.id!;
 
-        expect(await repository.read(id)).toBeUndefined();
-    });
+            const result = await repository.remove(id);
+            expect(result).toBe(true);
 
-    test('createMany should store multiple envelopes', async () => {
-        const envelopes = [{name: "test1", count: 4}, {name: "test2", count: 45}, {name: "test3", count: 2}].map(enveloper);
+            expect(await repository.read(id)).toBeUndefined();
+        });
 
-        const result = await repository.createMany(envelopes);
-        expect(result.length).toEqual(envelopes.length);
-    });
+        it('createMany should store multiple envelopes', async () => {
+            const envelopes = [
+                { name: "test1", count: 4 },
+                { name: "test2", count: 45 },
+                { name: "test3", count: 2 }
+            ].map(enveloper);
 
-    test('readMany should retrieve multiple envelopes by IDs', async () => {
-        const envelopes = [{name: "test1", count: 4}, {name: "test2", count: 45}, {name: "test3", count: 2}].map(enveloper);
+            const result = await repository.createMany(envelopes);
+            expect(result.length).toEqual(envelopes.length);
+        });
 
-        const create_result = await repository.createMany(envelopes);
+        it('readMany should retrieve multiple envelopes by IDs', async () => {
+            const envelopes = [
+                { name: "test1", count: 4 },
+                { name: "test2", count: 45 },
+                { name: "test3", count: 2 }
+            ].map(enveloper);
 
-        const result = await repository.readMany(create_result.slice(0,2).map((e) => e.id!));
+            const create_result = await repository.createMany(envelopes);
 
-        expect(result.length).toEqual(2);
-    });
+            const result = await repository.readMany(create_result.slice(0, 2).map((e) => e.id!));
 
-    test('removeMany should delete multiple envelopes by IDs', async () => {
-        const envelopes = [{name: "test1", count: 4}, {name: "test2", count: 45}, {name: "test3", count: 2}].map(enveloper);
+            expect(result.length).toEqual(2);
+        });
 
-        let create_result = await repository.createMany(envelopes);
+        it('removeMany should delete multiple envelopes by IDs', async () => {
+            const envelopes = [
+                { name: "test1", count: 4 },
+                { name: "test2", count: 45 },
+                { name: "test3", count: 2 }
+            ].map(enveloper);
 
-        const ids = create_result.map((e) => e.id!);
-        let to_delete = ids.slice(0,2);
-        const result = await repository.removeMany(to_delete);
+            const create_result = await repository.createMany(envelopes);
 
-        to_delete.forEach((id) => expect(result[id]).toBe(true));
+            const ids = create_result.map((e) => e.id!);
+            const to_delete = ids.slice(0, 2);
+            const result = await repository.removeMany(to_delete);
 
-        const listed = await repository.list();
-        expect(listed).toHaveLength(1);
+            to_delete.forEach((id) => expect(result[id]).toBe(true));
+
+            const listed = await repository.list();
+            expect(listed).toHaveLength(1);
+        });
     });
 }
