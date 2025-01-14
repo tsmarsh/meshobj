@@ -5,7 +5,7 @@ import * as jwt from "jsonwebtoken";
 import express from "express";
 import {init} from "../src/server";
 import {Restlette} from "../src/configTypes";
-import {Document, OpenAPIClientAxios} from "openapi-client-axios";
+import {Document, OpenAPIClient, OpenAPIClientAxios} from "openapi-client-axios";
 import {get} from "axios";
 
 let mongod: MongoMemoryServer;
@@ -87,15 +87,15 @@ beforeAll(async () => {
     app = await init(globalThis.__CONFIG__);
     let port = globalThis.__CONFIG__.port;
 
-    let registeredPaths = getRegisteredPaths(app);
-    console.log(registeredPaths);
+    // let registeredPaths = getRegisteredPaths(app);
+    // console.log(registeredPaths);
     // Start the server
     app.listen(port, () => {
         console.log(`Server running on http://localhost:${port}`);
     });
 
     // Build API clients
-    const swagger_docs = await Promise.all(
+    const swagger_docs: Document[] = await Promise.all(
         globalThis.__CONFIG__.restlettes.map(async (restlette: Restlette) => {
             let url = `http://localhost:${globalThis.__CONFIG__.port}${restlette.path}/api-docs/swagger.json`;
             console.log("Url", url);
@@ -122,13 +122,18 @@ afterAll(async () => {
 
 async function buildApi(swagger_docs: Document[], token: string) {
     const authHeaders = { Authorization: `Bearer ${token}` };
-    const apis:OpenAPIClientAxios[] = await Promise.all(
+    const apis = await Promise.all(
         swagger_docs.map(async (doc: Document) => {
+            if (!doc.paths || Object.keys(doc.paths).length === 0) {
+                throw new Error(`Swagger document for ${doc.info.title} has no paths defined`);
+            }
+
             const api = new OpenAPIClientAxios({
                 definition: doc,
                 axiosConfigDefaults: { headers: authHeaders },
             });
-            return await api.init();
+
+            return api.init();
         })
     );
 
@@ -141,10 +146,14 @@ async function buildApi(swagger_docs: Document[], token: string) {
             farm_api = api;
         }
     }
+
+    console.log("Swagger paths for Farm API:", Object.keys(farm_api.paths));
 }
 
 async function buildModels() {
+
     const farm = await farm_api.create(null, { name: "Emerdale" });
+    console.log("Farm: ", JSON.stringify(farm));
     globalThis.farm_id = farm.request.path.slice(-36);
 
     const coop1 = await coop_api.create(null, { name: "red", farm_id: globalThis.farm_id });

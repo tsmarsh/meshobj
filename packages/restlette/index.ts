@@ -1,163 +1,260 @@
-import express, { Router } from "express";
+import express, {Router} from "express";
 import Log4js from "log4js";
 import swaggerUi from "swagger-ui-express";
-import { Crud } from "./src/crud";
+import {Crud} from "./src/crud";
 
 const logger = Log4js.getLogger("meshql/restlette");
 
-const schemas = (apiPath: string, schema: Record<string, any>): Record<string, any> => {
-    const paths: Record<string, any> = {};
-
-    paths[`${apiPath}/bulk`] = {
-        post: {
-            description: "Bulk create items",
-            tags: [apiPath],
-            requestBody: {
-                content: {
-                    "application/json": {
-                        schema: { type: "array", items: schema },
+export const paths = (context: string, schema: Record<string, any>,) => {
+    return {
+        [`${context}`]: {
+            get: {
+                operationId: "list",
+                summary: "Lists all documents",
+                security: [
+                    {
+                        BearerAuth: [],
                     },
-                },
-            },
-            responses: {
-                200: {
-                    description: "Successful response",
-                    content: {
-                        "application/json": {
-                            schema: { type: "array", items: schema },
+                ],
+                responses: {
+                    200: {
+                        description: "A list of documents",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "array",
+                                    items: {
+                                        type: "string",
+                                    },
+                                },
+                            },
                         },
                     },
                 },
             },
-        },
-        get: {
-            description: "Bulk read items",
-            tags: [apiPath],
-            responses: {
-                200: {
-                    description: "Successful response",
-                    content: {
-                        "application/json": {
-                            schema: { type: "array", items: schema },
-                        },
+            post: {
+                operationId: "create",
+                summary: "Creates a document",
+                security: [
+                    {
+                        BearerAuth: [],
                     },
-                },
-            },
-        },
-    };
-
-    paths[apiPath] = {
-        post: {
-            description: "Create an item",
-            tags: [apiPath],
-            requestBody: {
-                content: {
-                    "application/json": {
-                        schema,
-                    },
-                },
-            },
-            responses: {
-                201: {
-                    description: "Item created successfully",
-                    content: {
-                        "application/json": {
-                            schema,
-                        },
-                    },
-                },
-            },
-        },
-        get: {
-            description: "List items",
-            tags: [apiPath],
-            responses: {
-                200: {
-                    description: "Successful response",
-                    content: {
-                        "application/json": {
-                            schema: { type: "array", items: schema },
-                        },
-                    },
-                },
-            },
-        },
-    };
-
-    paths[`${apiPath}/{id}`] = {
-        get: {
-            description: "Read an item",
-            tags: [apiPath],
-            parameters: [
-                {
-                    name: "id",
-                    in: "path",
+                ],
+                requestBody: {
                     required: true,
-                    schema: { type: "string" },
-                },
-            ],
-            responses: {
-                200: {
-                    description: "Successful response",
                     content: {
                         "application/json": {
-                            schema,
+                            schema: {
+                                $ref: "#/components/schemas/State",
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    303: {
+                        description:
+                            "The document was successfully created. You’ll be redirected to its URL.",
+                    },
+                    404: {
+                        description: "A document with the specified ID was not found.",
+                    },
+                },
+            },
+        },
+        [`${context}/{id}`]: {
+            get: {
+                summary: "Retrieves a document",
+                operationId: "read",
+                security: [
+                    {
+                        BearerAuth: [],
+                    },
+                ],
+                parameters: [
+                    {
+                        in: "path",
+                        name: "id",
+                        required: true,
+                        schema: {
+                            type: "string",
+                        },
+                        description: "The ID of the document to retrieve.",
+                    },
+                ],
+                responses: {
+                    200: {
+                        description: "The document was successfully retrieved.",
+                        headers: {
+                            "X-Canonical-Id": {
+                                schema: {
+                                    type: "string",
+                                },
+                            },
+                        },
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/State",
+                                },
+                            },
+                        },
+                    },
+                    404: {
+                        description: "A document with the specified ID was not found.",
+                    },
+                },
+            },
+            put: {
+                summary: "Creates or updates a document",
+                operationId: "update",
+                security: [
+                    {
+                        BearerAuth: [],
+                    },
+                ],
+                parameters: [
+                    {
+                        in: "path",
+                        name: "id",
+                        required: true,
+                        schema: {
+                            type: "string",
+                        },
+                        description: "The ID of the document to create or update.",
+                    },
+                ],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                $ref: "#/components/schemas/State",
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    200: {
+                        description: "The document was successfully updated.",
+                    },
+                    201: {
+                        description: "The document was successfully created.",
+                        headers: {
+                            Location: {
+                                schema: {
+                                    type: "string",
+                                },
+                                description: "URI of the created document.",
+                            },
                         },
                     },
                 },
             },
-        },
-        put: {
-            description: "Update an item",
-            tags: [apiPath],
-            parameters: [
-                {
-                    name: "id",
-                    in: "path",
-                    required: true,
-                    schema: { type: "string" },
-                },
-            ],
-            requestBody: {
-                content: {
-                    "application/json": {
-                        schema,
+            delete: {
+                summary: "Deletes a document",
+                operationId: "delete",
+                security: [
+                    {
+                        BearerAuth: [],
+                    },
+                ],
+                parameters: [
+                    {
+                        in: "path",
+                        name: "id",
+                        required: true,
+                        schema: {
+                            type: "string",
+                        },
+                        description: "The ID of the document to delete.",
+                    },
+                ],
+                responses: {
+                    200: {
+                        description: "The document was successfully deleted.",
+                    },
+                    404: {
+                        description: "A document with the specified ID was not found.",
                     },
                 },
             },
-            responses: {
-                200: {
-                    description: "Item updated successfully",
-                    content: {
-                        "application/json": {
-                            schema,
+        },
+        [`${context}/bulk`]: {
+            get: {
+                summary: "Retrieves all documents in bulk",
+                operationId: "bulk_read",
+                security: [
+                    {
+                        BearerAuth: [],
+                    },
+                ],
+                responses: {
+                    200: {
+                        description: "The documents were successfully retrieved.",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "array",
+                                    items: {
+                                        $ref: "#/components/schemas/State",
+                                    },
+                                },
+                            },
                         },
                     },
                 },
             },
-        },
-        delete: {
-            description: "Remove an item",
-            tags: [apiPath],
-            parameters: [
-                {
-                    name: "id",
-                    in: "path",
+            post: {
+                summary: "Creates multiple documents",
+                operationId: "bulk_create",
+                security: [
+                    {
+                        BearerAuth: [],
+                    },
+                ],
+                requestBody: {
                     required: true,
-                    schema: { type: "string" },
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "array",
+                                items: {
+                                    $ref: "#/components/schemas/State",
+                                },
+                            },
+                        },
+                    },
                 },
-            ],
-            responses: {
-                204: {
-                    description: "Item removed successfully",
+                responses: {
+                    200: {
+                        description: "The documents were successfully created.",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        successful: {
+                                            type: "array",
+                                            items: {
+                                                $ref: "#/components/schemas/OperationStatus",
+                                            },
+                                        },
+                                        failed: {
+                                            type: "array",
+                                            items: {
+                                                $ref: "#/components/schemas/OperationStatus",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
                 },
             },
-        },
     };
-
-    return paths;
 };
-
 const swaggerOptions = (apiPath: string, port: number, schema: Record<string, any>) => ({
     openapi: "3.0.0",
     info: {
@@ -170,7 +267,33 @@ const swaggerOptions = (apiPath: string, port: number, schema: Record<string, an
             url: `http://localhost:${port}${apiPath}`,
         },
     ],
-    paths: schemas(apiPath, schema),
+    components: {
+        securitySchemes: {
+            BearerAuth: {
+                type: "http",
+                scheme: "bearer",
+                bearerFormat: "JWT",
+            },
+        },
+        schemas: {
+            State: schema,
+            OperationStatus: {
+                type: "object",
+                properties: {
+                    id: {
+                        type: "string",
+                    },
+                    status: {
+                        type: "string",
+                    },
+                    error: {
+                        type: "string",
+                    },
+                },
+            },
+        },
+    },
+    paths: paths(apiPath, schema),
 });
 
 export function init<I>(
