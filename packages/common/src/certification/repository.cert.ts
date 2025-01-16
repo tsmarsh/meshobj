@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, afterAll, expect } from 'vitest';
-import { Repository, Envelope, Id, Payload } from "../index";
+import { Repository, Envelope, Id, Payload } from "../index.js";
 
 export function numvelop(payload: Payload): Envelope<number> { return { payload }; }
 export function strinvelop(payload: Payload): Envelope<string> { return { payload }; }

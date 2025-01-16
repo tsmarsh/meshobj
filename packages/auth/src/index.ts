@@ -1,5 +1,4 @@
 import {Envelope} from "@meshql/common";
-import {Request} from "express";
 
 export interface Auth {
     getAuthToken(context: Record<string, any>): Promise<string[]>;

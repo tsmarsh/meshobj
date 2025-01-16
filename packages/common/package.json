@@ -1,22 +1,28 @@
 {
   "name": "@meshql/common",
   "version": "0.1.0",
-  "main": "index.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "author": "Tom Marsh",
   "license": "MIT",
-  "private": false,
   "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@meshql/memory_repo": "0.1.0",
-    "jest": "^29.7.0",
-    "ts-node": "^10.9.2"
+    "@meshql/memory_repo": "workspace:*",
+    "@types/node": "^22.10.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   },
   "scripts": {
-    "test": "jest --passWithNoTests"
+    "build": "tsc",
+    "test": "vitest --run --passWithNoTests"
   },
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "handlebars": "^4.7.8"
+    "handlebars": "^4.7.8",
+    "vitest": "^2.1.8"
   }
 }

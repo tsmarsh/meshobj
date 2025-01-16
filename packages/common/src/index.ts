@@ -1,7 +1,7 @@
 import {TemplateDelegate} from "handlebars";
 
-export * from "./certification/repository.cert"
-export * from "./certification/searcher.cert"
+export * from "./certification/repository.cert.js"
+export * from "./certification/searcher.cert.js"
 
 export type Singleton = {
     query: string;

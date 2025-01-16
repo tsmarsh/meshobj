@@ -1,5 +1,5 @@
 import {Enforcer, newEnforcer} from "casbin";
-import {Auth} from "@meshql/auth";
+import {Auth} from "@meshql/auth"
 import {Envelope} from "@meshql/common";
 
 

@@ -1,16 +1,23 @@
 {
   "name": "@meshql/jwt_auth",
   "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "description": "A dangerously simple jwt implementation",
-  "main": "index.ts",
   "author": "Tom Marsh",
   "license": "MIT",
-  "private": false,
   "scripts": {
+    "build": "tsc",
     "test": "jest --passWithNoTests"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2"
+    "@types/node": "^22.10.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "jsonwebtoken": "^9.0.2"

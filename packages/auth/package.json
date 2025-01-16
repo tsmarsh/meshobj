@@ -1,12 +1,17 @@
 {
   "name": "@meshql/auth",
   "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "description": "Auth module",
-  "main": "index.ts",
   "author": "Tom Marsh",
   "license": "MIT",
-  "private": false,
   "dependencies": {
+    "@meshql/common": "workspace:*",
     "express": "^5.0.1"
   },
   "devDependencies": {
@@ -21,6 +26,7 @@
     "typescript": "^5.7.2"
   },
   "scripts": {
+    "build": "tsc",
     "test": "jest --passWithNoTests"
   }
 }

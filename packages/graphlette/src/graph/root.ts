@@ -1,8 +1,7 @@
-import {DTOFactory} from "./dto";
-import {Auth} from "@meshql/auth";
+import {DTOFactory} from "./dto.js";
 import HandleBars from "handlebars";
 import {Searcher, RootConfig} from "@meshql/common";
-import {Request} from "express";
+import {Auth} from "@meshql/auth";
 
 export function context<T> (repo: Searcher<T>, authorizer: Auth, config: RootConfig) {
     let dtoF = new DTOFactory(config.resolvers);

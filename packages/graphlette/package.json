@@ -1,13 +1,17 @@
 {
   "name": "@meshql/graphlette",
-  "type": "module",
   "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "description": "GraphQL Endpoint for MeshQL",
-  "main": "index.ts",
   "author": "Tom Marsh",
   "license": "MIT",
-  "private": false,
   "scripts": {
+    "build": "tsc",
     "test": "vitest --run --coverage"
   },
   "devDependencies": {
@@ -17,11 +21,11 @@
     "vitest": "^2.1.8"
   },
   "dependencies": {
-    "@meshql/auth": "0.1.0",
+    "@meshql/auth": "workspace:*",
+    "@meshql/common": "workspace:*",
     "express-graphql": "^0.12.0",
     "graphql": "^15.10.1",
     "handlebars": "^4.7.8",
-    "log4js": "^6.9.1",
-    "mercurius": "^16.0.0"
+    "log4js": "^6.9.1"
   }
 }

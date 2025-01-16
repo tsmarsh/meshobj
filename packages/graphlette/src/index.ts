@@ -1,6 +1,6 @@
-export {DTOFactory} from "./src/graph/dto"
-export {context, root} from "./src/graph/root"
-export {callSubgraph} from "./src/graph/subgraph"
+export {DTOFactory} from "./graph/dto.js"
+export {context, root} from "./graph/root.js"
+export {callSubgraph} from "./graph/subgraph.js"
 
 import {Application} from "express";
 import {graphqlHTTP} from "express-graphql";

@@ -1,4 +1,4 @@
-import { processContext, callSubgraph } from "./subgraph";
+import { processContext, callSubgraph } from "./subgraph.js";
 
 import Log4js from "log4js";
 import {GraphQLArgs} from "graphql/graphql";

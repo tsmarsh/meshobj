@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import Log4js from "log4js";
-import { init } from "../index"; // Assuming this initializes an Express app
+import { init } from "../src"; // Assuming this initializes an Express app
 import { Auth, NoOp } from "@meshql/auth";
 import { InMemory } from "@meshql/memory_repo";
 import { Envelope, Repository, Validator } from "@meshql/common";

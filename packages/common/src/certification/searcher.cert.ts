@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, afterAll, expect } from 'vitest';
-import { Envelope, Searcher } from "../index";
+import { Envelope, Searcher } from "../index.js";
 import { TemplateDelegate } from "handlebars";
 
 export type TestTemplates = {

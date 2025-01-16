@@ -1,6 +1,6 @@
-import {init} from "./src/server"
+import {init} from "./server.js"
 const parser = require("@pushcorn/hocon-parser");
-import {Config} from "src/configTypes"
+import {Config} from "src/configTypes.js"
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import {Application, Express} from "express";

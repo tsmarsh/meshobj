@@ -1,9 +1,13 @@
 {
   "name": "@meshql/casbin_auth",
-  "type": "module",
   "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "description": "Simple authorizer for casbin",
-  "main": "index.ts",
   "author": "Tom Marsh",
   "license": "MIT",
   "private": true,
@@ -13,9 +17,12 @@
     "vitest": "^2.1.8"
   },
   "scripts": {
+    "build": "tsc",
     "test": "vitest --run --coverage"
   },
   "dependencies": {
+    "@meshql/auth": "workspace:*",
+    "@meshql/common": "workspace:*",
     "casbin": "^5.36.0"
   }
 }

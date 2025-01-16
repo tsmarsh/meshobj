@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",                  // Use ES modules
+    "target": "ES2022",                 // Latest Node.js target
+    "moduleResolution": "nodenext",     // Resolve subpath exports correctly
+    "declaration": true,                // Generate type declarations
+    "declarationMap": true,             // Enable debugging of declaration files
+    "outDir": "./dist",                 // Output directory for compiled files
+    "rootDir": "./src",                 // Root directory for source files
+    "strict": true,                     // Enable all strict checks
+    "esModuleInterop": true,            // Better interop with CommonJS modules
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true                // Skip type checks for `node_modules`
+  },
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.spec.ts", "dist"],
+  "include": []
+}

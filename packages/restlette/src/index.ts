@@ -1,7 +1,7 @@
-import express, {Router} from "express";
+import express, {RequestHandler, Router} from "express";
 import Log4js from "log4js";
 import swaggerUi from "swagger-ui-express";
-import {Crud} from "./src/crud";
+import {Crud} from "./crud.js";
 
 const logger = Log4js.getLogger("meshql/restlette");
 
@@ -305,12 +305,12 @@ export function init<I>(
 ): express.Application {
     logger.info(`API Docs are available at: http://localhost:${port}${apiPath}/api-docs`);
 
-    const swaggerDoc = swaggerOptions(apiPath, port, jsonSchema);
+    const swaggerDoc: Record<string, any> = swaggerOptions(apiPath, port, jsonSchema);
     const router = createRestletteRouter(apiPath, crud);
 
     app.use(apiPath, router);
-    app.get(`${apiPath}/api-docs/swagger.json`, (req:Request, res:Response) => res.json(swaggerDoc));
-    app.use(`${apiPath}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+    app.get(`${apiPath}/api-docs/swagger.json`, (req:express.Request, res:express.Response) => res.json(swaggerDoc));
+    app.use(`${apiPath}/api-docs`, ...swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
     return app;
 }
