@@ -1,6 +1,5 @@
-
 import { Database } from 'sqlite';
-import { Repository, Envelope, Id, Payload } from "@meshql/common";
+import { Repository, Envelope, Id } from "@meshql/common";
 
 export class SQLiteRepository implements Repository<string> {
     private db: Database;

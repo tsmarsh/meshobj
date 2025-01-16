@@ -10,7 +10,7 @@ export class NoOp implements Auth {
         return ["TOKEN"];
     }
 
-    async isAuthorized(creds: any, data: Record<string, any>): Promise<boolean> {
+    async isAuthorized(creds: string[], data: Envelope<any>): Promise<boolean> {
         return true;
     }
 }

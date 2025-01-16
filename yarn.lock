@@ -987,7 +987,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshql/casbin_auth@workspace:packages/casbin_auth":
+"@meshql/casbin_auth@workspace:*, @meshql/casbin_auth@workspace:packages/casbin_auth":
   version: 0.0.0-use.local
   resolution: "@meshql/casbin_auth@workspace:packages/casbin_auth"
   dependencies:
@@ -1015,7 +1015,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshql/graphlette@npm:0.1.0, @meshql/graphlette@workspace:packages/graphlette":
+"@meshql/graphlette@npm:0.1.0, @meshql/graphlette@workspace:*, @meshql/graphlette@workspace:packages/graphlette":
   version: 0.0.0-use.local
   resolution: "@meshql/graphlette@workspace:packages/graphlette"
   dependencies:
@@ -1036,6 +1036,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@meshql/jwt_auth@workspace:packages/jwt_auth"
   dependencies:
+    "@meshql/auth": "workspace:*"
+    "@meshql/common": "workspace:*"
     "@types/node": "npm:^22.10.6"
     jsonwebtoken: "npm:^9.0.2"
     ts-node: "npm:^10.9.2"
@@ -1047,8 +1049,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@meshql/memory_repo@workspace:packages/memory_repo"
   dependencies:
-    "@meshql/auth": "npm:0.1.0"
-    "@meshql/graphlette": "npm:0.1.0"
+    "@meshql/auth": "workspace:*"
+    "@meshql/graphlette": "workspace:*"
     "@types/node": "npm:^22.10.6"
     mongodb: "npm:^6.12.0"
     mongodb-memory-server: "npm:^10.1.3"
@@ -1064,6 +1066,9 @@ __metadata:
   resolution: "@meshql/meshql@workspace:packages/meshql"
   dependencies:
     "@jest/globals": "npm:^29.7.0"
+    "@meshql/casbin_auth": "workspace:*"
+    "@meshql/graphlette": "workspace:*"
+    "@meshql/restlette": "workspace:*"
     "@pushcorn/hocon-parser": "npm:^1.3.1"
     "@types/dotenv": "npm:^8.2.3"
     "@types/node": "npm:^22.10.6"
@@ -1099,20 +1104,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshql/restlette@workspace:packages/restlette":
+"@meshql/restlette@workspace:*, @meshql/restlette@workspace:packages/restlette":
   version: 0.0.0-use.local
   resolution: "@meshql/restlette@workspace:packages/restlette"
   dependencies:
-    "@types/express": "npm:^4"
+    "@meshql/auth": "workspace:*"
+    "@meshql/common": "workspace:*"
+    "@types/express": "npm:^4.17.17"
     "@types/node": "npm:^22.10.6"
     "@types/swagger-ui-express": "npm:^4.1.7"
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:^3.0.1"
-    express: "npm:^4.21.2"
+    express: "npm:^4.17.17"
     fastify: "npm:^5.2.1"
     log4js: "npm:^6.9.1"
     moq.ts: "npm:^10.0.8"
-    swagger-ui-express: "npm:^5.0.1"
+    swagger-ui-express: "npm:^4.1.7"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.3"
     vitest: "npm:^2.1.8"
@@ -1123,6 +1130,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@meshql/sqlite_repo@workspace:packages/sqlite_repo"
   dependencies:
+    "@meshql/common": "workspace:*"
     "@types/typescript": "npm:^2.0.0"
     sqlite: "npm:^5.1.1"
     sqlite3: "npm:^5.1.7"
@@ -1504,7 +1512,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:^4.17.33":
+"@types/express-serve-static-core@npm:^4.17.31":
   version: 4.19.6
   resolution: "@types/express-serve-static-core@npm:4.19.6"
   dependencies:
@@ -1516,31 +1524,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:^5.0.0":
-  version: 5.0.3
-  resolution: "@types/express-serve-static-core@npm:5.0.3"
-  dependencies:
-    "@types/node": "npm:*"
-    "@types/qs": "npm:*"
-    "@types/range-parser": "npm:*"
-    "@types/send": "npm:*"
-  checksum: 10c0/47cacb12d393f4272f46e5c95d7b06f9c32c528ba1cca31b7ee883f6f6ab7e8f40b92fac2333dea6c1f8130e098793f775441f048067514794662944e900189c
-  languageName: node
-  linkType: hard
-
-"@types/express@npm:*, @types/express@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@types/express@npm:5.0.0"
-  dependencies:
-    "@types/body-parser": "npm:*"
-    "@types/express-serve-static-core": "npm:^5.0.0"
-    "@types/qs": "npm:*"
-    "@types/serve-static": "npm:*"
-  checksum: 10c0/0d74b53aefa69c3b3817ee9b5145fd50d7dbac52a8986afc2d7500085c446656d0b6dc13158c04e2d9f18f4324d4d93b0452337c5ff73dd086dca3e4ff11f47b
-  languageName: node
-  linkType: hard
-
-"@types/express@npm:^4":
+"@types/express@npm:^4.17.17":
   version: 4.17.21
   resolution: "@types/express@npm:4.17.21"
   dependencies:
@@ -3388,7 +3372,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.21.2":
+"express@npm:^4.17.17, express@npm:^4.21.2":
   version: 4.21.2
   resolution: "express@npm:4.21.2"
   dependencies:
@@ -7294,12 +7278,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui-dist@npm:>=5.0.0":
+"swagger-ui-dist@npm:>=4.11.0, swagger-ui-dist@npm:>=5.0.0":
   version: 5.18.2
   resolution: "swagger-ui-dist@npm:5.18.2"
   dependencies:
     "@scarf/scarf": "npm:=1.4.0"
   checksum: 10c0/254f0d0b14766d505e69c36ea656afe838c32eefe1317aa4a8a2ffae06f1e53c55333130c6cea2f57bb47825b0cc465436f3f7af41254bd24b0601e56f914dba
+  languageName: node
+  linkType: hard
+
+"swagger-ui-express@npm:^4.1.7":
+  version: 4.6.3
+  resolution: "swagger-ui-express@npm:4.6.3"
+  dependencies:
+    swagger-ui-dist: "npm:>=4.11.0"
+  peerDependencies:
+    express: ">=4.0.0 || >=5.0.0-beta"
+  checksum: 10c0/208eb1483209ee63d3c6036e1dfbaac5405a37ddf13105e1e3da2352f1bfa398cf5f7356f926743e8c9e99b04db4e42573690eb6d4985fd8340912910d3203c0
   languageName: node
   linkType: hard
 

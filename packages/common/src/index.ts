@@ -57,4 +57,6 @@ export interface Searcher<I> {
     findAll<I>(queryTemplate: TemplateDelegate, args: Record<string, any>, creds?: string[],timestamp?: number): Promise<Record<string, any>[]>;
 }
 
-export type Validator = (data: Record<string, any>) => Promise<boolean>;
+export interface Validator {
+    (data: Record<string, any>): Promise<boolean>
+}

@@ -1,7 +1,7 @@
-import {Auth} from "../../../../LilNAS/repos/meshql/packages/auth/src/index.js";
+import {Auth} from "@meshql/auth";
 import {getLogger} from "log4js";
 const jwt = require("jsonwebtoken");
-import {Envelope} from "../../../../LilNAS/repos/meshql/packages/common/src/index.js";
+import {Envelope} from "@meshql/common";
 import {Request} from "express";
 
 let logger = getLogger("meshql/jwtauth");

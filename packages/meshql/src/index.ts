@@ -1,6 +1,6 @@
 import {init} from "./server.js"
 const parser = require("@pushcorn/hocon-parser");
-import {Config} from "src/configTypes.js"
+import {Config} from "./configTypes.js"
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import {Application, Express} from "express";
@@ -18,10 +18,17 @@ process.env.ENV = "test";
 process.env.PREFIX = "farm";
 process.env.PLATFORM_URL = "http://localhost:3033";
 
-let configFile = `${__dirname}/${argv.config}`;
-console.log(`Using config file: ${configFile}`);
-let config: Config = await parser.parse({ url: configFile });
 
-let app: Application = await init(config);
 
-await app.listen({port: config.port});
+async function buildApp() {
+    let configFile = `${__dirname}/${argv.config}`;
+    console.log(`Using config file: ${configFile}`);
+    let config = await parser.parse({ url: configFile });
+
+    let app = await init(config);
+    await app.listen({port: config.port});
+}
+
+buildApp().then(() => {
+    console.log("App running")
+})

@@ -21,15 +21,15 @@ export class Crud<I> {
     }
 
     create = async (req: Request, res: Response) => {
-        const authTokens = await this.calculateTokens(req);
-        const payload = req.body as any;
+        const authorized_tokens: string[] = await this.calculateTokens(req);
+        const payload :Record<string, any> = req.body;
 
         if (!(await this._validator(payload))) {
             res.status(400).send("Invalid document");
             return;
         }
 
-        const doc: Envelope<I> = { payload, authorized_tokens: authTokens };
+        const doc: Envelope<I> = { payload, authorized_tokens };
         const result: Envelope<I> = await this._repo.create(doc);
 
         if (result) {
@@ -121,17 +121,17 @@ export class Crud<I> {
     };
 
     bulk_create = async (req: Request, res: Response) => {
-        const docs = req.body as Record<string, any>[];
+        const docs:Record<string, any>[] = req.body as Record<string, any>[];
         const authorizedTokens = await this.calculateTokens(req);
 
         const envelopes: Envelope<I>[] = (
             await Promise.all(
-                docs.map(async (d) => (await this._validator(d) ? { payload: d, authorized_tokens: authorizedTokens } : null))
+                docs.map(async (d: Record<string, any>) => (await this._validator(d) ? { payload: d, authorized_tokens: authorizedTokens } : null))
             )
         ).filter(Boolean) as Envelope<I>[];
 
         const created = await this._repo.createMany(envelopes);
-        res.send(created.map(({ id }) => `${this._context}/${id}`));
+        res.send(created.map(({ id }):string => `${this._context}/${id}`));
     };
 
     bulk_read = async (req: Request, res: Response) => {

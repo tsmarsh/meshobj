@@ -6,8 +6,8 @@
   ],
   "version": "0.1.0",
   "scripts": {
-    "build": "yarn workspaces run build",
-    "test": "yarn workspaces run test"
+    "build": "yarn workspaces foreach --all -t run build",
+    "test": "yarn workspaces foreach --all -t run test"
   },
   "dependencies": {
     "@meshql/auth": "workspace:^",
@@ -17,6 +17,10 @@
     "@vitest/coverage-v8": "^2.1.8",
     "lcov-result-merger": "^5.0.1",
     "vitest": "^2.1.8"
+  },
+  "resolutions": {
+    "@types/express": "^4.17.17",
+    "@types/express-serve-static-core": "^4.17.31"
   },
   "packageManager": "yarn@4.6.0"
 }

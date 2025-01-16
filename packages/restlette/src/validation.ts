@@ -1,13 +1,13 @@
 import { Validator } from "@meshql/common";
-import Ajv from "ajv";
+import Ajv, { Ajv as AjvType } from "ajv";
 import addFormats from "ajv-formats";
 
-export function JSONSchemaValidator(schema: Record<string, any> ):Validator {
-    const ajv = new Ajv();
-    addFormats(ajv);
-    ajv.addKeyword("faker")
-    let validate = ajv.compile(schema);
+export function JSONSchemaValidator(schema: Record<string, any>): Validator {
+    const ajv: AjvType = new Ajv();
+    addFormats(ajv); // Ensure this is callable
+    ajv.addKeyword("faker");
 
-    return async (data) =>
-        validate(data);
+    const validate = ajv.compile(schema);
+
+    return async (data) => validate(data);
 }

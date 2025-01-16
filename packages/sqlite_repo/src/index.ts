@@ -1,2 +1,2 @@
-export {SQLiteRepository} from "./sqliteRepo.ts"
-export {SQLiteSearcher} from "./sqliteSearcher.ts"
+export {SQLiteRepository} from "./sqliteRepo.js"
+export {SQLiteSearcher} from "./sqliteSearcher.js"

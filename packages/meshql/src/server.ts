@@ -1,5 +1,4 @@
 import express, { Application } from "express";
-import swaggerUi from "swagger-ui-express";
 import { DTOFactory, root, init as graph_init } from "@meshql/graphlette";
 import { init as rest_init } from "@meshql/restlette";
 import {
@@ -102,11 +101,11 @@ async function processRestlette(
     restlette: Restlette,
     auth: Auth,
     app: Application,
-    port
+    port: number
 ) {
     const validator: Validator = JSONSchemaValidator(restlette.schema);
-    const repo = await buildRepository(restlette.storage);
-    const crud = new Crud(auth, repo, validator, restlette.path, restlette.tokens);
+    const repo: any = await buildRepository(restlette.storage);
+    const crud: any = new Crud(auth, repo, validator, restlette.path, restlette.tokens);
     rest_init(app, crud, restlette.path, port, restlette.schema);
 }
 

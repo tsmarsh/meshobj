@@ -20,6 +20,8 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
+    "@meshql/auth": "workspace:*",
+    "@meshql/common": "workspace:*",
     "jsonwebtoken": "^9.0.2"
   }
 }
