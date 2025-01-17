@@ -12,18 +12,17 @@ import {
 import {
     Envelope,
     Repository,
-    RootConfig,
     Searcher,
     Validator,
 } from "@meshql/common";
 import { MongoSearcher, PayloadRepository } from "@meshql/mongo_repo";
-import { SQLiteSearcher } from "@meshql/sqlite_repo/src/sqliteSearcher";
+import { SQLiteSearcher } from "@meshql/sqlite_repo";
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
 import { Collection, MongoClient } from "mongodb";
-import { Crud } from "@meshql/restlette/src/crud";
-import { JSONSchemaValidator } from "@meshql/restlette/src/validation";
-import { SQLiteRepository } from "@meshql/sqlite_repo/src/sqliteRepo";
+import { Crud } from "@meshql/restlette";
+import { JSONSchemaValidator } from "@meshql/restlette";
+import { SQLiteRepository } from "@meshql/sqlite_repo";
 import { JWTSubAuthorizer } from "@meshql/jwt_auth";
 import { Auth } from "@meshql/auth";
 import { CasbinAuth } from "@meshql/casbin_auth";
