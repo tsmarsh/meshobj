@@ -17,9 +17,9 @@ export class JWTSubAuthorizer implements Auth {
         if (authHeader.startsWith("Bearer ")) {
             const token = authHeader.substring(7, authHeader.length);
 
-            const dToken = jwt.decode(token);
+            const dToken: {sub: string} = jwt.decode(token);
 
-            return dToken["sub"];
+            return [dToken["sub"]];
         } else {
             logger.error("Missing Bearer Token");
             return [];

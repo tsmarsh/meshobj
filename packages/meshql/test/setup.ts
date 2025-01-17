@@ -6,7 +6,6 @@ import express from "express";
 import {init} from "../src/server";
 import {Restlette} from "../src/configTypes";
 import {Document, OpenAPIClient, OpenAPIClientAxios} from "openapi-client-axios";
-import {get} from "axios";
 
 let mongod: MongoMemoryServer;
 let uri: string;
@@ -102,9 +101,12 @@ beforeAll(async () => {
             const response = await fetch(
                 url
             );
-            return await response.json();
+            let doc = await response.json();
+            //console.log("Doc: ", JSON.stringify(doc, null, 2));
+            return doc;
         })
     );
+
 
     await buildApi(swagger_docs, globalThis.__TOKEN__);
 
@@ -153,13 +155,13 @@ async function buildApi(swagger_docs: Document[], token: string) {
 async function buildModels() {
 
     const farm = await farm_api.create(null, { name: "Emerdale" });
-    console.log("Farm: ", JSON.stringify(farm));
+    console.log("Farm: ", JSON.stringify(farm.data));
     globalThis.farm_id = farm.request.path.slice(-36);
 
     const coop1 = await coop_api.create(null, { name: "red", farm_id: globalThis.farm_id });
     globalThis.coop1_id = coop1.request.path.slice(-36);
 
-    const coop2 = await globalThis.coop_api.create(null, { name: "yellow", farm_id: globalThis.farm_id });
+    const coop2 = await coop_api.create(null, { name: "yellow", farm_id: globalThis.farm_id });
     globalThis.coop2_id = coop2.request.path.slice(-36);
 
     await coop_api.create(null, { name: "pink", farm_id: globalThis.farm_id });
