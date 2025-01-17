@@ -1,5 +1,5 @@
-import {SearcherCertification, Searcher, Envelope, TestTemplates} from "@meshql/common"
-
+import {Searcher, Envelope} from "@meshql/common"
+import {SearcherCertification, TestTemplates} from "../../common/test/certification/searcher.cert"
 import {DTOFactory} from "@meshql/graphlette";
 import {NoOp, Auth} from "@meshql/auth";
 import {compile} from "handlebars";

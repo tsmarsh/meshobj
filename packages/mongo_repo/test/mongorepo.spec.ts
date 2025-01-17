@@ -1,4 +1,5 @@
-import {strinvelop, Repository, RepositoryCertification} from "@meshql/common"
+import {strinvelop, Repository} from "@meshql/common"
+import {RepositoryCertification} from "../../common/test/certification/repository.cert"
 import { MongoMemoryServer } from "mongodb-memory-server";
 import {PayloadRepository} from "../src/mongoRepo";
 import {MongoClient} from "mongodb";

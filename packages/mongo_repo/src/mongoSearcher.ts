@@ -1,6 +1,6 @@
 import {Envelope, Searcher} from "@meshql/common";
 import {Auth} from "@meshql/auth";
-import {Collection, Document, WithId} from "mongodb";
+import {Collection, Document} from "mongodb";
 import {DTOFactory} from "@meshql/graphlette";
 import HandleBars from "handlebars";
 import Handlebars from "handlebars";

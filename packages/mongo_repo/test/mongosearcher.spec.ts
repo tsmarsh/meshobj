@@ -1,4 +1,5 @@
-import {SearcherCertification, Searcher, Envelope, TestTemplates} from "@meshql/common"
+import {Searcher, Envelope} from "@meshql/common"
+import {SearcherCertification, TestTemplates} from "../../common/test/certification/searcher.cert"
 import { MongoMemoryServer } from "mongodb-memory-server";
 import {PayloadRepository} from "../src/mongoRepo";
 import {Collection, MongoClient} from "mongodb";

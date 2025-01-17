@@ -1,8 +1,5 @@
 import {TemplateDelegate} from "handlebars";
 
-export * from "./certification/repository.cert.js"
-export * from "./certification/searcher.cert.js"
-
 export type Singleton = {
     query: string;
     name: string;
@@ -60,3 +57,6 @@ export interface Searcher<I> {
 export interface Validator {
     (data: Record<string, any>): Promise<boolean>
 }
+
+export function numvelop(payload: Payload): Envelope<number> { return { payload }; }
+export function strinvelop(payload: Payload): Envelope<string> { return { payload }; }

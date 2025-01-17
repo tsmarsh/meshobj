@@ -1,4 +1,5 @@
-import {strinvelop, Repository, RepositoryCertification} from "@meshql/common"
+import {strinvelop, Repository} from "@meshql/common"
+import {RepositoryCertification} from "../../common/test/certification/repository.cert"
 import {SQLiteRepository} from "../src/sqliteRepo";
 import {open, Database} from "sqlite";
 import sqlite3 from "sqlite3";

@@ -1,8 +1,5 @@
 import { describe, it, beforeEach, afterAll, expect } from 'vitest';
-import { Repository, Envelope, Id, Payload } from "../index.js";
-
-export function numvelop(payload: Payload): Envelope<number> { return { payload }; }
-export function strinvelop(payload: Payload): Envelope<string> { return { payload }; }
+import { Repository, Envelope, Id, Payload } from "../../src";
 
 export function RepositoryCertification<I>(
     createRepository: () => Promise<Repository<I>>,
