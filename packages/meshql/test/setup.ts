@@ -122,8 +122,8 @@ afterAll(async () => {
 
 async function buildApi(swagger_docs: Document[], token: string) {
     const authHeaders = { Authorization: `Bearer ${token}` };
-    const apis = await Promise.all(
-        swagger_docs.map(async (doc: Document) => {
+    const apis:OpenAPIClient[] = await Promise.all(
+        swagger_docs.map(async (doc: Document): Promise<OpenAPIClient> => {
             if (!doc.paths || Object.keys(doc.paths).length === 0) {
                 throw new Error(`Swagger document for ${doc.info.title} has no paths defined`);
             }
@@ -137,7 +137,7 @@ async function buildApi(swagger_docs: Document[], token: string) {
         })
     );
 
-    for (const api: OpenAPIClientAxios of apis) {
+    for (const api: OpenAPIClient of apis) {
         if (Object.keys(api.paths)[0].includes("hen")) {
             hen_api = api;
         } else if (Object.keys(api.paths)[0].includes("coop")) {
