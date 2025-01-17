@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "vitest --run"
+    "test": "vitest --run --coverage"
   },
   "devDependencies": {
     "vitest": "^2.1.8"
