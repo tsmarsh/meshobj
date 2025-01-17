@@ -1,7 +1,7 @@
 {
   "name": "@meshql/auth",
   "version": "0.1.0",
-  "type": "module",
+  "type": "commonjs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -23,6 +23,6 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest --passWithNoTests"
+    "test": "vitest --run --passWithNoTests"
   }
 }
