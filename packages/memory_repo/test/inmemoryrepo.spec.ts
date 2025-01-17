@@ -1,4 +1,4 @@
-import {numvelop, Repository, RepositoryCertification} from "@meshql/common"
+const {numvelop, Repository, RepositoryCertification} = require("@meshql/common")
 import {InMemory} from "../src";
 
 const createRepository = async () : Promise<Repository<number>> => {

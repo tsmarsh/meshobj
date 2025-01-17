@@ -12,12 +12,13 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "test": "jest --passWithNoTests"
+    "test": "vitest --run --passWithNoTests"
   },
   "devDependencies": {
     "@types/node": "^22.10.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.1"
   },
   "dependencies": {
     "@meshql/auth": "workspace:*",

@@ -10,4 +10,8 @@ export default defineConfig({
             reporter: ["text", "json", "html"],
         },
     },
+    esbuild: {
+        loader: "ts", // Use TypeScript loader
+        target: "es2022", // Align with `tsconfig.json`
+    }
 });
