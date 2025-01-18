@@ -12,7 +12,7 @@ function secureRead(tokens: string[], match: any): any {
     return match;
 }
 
-export class PayloadRepository implements Repository<string>{
+export class MongoRepository implements Repository<string>{
     private db: Collection<Envelope<string>>;
 
     constructor(db: Collection<Envelope<string>>) {

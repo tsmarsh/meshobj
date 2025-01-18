@@ -1,7 +1,7 @@
 import {strinvelop, Repository} from "@meshql/common"
 import {RepositoryCertification} from "../../common/test/certification/repository.cert"
 import { MongoMemoryServer } from "mongodb-memory-server";
-import {PayloadRepository} from "../src/mongoRepo";
+import {MongoRepository} from "../src/mongoRepo";
 import {MongoClient} from "mongodb";
 
 let mongod: MongoMemoryServer;
@@ -16,7 +16,7 @@ const createRepository = async () : Promise<Repository<string>> => {
 
     let db = client.db("test")
     mongos.push(client)
-    return new PayloadRepository(db.collection(crypto.randomUUID()));
+    return new MongoRepository(db.collection(crypto.randomUUID()));
 }
 
 const tearDown = async (): Promise<void> => {

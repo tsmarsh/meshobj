@@ -1,7 +1,7 @@
 import {Searcher, Envelope} from "@meshql/common"
 import {SearcherCertification, TestTemplates} from "../../common/test/certification/searcher.cert"
 import { MongoMemoryServer } from "mongodb-memory-server";
-import {PayloadRepository} from "../src/mongoRepo";
+import {MongoRepository} from "../src/mongoRepo";
 import {Collection, MongoClient} from "mongodb";
 import {MongoSearcher} from "../src/mongoSearcher";
 import {DTOFactory} from "@meshql/graphlette";
@@ -24,7 +24,7 @@ const createSearcher = async (data: Envelope<string>[]): Promise<{saved: Envelop
     let dtoFactory = new DTOFactory([]);
     let auth: Auth = new NoOp();
 
-    let repo = new PayloadRepository(collection);
+    let repo = new MongoRepository(collection);
     let saved = await repo.createMany(data);
 
     return {saved, searcher: new MongoSearcher(collection, dtoFactory, auth)};

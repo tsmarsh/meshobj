@@ -15,7 +15,7 @@ import {
     Searcher,
     Validator,
 } from "@meshql/common";
-import { MongoSearcher, PayloadRepository } from "@meshql/mongo_repo";
+import { MongoSearcher, MongoRepository } from "@meshql/mongo_repo";
 import { SQLiteSearcher } from "@meshql/sqlite_repo";
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
@@ -79,7 +79,7 @@ async function buildRepository(storage: StorageConfig): Promise<Repository<any>>
         case "mongo": {
             const mongoConfig = storage as MongoConfig;
             const collection = await buildMongoCollection(mongoConfig);
-            return new PayloadRepository(collection);
+            return new MongoRepository(collection);
         }
         case "sql": {
             const sqlConfig = storage as SQLConfig;

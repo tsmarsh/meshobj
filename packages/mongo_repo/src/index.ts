@@ -1,2 +1,2 @@
 export {MongoSearcher} from "./mongoSearcher.js"
-export {PayloadRepository} from "./mongoRepo.js"
+export {MongoRepository} from "./mongoRepo.js"
