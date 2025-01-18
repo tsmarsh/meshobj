@@ -7,7 +7,7 @@ export class InMemory implements Repository<number>{
     async create(payload: Envelope<number>, tokens: string[] = []): Promise<Envelope<number>> {
         let id = this.sequence++;
         payload["id"] = id;
-        payload["createdAt"] = new Date();
+        payload["created_at"] = new Date();
         this.db[id] = payload;
         return payload;
     }
@@ -20,7 +20,7 @@ export class InMemory implements Repository<number>{
         return Object.values(this.db);
     }
 
-    async read(id: Id<number>, tokens: string[] = [], createdAt: Date = new Date()): Promise<Envelope<number>> {
+    async read(id: Id<number>, tokens: string[] = [], created_at: Date = new Date()): Promise<Envelope<number>> {
         return this.db[id];
     }
 

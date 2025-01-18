@@ -43,7 +43,6 @@ export class PostgresRepository implements Repository<string> {
         const result = await this.pool.query(query, values);
 
         let row = result.rows[0];
-        console.log("Created: ", JSON.stringify(row, null, 2));
         return row;
     };
 
@@ -130,8 +129,7 @@ export class PostgresRepository implements Repository<string> {
         const values = tokens.length > 0 ? [tokens] : [];
 
         const result = await this.pool.query(query, values);
-
-        console.log("List: ", JSON.stringify(result.rows, null, 2))
+        
         return result.rows;
     };
 }
