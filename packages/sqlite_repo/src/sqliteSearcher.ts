@@ -23,7 +23,7 @@ export class SQLiteSearcher implements Searcher<string> {
     }
 
     async find(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>> {
-        args._createdAt = timestamp;
+        args._created_at = timestamp;
         let sql = this.processQueryTemplate(args, queryTemplate);
 
         const result = await this.db.get(sql, []);
@@ -42,7 +42,7 @@ export class SQLiteSearcher implements Searcher<string> {
     }
 
     async findAll(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>[]> {
-        args._createdAt = timestamp;
+        args._created_at = timestamp;
         let sql = this.processQueryTemplate(args, queryTemplate);
 
         const rows = await this.db.all(sql, []);

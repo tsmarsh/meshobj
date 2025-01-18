@@ -15,7 +15,7 @@ export class SQLiteRepository implements Repository<string> {
             CREATE TABLE IF NOT EXISTS ${this.collection} (
                 id TEXT PRIMARY KEY,
                 payload TEXT,
-                createdAt INTEGER,
+                created_at INTEGER,
                 deleted INTEGER DEFAULT 0
             )
         `);
@@ -23,17 +23,17 @@ export class SQLiteRepository implements Repository<string> {
 
     create = async (envelope: Envelope<string>): Promise<Envelope<string>> => {
         const id = envelope.id ?? crypto.randomUUID();
-        const createdAt = envelope.createdAt ? envelope.createdAt.getTime() : Date.now();
+        const created_at = envelope.created_at ? envelope.created_at.getTime() : Date.now();
 
         await this.db.run(
-            `INSERT INTO ${this.collection} (id, payload, createdAt, deleted) VALUES (?, ?, ?, ?)`,
+            `INSERT INTO ${this.collection} (id, payload, created_at, deleted) VALUES (?, ?, ?, ?)`,
             id,
             JSON.stringify(envelope.payload),
-            createdAt,
+            created_at,
             0
         );
 
-        return { ...envelope, id, createdAt: new Date(createdAt), deleted: false };
+        return { ...envelope, id, created_at: new Date(created_at), deleted: false };
     }
 
     read = async (id: Id<string>): Promise<Envelope<string>> => {
@@ -44,7 +44,7 @@ export class SQLiteRepository implements Repository<string> {
         return {
             id: row.id,
             payload: JSON.parse(row.payload),
-            createdAt: new Date(row.createdAt),
+            created_at: new Date(row.created_at),
             deleted: !!row.deleted
         };
     }
@@ -55,7 +55,7 @@ export class SQLiteRepository implements Repository<string> {
         return rows.map(row => ({
             id: row.id,
             payload: JSON.parse(row.payload),
-            createdAt: new Date(row.createdAt),
+            created_at: new Date(row.created_at),
             deleted: !!row.deleted
         }));
     }
@@ -71,7 +71,7 @@ export class SQLiteRepository implements Repository<string> {
         let created: Envelope<string>[] = [];
         await this.db.run("BEGIN TRANSACTION");
         for (const envelope of payloads) {
-            created.push(await this.create({ ...envelope, createdAt: new Date(now) }));
+            created.push(await this.create({ ...envelope, created_at: new Date(now) }));
         }
         await this.db.run("COMMIT");
 
@@ -90,7 +90,7 @@ export class SQLiteRepository implements Repository<string> {
         return rows.map(row => ({
             id: row.id,
             payload: JSON.parse(row.payload),
-            createdAt: new Date(row.createdAt),
+            created_at: new Date(row.created_at),
             deleted: !!row.deleted
         }));
     }

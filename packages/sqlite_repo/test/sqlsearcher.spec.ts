@@ -37,32 +37,32 @@ const findById = `
             SELECT *
             FROM test
             WHERE id = '{{id}}'
-              AND createdAt <= {{_createdAt}}
-            ORDER BY createdAt DESC
+              AND created_at <= {{_created_at}}
+            ORDER BY created_at DESC
             LIMIT 1`
 
 const findByName =`
             SELECT *
             FROM test
             WHERE json_extract(payload, '$.name') = '{{id}}'
-              AND createdAt <= {{_createdAt}}
-            ORDER BY createdAt DESC
+              AND created_at <= {{_created_at}}
+            ORDER BY created_at DESC
             LIMIT 1`
 
 const findAllByType = `
             SELECT *
             FROM test
             WHERE json_extract(payload, '$.type') = '{{id}}'
-              AND createdAt <= {{_createdAt}}
-            ORDER BY createdAt DESC`;
+              AND created_at <= {{_created_at}}
+            ORDER BY created_at DESC`;
 
 const findByNameAndType = `
             SELECT *
             FROM test
             WHERE json_extract(payload, '$.type') = '{{type}}'
               AND json_extract(payload, '$.name') = '{{name}}'
-              AND createdAt <= {{_createdAt}}
-            ORDER BY createdAt DESC`;
+              AND created_at <= {{_created_at}}
+            ORDER BY created_at DESC`;
 
 const templates: TestTemplates = {
     findById: compile(findById),
