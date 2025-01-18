@@ -24,8 +24,9 @@ export function RepositoryCertification<I>(
             const envelope = enveloper(data);
 
             const result = await repository.create(envelope);
+
             expect(result.id).not.toBeNull();
-            expect(result.createdAt?.getTime()).toBeGreaterThanOrEqual(now.getTime());
+            expect(result.created_at?.getTime()).toBeGreaterThanOrEqual(now.getTime());
             expect(result.deleted).toBeFalsy();
         });
 

@@ -32,7 +32,7 @@ export type Payload = Record<string, any>;
 export type Envelope<I> = {
     id?: Id<I>;
     payload: Payload;
-    createdAt?: Date;
+    created_at?: Date;
     deleted?: boolean;
     authorized_tokens?: string[]
 }

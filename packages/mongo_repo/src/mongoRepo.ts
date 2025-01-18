@@ -20,7 +20,7 @@ export class MongoRepository implements Repository<string>{
     }
 
     create = async (doc: Envelope<string>): Promise<Envelope<string>> => {
-        doc.createdAt = new Date();
+        doc.created_at = new Date();
 
         if (!Object.hasOwnProperty.call(doc, "id")) {
             doc.id = uuid();
@@ -33,9 +33,9 @@ export class MongoRepository implements Repository<string>{
     };
 
     createMany = async (clean_docs: Envelope<string>[]): Promise<Envelope<string>[]> => {
-        const createdAt = new Date();
+        const created_at = new Date();
         const docs: Envelope<string>[] = clean_docs.map((doc) => {
-            doc.createdAt = createdAt;
+            doc.created_at = created_at;
             doc.id = uuid();
             return doc;
         });
@@ -49,12 +49,12 @@ export class MongoRepository implements Repository<string>{
         return docs;
     };
 
-    read = async (id: Id<string>, tokens: string[] = [], createdAt: Date = new Date()): Promise<Envelope<string>> => {
+    read = async (id: Id<string>, tokens: string[] = [], created_at: Date = new Date()): Promise<Envelope<string>> => {
         let results: Envelope<string>[] = [];
 
         let filter: any = {
             id,
-            createdAt: {$lt: createdAt},
+            created_at: {$lt: created_at},
             deleted: {$exists: false},
         }
 
@@ -64,7 +64,7 @@ export class MongoRepository implements Repository<string>{
         try {
             results = await this.db
                 .find(filter)
-                .sort({createdAt: -1})
+                .sort({created_at: -1})
                 .toArray();
         } catch (err) {
             logger.error(`Can't read: ${JSON.stringify(err)}`);
@@ -88,7 +88,7 @@ export class MongoRepository implements Repository<string>{
                         $match: match,
                     },
                     {
-                        $sort: {createdAt: -1},
+                        $sort: {created_at: -1},
                     },
                     {
                         $group: {
@@ -105,7 +105,7 @@ export class MongoRepository implements Repository<string>{
             logger.error(`Error listing: ${JSON.stringify(err, null, 2)}`);
         }
 
-        return results.map((d) => {return {id: d.id, createdAt: d.createdAt, payload: d.payload}});
+        return results.map((d) => {return {id: d.id, created_at: d.created_at, payload: d.payload}});
     };
 
     remove = async (id: Id<string>, tokens: string[] = []): Promise<boolean> => {
@@ -137,7 +137,7 @@ export class MongoRepository implements Repository<string>{
                         $match: match,
                     },
                     {
-                        $sort: {createdAt: -1},
+                        $sort: {created_at: -1},
                     },
                     {
                         $group: {
@@ -154,6 +154,6 @@ export class MongoRepository implements Repository<string>{
             logger.error(`Error listing: ${JSON.stringify(err)}`);
         }
 
-        return results.map((d) => {return {id: d.id, createdAt: d.createdAt, payload: d.payload}});
+        return results.map((d) => {return {id: d.id, created_at: d.created_at, payload: d.payload}});
     };
 }

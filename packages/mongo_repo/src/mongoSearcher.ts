@@ -42,11 +42,11 @@ export class MongoSearcher implements Searcher<string> {
     async find(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: [string], timestamp: number = Date.now()): Promise<Record<string, any>> {
         let query = this.processQueryTemplate(args, queryTemplate);
 
-        query.createdAt = {
+        query.created_at = {
             $lt: new Date(timestamp),
         };
 
-        let doc = await this.db.find(query).sort({createdAt: -1}).toArray()
+        let doc = await this.db.find(query).sort({created_at: -1}).toArray()
             .catch(() => {
                 logger.debug(`Nothing found for: ${args}`);
                 return [];
@@ -80,7 +80,7 @@ export class MongoSearcher implements Searcher<string> {
 
         let query = this.processQueryTemplate(args, queryTemplate);
 
-        query.createdAt = time_filter;
+        query.created_at = time_filter;
 
         let results = await this.db
             .aggregate([
@@ -88,7 +88,7 @@ export class MongoSearcher implements Searcher<string> {
                     $match: query,
                 },
                 {
-                    $sort: {createdAt: -1},
+                    $sort: {created_at: -1},
                 },
                 {
                     $group: {
