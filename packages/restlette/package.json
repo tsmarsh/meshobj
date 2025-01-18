@@ -12,7 +12,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "test": "c8 --report-dir=../../.nyc_output vitest --run --coverage"
+    "test": "vitest --run --coverage"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",

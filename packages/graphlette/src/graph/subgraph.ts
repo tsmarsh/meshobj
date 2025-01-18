@@ -22,9 +22,9 @@ type HeadersType = {
 }
 
 async function callSibling(query: string, url: URL, authHeader: string | null) {
-    const body: string = JSON.stringify({query: query});
+    const body: string = JSON.stringify({query: query}, null, 2);
 
-    logger.trace("Subgraph Call: ", url, body);
+    logger.trace("Subgraph Call: ", url.pathname, JSON.stringify(query, null, 2));
 
     let headers: HeadersType = {
         "Content-Type": "application/json",

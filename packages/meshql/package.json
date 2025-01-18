@@ -44,7 +44,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "c8 --report-dir=../../.nyc_output vitest --run --coverage",
+    "test": "vitest --run --coverage",
     "test:watch": "vitest --watch"
   }
 }

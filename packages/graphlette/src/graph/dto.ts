@@ -1,5 +1,5 @@
 import { processContext, callSubgraph } from "./subgraph.js";
-
+import {IncomingMessage} from "http";
 import Log4js from "log4js";
 import {GraphQLArgs} from "graphql/graphql";
 import {Resolver} from "@meshql/common"
@@ -43,7 +43,7 @@ const assignProperties = (target: { [key: string]: any }, source: { [key: string
 
 const assignResolver = (id: string = "id", queryName: string, url: URL) : Record<string, any> => {
     logger.debug(`Assigning resolver for: ${id}, ${queryName}, ${url}`);
-    return async function (this: { [key: string]: any }, parent: any, args: any, context: GraphQLArgs): Promise<Record<string, any>> {
+    return async function (this: { [key: string]: any }, parent: any, args: IncomingMessage, context: GraphQLArgs): Promise<Record<string, any>> {
         let self = this as { [key: string]: any }
         let foreignKey: any = self[id];
         const query: string = processContext(
@@ -53,7 +53,7 @@ const assignResolver = (id: string = "id", queryName: string, url: URL) : Record
             self._timestamp,
         );
         let header =
-            typeof self._authHeader === "undefined" ? undefined : self._authHeader;
+             args && args.headers && args.headers.authorization  ? args.headers.authorization : null;
         return await callSubgraph(url, query, queryName, header);
     };
 };

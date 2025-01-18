@@ -51,6 +51,9 @@ export class MongoSearcher implements Searcher<string> {
                 logger.debug(`Nothing found for: ${args}`);
                 return [];
             });
+
+        logger.trace(`Found: ${JSON.stringify(doc)}`)
+
         if(doc.length > 0) {
             let result = doc[0];
 
@@ -60,6 +63,8 @@ export class MongoSearcher implements Searcher<string> {
                     result.payload,
                     timestamp,
                 );
+            } else {
+                logger.trace("Not Authorized")
             }
         }
 

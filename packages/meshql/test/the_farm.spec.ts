@@ -1,6 +1,18 @@
 import { describe, it, expect } from "vitest";
 import { callSubgraph } from "@meshql/graphlette";
+import Log4js from "log4js";
 
+
+Log4js.configure({
+    appenders: {
+        out: {
+            type: "stdout",
+        },
+    },
+    categories: {
+        default: { appenders: ["out"], level: "trace" },
+    },
+});
 describe("The Farm", () => {
     it("should build a server with multiple nodes", async () => {
         const query = `{
@@ -46,33 +58,33 @@ describe("The Farm", () => {
         expect(json[0].name).toBe("duck");
     });
 
-    // it("should query in both directions", async () => {
-    //     const query = `{
-    //   getByCoop(id: "${globalThis.coop1_id}") {
-    //     name
-    //     eggs
-    //     coop {
-    //       name
-    //       farm {
-    //         name
-    //       }
-    //     }
-    //   }
-    // }`;
-    //
-    //     const json = await callSubgraph(
-    //         new URL(`http://localhost:${globalThis.__CONFIG__.port}/hen/graph`),
-    //         query,
-    //         "getByCoop",
-    //         `Bearer ${globalThis.__TOKEN__}`
-    //     );
-    //
-    //     expect(json.length).toBe(2);
-    //     expect(json.map((res: any) => res.name)).toEqual(
-    //         expect.arrayContaining(["chuck", "duck"])
-    //     );
-    //     expect(json[0].coop.name).toBe("purple");
-    // });
+    it("should query in both directions", async () => {
+        const query = `{
+      getByCoop(id: "${globalThis.coop1_id}") {
+        name
+        eggs
+        coop {
+          name
+          farm {
+            name
+          }
+        }
+      }
+    }`;
+
+        const json = await callSubgraph(
+            new URL(`http://localhost:${globalThis.__CONFIG__.port}/hen/graph`),
+            query,
+            "getByCoop",
+            `Bearer ${globalThis.__TOKEN__}`
+        );
+
+        expect(json.length).toBe(2);
+        expect(json.map((res: any) => res.name)).toEqual(
+            expect.arrayContaining(["chuck", "duck"])
+        );
+        expect(json[0].coop.name).toBe("purple");
+    });
 
     it("should get latest by default", async () => {
         const query = `{
