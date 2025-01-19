@@ -129,7 +129,7 @@ export class PostgresRepository implements Repository<string> {
         const values = tokens.length > 0 ? [tokens] : [];
 
         const result = await this.pool.query(query, values);
-        
+
         return result.rows;
     };
 }
