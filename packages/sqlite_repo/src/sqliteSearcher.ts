@@ -9,11 +9,13 @@ let logger = getLogger("meshql/sqlitesearcher");
 
 export class SQLiteSearcher implements Searcher<string> {
     private db: Database;
+    private table: string;
     private authorizer: Auth;
     private dtoFactory: DTOFactory;
 
-    constructor(db: Database, dtoFactory: DTOFactory, authorizer: Auth) {
+    constructor(db: Database,table: string, dtoFactory: DTOFactory, authorizer: Auth) {
         this.db = db;
+        this.table =table;
         this.dtoFactory = dtoFactory;
         this.authorizer = authorizer;
     }
@@ -24,6 +26,7 @@ export class SQLiteSearcher implements Searcher<string> {
 
     async find(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>> {
         args._created_at = timestamp;
+        args._name = this.table
         let sql = this.processQueryTemplate(args, queryTemplate);
 
         const result = await this.db.get(sql, []);
@@ -43,6 +46,7 @@ export class SQLiteSearcher implements Searcher<string> {
 
     async findAll(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>[]> {
         args._created_at = timestamp;
+        args._name = this.table
         let sql = this.processQueryTemplate(args, queryTemplate);
 
         const rows = await this.db.all(sql, []);

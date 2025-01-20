@@ -130,6 +130,7 @@ export class PostgresRepository implements Repository<string> {
 
         const result = await this.pool.query(query, values);
 
+        console.log("List: ", JSON.stringify(result.rows, null, 2))
         return result.rows;
     };
 }

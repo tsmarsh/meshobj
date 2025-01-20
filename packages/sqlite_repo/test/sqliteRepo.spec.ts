@@ -10,6 +10,7 @@ const createRepository = async () : Promise<Repository<string>> => {
     let db = await open({filename: ":memory:", driver: sqlite3.Database});
 
     dbs.push(db)
+
     let repo = new SQLiteRepository(db, "test");
 
     await repo.initialize();

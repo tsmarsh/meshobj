@@ -1,71 +1,43 @@
-import { Database } from 'sqlite';
-import { Repository, Envelope, Id } from "@meshql/common";
+import sqlite3 from 'sqlite3';
+import { v4 as uuid } from 'uuid';
+import { Envelope, Id, Repository } from "@meshql/common";
+import {Database} from "sqlite";
 
 export class SQLiteRepository implements Repository<string> {
     private db: Database;
-    private collection: string;
+    private table: string;
 
-    constructor(db: Database, collection: string) {
+    constructor(db: Database, table: string) {
         this.db = db;
-        this.collection = collection;
+        this.table = table;
     }
 
     async initialize(): Promise<void> {
-        await this.db.exec(`
-            CREATE TABLE IF NOT EXISTS ${this.collection} (
-                id TEXT PRIMARY KEY,
-                payload TEXT,
-                created_at INTEGER,
-                deleted INTEGER DEFAULT 0
-            )
+        await this.db.exec( `
+            CREATE TABLE IF NOT EXISTS ${this.table} (
+                _id INTEGER PRIMARY KEY,
+                id TEXT UNIQUE,
+                payload TEXT NOT NULL,
+                created_at INTEGER DEFAULT (strftime('%s', 'now')),
+                deleted INTEGER DEFAULT 0,
+                authorized_tokens JSON
+            );
         `);
     }
 
-    create = async (envelope: Envelope<string>): Promise<Envelope<string>> => {
-        const id = envelope.id ?? crypto.randomUUID();
-        const created_at = envelope.created_at ? envelope.created_at.getTime() : Date.now();
+    create = async (doc: Envelope<string>, tokens: string[] = []): Promise<Envelope<string>> => {
+        const query = `
+            INSERT INTO ${this.table} (id, payload, authorized_tokens)
+            VALUES (?, ?, ?);
+        `;
+        const id = doc.id || uuid();
+        const values = [id, JSON.stringify(doc.payload), JSON.stringify(tokens || [])];
 
-        await this.db.run(
-            `INSERT INTO ${this.collection} (id, payload, created_at, deleted) VALUES (?, ?, ?, ?)`,
-            id,
-            JSON.stringify(envelope.payload),
-            created_at,
-            0
-        );
+        await this.db.run(query, values );
+        return { ...doc, id, deleted: false, created_at: new Date() };
+    };
 
-        return { ...envelope, id, created_at: new Date(created_at), deleted: false };
-    }
-
-    read = async (id: Id<string>): Promise<Envelope<string>> => {
-        const row = await this.db.get(`SELECT * FROM ${this.collection} WHERE id = ? AND deleted = 0`, id);
-
-        if (!row) return row;
-
-        return {
-            id: row.id,
-            payload: JSON.parse(row.payload),
-            created_at: new Date(row.created_at),
-            deleted: !!row.deleted
-        };
-    }
-
-    list = async (): Promise<Envelope<string>[]> => {
-        const rows = await this.db.all(`SELECT * FROM ${this.collection} WHERE deleted = 0`);
-
-        return rows.map(row => ({
-            id: row.id,
-            payload: JSON.parse(row.payload),
-            created_at: new Date(row.created_at),
-            deleted: !!row.deleted
-        }));
-    }
-
-    remove = async (id: Id<string>): Promise<boolean> => {
-        const result = await this.db.run(`UPDATE ${this.collection} SET deleted = 1 WHERE id = ?`, id);
-        return result.changes! > 0;
-    }
-
-    async createMany(payloads: Envelope<string>[]): Promise<Envelope<string>[]> {
+    createMany = async (payloads: Envelope<string>[]): Promise<Envelope<string>[]> => {
         const now = Date.now();
 
         let created: Envelope<string>[] = [];
@@ -76,24 +48,61 @@ export class SQLiteRepository implements Repository<string> {
         await this.db.run("COMMIT");
 
         return created;
-    }
+    };
 
-    readMany = async (ids: Id<string>[]): Promise<Envelope<string>[]> => {
-        const placeholders = ids.map(() => "?").join(", ");
-        let query = `SELECT * FROM ${this.collection} WHERE id IN (${placeholders}) AND deleted = 0`;
+    read = async (id: Id<string>, tokens: string[] = []): Promise<Envelope<string>> => {
+        const query = `
+            SELECT * FROM ${this.table}
+            WHERE id = ? AND deleted = 0
+            ${tokens.length > 0 ? `AND EXISTS (SELECT 1 FROM json_each(authorized_tokens) WHERE value IN (SELECT value FROM json_each(?)))` : ""}
+            ORDER BY created_at DESC
+            LIMIT 1;
+        `;
+        const values = tokens.length > 0 ? [id, JSON.stringify(tokens)] : [id];
 
-        const rows = await this.db.all(
-            query,
-            ...ids
-        );
+        const row: any = await this.db.get(query, values);
+
+        if (!row) return row;
+
+        return {
+            id: row.id,
+            payload: JSON.parse(row.payload),
+            created_at: new Date(row.created_at),
+            deleted: !!row.deleted
+        };
+    };
+
+    readMany = async (ids: Id<string>[], tokens: string[] = []): Promise<Envelope<string>[]> => {
+        const query = `
+            SELECT * FROM ${this.table}
+            WHERE id IN (${ids.map(() => "?").join(", ")}) AND deleted = 0
+            ${tokens.length > 0 ? `AND EXISTS (SELECT 1 FROM json_each(authorized_tokens) WHERE value IN (SELECT value FROM json_each(?)))` : ""}
+            ORDER BY created_at DESC;
+        `;
+        const values = [...ids, ...(tokens.length > 0 ? [JSON.stringify(tokens)] : [])];
+
+        const rows = await this.db.all(query, values);
 
         return rows.map(row => ({
             id: row.id,
             payload: JSON.parse(row.payload),
             created_at: new Date(row.created_at),
             deleted: !!row.deleted
-        }));
-    }
+        }))
+    };
+
+    remove = async (id: Id<string>, tokens: string[] = []): Promise<boolean> => {
+        const query = `
+            UPDATE ${this.table}
+            SET deleted = 1
+            WHERE id = ?
+            ${tokens.length > 0 ? `AND EXISTS (SELECT 1 FROM json_each(authorized_tokens) WHERE value IN (SELECT value FROM json_each(?)))` : ""};
+        `;
+        const values = tokens.length > 0 ? [id, JSON.stringify(tokens)] : [id];
+
+        const result = await this.db.run(query, values);
+        return result.changes! > 0;
+    };
 
     removeMany = async (ids: Id<string>[]): Promise<Record<Id<string>, boolean>> => {
         const result: Record<Id<string>, boolean> = {};
@@ -106,4 +115,23 @@ export class SQLiteRepository implements Repository<string> {
 
         return result;
     }
+
+    list = async (tokens: string[] = []): Promise<Envelope<string>[]> => {
+        const query = `
+            SELECT * FROM ${this.table}
+            WHERE deleted = 0
+            ${tokens.length > 0 ? `AND EXISTS (SELECT 1 FROM json_each(authorized_tokens) WHERE value IN (SELECT value FROM json_each(?)))` : ""}
+            ORDER BY created_at DESC;
+        `;
+        const values:string[] = tokens.length > 0 ? [JSON.stringify(tokens)] : [];
+
+        const rows = await this.db.all(query, values);
+
+        return rows.map(row => ({
+            id: row.id,
+            payload: JSON.parse(row.payload),
+            created_at: new Date(row.created_at),
+            deleted: !!row.deleted
+        }));
+    };
 }

@@ -63,7 +63,7 @@ async function processGraphlette(
                 filename: sqlConfig.uri,
                 driver: sqlite3.Database,
             });
-            searcher = new SQLiteSearcher(lite, dtoFactory, auth);
+            searcher = new SQLiteSearcher(lite, sqlConfig.collection, dtoFactory, auth);
             break;
         }
         case "memory":

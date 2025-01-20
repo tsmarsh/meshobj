@@ -23,7 +23,7 @@ const createSearcher = async (data: Envelope<string>[]): Promise<{saved: Envelop
 
     let saved = await repo.createMany(data);
 
-    return {saved, searcher: new SQLiteSearcher(db, dtoFactory, auth)};
+    return {saved, searcher: new SQLiteSearcher(db, "test", dtoFactory, auth)};
 
 }
 
@@ -35,7 +35,7 @@ const tearDown = async (): Promise<void> => {
 
 const findById = `
             SELECT *
-            FROM test
+            FROM {{_name}}
             WHERE id = '{{id}}'
               AND created_at <= {{_created_at}}
             ORDER BY created_at DESC
@@ -43,7 +43,7 @@ const findById = `
 
 const findByName =`
             SELECT *
-            FROM test
+            FROM {{_name}}
             WHERE json_extract(payload, '$.name') = '{{id}}'
               AND created_at <= {{_created_at}}
             ORDER BY created_at DESC
@@ -51,14 +51,14 @@ const findByName =`
 
 const findAllByType = `
             SELECT *
-            FROM test
+            FROM {{_name}}
             WHERE json_extract(payload, '$.type') = '{{id}}'
               AND created_at <= {{_created_at}}
             ORDER BY created_at DESC`;
 
 const findByNameAndType = `
             SELECT *
-            FROM test
+            FROM {{_name}}
             WHERE json_extract(payload, '$.type') = '{{type}}'
               AND json_extract(payload, '$.name') = '{{name}}'
               AND created_at <= {{_created_at}}
