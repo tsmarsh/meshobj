@@ -7,7 +7,7 @@
   "version": "0.1.0",
   "scripts": {
     "build": "lerna run build --since",
-    "test": "yarn workspaces foreach --all -t run test",
+    "test": "yarn vitest --run --coverage",
     "coverage": "yarn run c8 report --report-dir=.nyc_output --reporter=text --reporter=html --reporter=lcov"
   },
   "dependencies": {
