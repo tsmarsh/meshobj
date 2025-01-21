@@ -27,6 +27,7 @@ import { JWTSubAuthorizer } from "@meshql/jwt_auth";
 import { Auth } from "@meshql/auth";
 import { CasbinAuth } from "@meshql/casbin_auth";
 import { InMemory } from "@meshql/memory_repo";
+import cors from 'cors';
 
 let port = 3030;
 
@@ -123,6 +124,13 @@ export async function init(config: Config): Promise<Application> {
 
     const app = express();
     app.use(express.json());
+
+    // Use CORS middleware
+    app.use(cors({
+        origin: '*', // Allow all origins. Adjust as needed for security.
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+    }));
 
     // Process graphlettes
     for (const graphlette of config.graphlettes) {
