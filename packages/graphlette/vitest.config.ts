@@ -8,7 +8,13 @@ export default defineConfig({
         coverage: {
             provider: "v8",
             reporter: ["text", "json", "html"],
-            reportsDirectory: '../../coverage'
+            reportsDirectory: '../../coverage',
+            exclude: [
+                '**/dist/**', // Exclude all dist directories
+                '**/node_modules/**', // Exclude node_modules
+                '**/test/**', // Optionally exclude test directories
+                '**/*.spec.ts', // Optionally exclude test files
+            ],
         },
     },
     esbuild: {
