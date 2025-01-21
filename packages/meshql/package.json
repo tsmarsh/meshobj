@@ -16,7 +16,6 @@
     "@meshql/common": "workspace:*",
     "@meshql/graphlette": "workspace:*",
     "@meshql/jwt_auth": "workspace:*",
-    "@meshql/memory_repo": "workspace:*",
     "@meshql/mongo_repo": "workspace:*",
     "@meshql/restlette": "workspace:*",
     "@meshql/sqlite_repo": "workspace:*",
