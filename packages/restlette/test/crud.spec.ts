@@ -20,20 +20,52 @@ Log4js.configure({
 });
 
 describe("Crud", () => {
+    const henSchema = {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "faker": "person.firstName"
+          },
+          "coop_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eggs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "dob": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+
     describe("A happy restlette", function () {
         let app: Application;
         let server: any;
 
         const port = 40200;
 
+        let saved: Envelope<string>;
         afterAll(() => {
             server.close();
         });
 
         beforeAll(async () => {
             const auth: Auth = new NoOp();
-            const repo: Repository<number> = new InMemory();
-            await repo.create({ id: "666", payload: { name: "chuck", eggs: 6 } });
+            const repo: Repository<string> = new InMemory();
+            saved = await repo.create({payload: { name: "chuck", eggs: 6 } });
 
             app = express();
             app.use(express.json());
@@ -42,7 +74,7 @@ describe("Crud", () => {
             const validator: Validator = async (data: Record<string, any>) => true;
 
             const crud: Crud<number> = new Crud(auth, repo, validator, context);
-            init(app, crud, context);
+            init(app, crud, context, port, henSchema);
 
             server = app.listen(port);
         });
@@ -72,11 +104,11 @@ describe("Crud", () => {
             const actual = await response.json();
 
             expect(actual.length).toBe(2);
-            expect(actual[0]).toBe("/hens/10");
+            expect(actual[0]).toBe(`/hens/${saved.id}`);
         });
 
         it("should update a document", async () => {
-            const response = await fetch(`http://localhost:${port}/hens/10`, {
+            const response = await fetch(`http://localhost:${port}/hens/${saved.id}`, {
                 method: "PUT",
                 body: JSON.stringify({ name: "chuck", eggs: 9 }),
                 headers: {
@@ -90,7 +122,7 @@ describe("Crud", () => {
         });
 
         it("should delete a document", async () => {
-            const response = await fetch(`http://localhost:${port}/hens/10`, {
+            const response = await fetch(`http://localhost:${port}/hens/${saved.id}`, {
                 method: "DELETE",
             });
 
@@ -129,7 +161,7 @@ describe("Crud", () => {
             });
 
             const crud: Crud<number> = new Crud(auth, repo, validator, context);
-            init(app, crud, context);
+            init(app, crud, context, port, henSchema);
 
             server = app.listen(port);
         });
@@ -159,7 +191,7 @@ describe("Crud", () => {
     describe("authorization tests", function () {
         let app: Application;
         let server: any;
-        let hen: Envelope<number>;
+        let hen: Envelope<string>;
 
         const port = 40400;
 
@@ -187,7 +219,7 @@ describe("Crud", () => {
             const validator: Validator = async (data) => true;
 
             const crud: Crud<number> = new Crud(auth, repo, validator, context);
-            init(app, crud, context);
+            init(app, crud, context, port, henSchema);
 
             server = app.listen(port);
         });
