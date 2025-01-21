@@ -11,7 +11,7 @@ import {compile} from "handlebars";
 let mongod: MongoMemoryServer;
 const mongos: MongoClient[] = []
 
-const createSearcher = async (data: Envelope<string>[]): Promise<{saved: Envelope<string>[], searcher: Searcher<string>}> => {
+const createSearcher = async (data: Envelope[]): Promise<{saved: Envelope[], searcher: Searcher}> => {
     if(!mongod) {
         mongod = await MongoMemoryServer.create();
     }
@@ -19,7 +19,7 @@ const createSearcher = async (data: Envelope<string>[]): Promise<{saved: Envelop
     await client.connect();
     mongos.push(client)
     let db = client.db("test")
-    let collection: Collection<Envelope<string>> = db.collection(crypto.randomUUID());
+    let collection: Collection<Envelope> = db.collection(crypto.randomUUID());
 
     let dtoFactory = new DTOFactory([]);
     let auth: Auth = new NoOp();

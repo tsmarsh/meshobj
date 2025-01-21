@@ -9,12 +9,12 @@ import {Schema} from "./types";
 
 let logger = getLogger("meshql/mongosearcher");
 
-export class MongoSearcher implements Searcher<string> {
+export class MongoSearcher implements Searcher {
     private authorizer: Auth;
-    private db: Collection<Envelope<string>>;
+    private db: Collection<Envelope>;
     private dtoFactory: DTOFactory;
 
-    constructor(db: Collection<Envelope<string>>, dtoFactory: DTOFactory, authorizer: Auth) {
+    constructor(db: Collection<Envelope>, dtoFactory: DTOFactory, authorizer: Auth) {
         this.authorizer = authorizer;
         this.db = db;
         this.dtoFactory = dtoFactory;
@@ -103,7 +103,7 @@ export class MongoSearcher implements Searcher<string> {
             .toArray();
 
         if (args !== undefined) {
-            results = results.filter((r: Document) => this.authorizer.isAuthorized(creds, r as Envelope<string>));
+            results = results.filter((r: Document) => this.authorizer.isAuthorized(creds, r as Envelope));
         }
         return results.map((d) => {
             let r = d as Schema

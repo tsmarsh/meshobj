@@ -11,7 +11,7 @@ import { PostgresSearcher } from "../src/postgresSearcher";
 const dbs: Pool[] = [];
 let container: StartedTestContainer | null = null;
 
-const createSearcher = async (data: Envelope<string>[]): Promise<{ saved: Envelope<string>[], searcher: Searcher<string> }> => {
+const createSearcher = async (data: Envelope[]): Promise<{ saved: Envelope[], searcher: Searcher }> => {
     if (!container) {
         container = await new GenericContainer("postgres")
             .withExposedPorts(5432)

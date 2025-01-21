@@ -7,7 +7,7 @@ import { getLogger } from "log4js";
 
 let logger = getLogger("meshql/sqlitesearcher");
 
-export class SQLiteSearcher implements Searcher<string> {
+export class SQLiteSearcher implements Searcher {
     private db: Database;
     private table: string;
     private authorizer: Auth;
@@ -50,12 +50,12 @@ export class SQLiteSearcher implements Searcher<string> {
         let sql = this.processQueryTemplate(args, queryTemplate);
 
         const rows = await this.db.all(sql, []);
-        const envelopes: Envelope<string>[] = rows.map((i) => i.payload = JSON.parse(i.payload));
+        const envelopes: Envelope[] = rows.map((i) => i.payload = JSON.parse(i.payload));
 
         const authorizedResults = rows.filter((row) => this.authorizer.isAuthorized(creds, row));
 
         return authorizedResults.map((row) => {
-            const result = row as Envelope<string>;
+            const result = row as Envelope;
             result.payload.id = result.id;
             return result.payload;
         });

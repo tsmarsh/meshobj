@@ -34,7 +34,7 @@ async function buildMongoCollection(mongoConfig: MongoConfig) {
     const client = new MongoClient(mongoConfig.uri);
     await client.connect();
     const mongoDb = client.db(mongoConfig.db);
-    const collection: Collection<Envelope<string>> = mongoDb.collection(
+    const collection: Collection<Envelope> = mongoDb.collection(
         mongoConfig.collection
     );
     return collection;
@@ -47,7 +47,7 @@ async function processGraphlette(
 ) {
     const { schema, storage, path, rootConfig } = graphlette;
 
-    let searcher: Searcher<any>;
+    let searcher: Searcher;
     const dtoFactory = new DTOFactory(rootConfig.resolvers);
 
     switch (storage.type) {
@@ -72,7 +72,7 @@ async function processGraphlette(
     graph_init(app, schema, path, rt);
 }
 
-async function buildRepository(storage: StorageConfig): Promise<Repository<any>> {
+async function buildRepository(storage: StorageConfig): Promise<Repository> {
     switch (storage.type) {
         case "mongo": {
             const mongoConfig = storage as MongoConfig;

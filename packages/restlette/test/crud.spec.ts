@@ -57,14 +57,14 @@ describe("Crud", () => {
 
         const port = 40200;
 
-        let saved: Envelope<string>;
+        let saved: Envelope;
         afterAll(() => {
             server.close();
         });
 
         beforeAll(async () => {
             const auth: Auth = new NoOp();
-            const repo: Repository<string> = new InMemory();
+            const repo: Repository = new InMemory();
             saved = await repo.create({payload: { name: "chuck", eggs: 6 } });
 
             app = express();
@@ -73,7 +73,7 @@ describe("Crud", () => {
             const context = "/hens";
             const validator: Validator = async (data: Record<string, any>) => true;
 
-            const crud: Crud<number> = new Crud(auth, repo, validator, context);
+            const crud: Crud = new Crud(auth, repo, validator, context);
             init(app, crud, context, port, henSchema);
 
             server = app.listen(port);
@@ -142,7 +142,7 @@ describe("Crud", () => {
 
         beforeAll(async () => {
             const auth: Auth = new NoOp();
-            const repo: Repository<number> = new InMemory();
+            const repo: Repository = new InMemory();
             await repo.create({ id: "666", payload: { name: "chuck", eggs: 6 } });
 
             app = express();
@@ -160,7 +160,7 @@ describe("Crud", () => {
                 additionalProperties: false,
             });
 
-            const crud: Crud<number> = new Crud(auth, repo, validator, context);
+            const crud: Crud = new Crud(auth, repo, validator, context);
             init(app, crud, context, port, henSchema);
 
             server = app.listen(port);
@@ -191,7 +191,7 @@ describe("Crud", () => {
     describe("authorization tests", function () {
         let app: Application;
         let server: any;
-        let hen: Envelope<string>;
+        let hen: Envelope;
 
         const port = 40400;
 
@@ -209,7 +209,7 @@ describe("Crud", () => {
                 },
             };
 
-            const repo: Repository<number> = new InMemory();
+            const repo: Repository = new InMemory();
             hen = await repo.create({ id: "666", payload: { name: "chuck", eggs: 6 } });
 
             app = express();
@@ -218,7 +218,7 @@ describe("Crud", () => {
             const context = "/hens";
             const validator: Validator = async (data) => true;
 
-            const crud: Crud<number> = new Crud(auth, repo, validator, context);
+            const crud: Crud = new Crud(auth, repo, validator, context);
             init(app, crud, context, port, henSchema);
 
             server = app.listen(port);

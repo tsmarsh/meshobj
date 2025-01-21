@@ -10,7 +10,7 @@ import {SQLiteSearcher} from "../src/sqliteSearcher";
 
 const dbs: Database[] = []
 
-const createSearcher = async (data: Envelope<string>[]): Promise<{saved: Envelope<string>[], searcher: Searcher<string>}> => {
+const createSearcher = async (data: Envelope[]): Promise<{saved: Envelope[], searcher: Searcher}> => {
     let db = await open({filename: ":memory:", driver: sqlite3.Database});
 
     dbs.push(db)

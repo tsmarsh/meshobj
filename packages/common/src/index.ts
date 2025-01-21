@@ -25,12 +25,12 @@ export type RootConfig = {
     resolvers?: Resolver[]
 }
 
-export type Id<I> = string | number;
+export type Id = string | number;
 
 export type Payload = Record<string, any>;
 
-export type Envelope<I> = {
-    id?: Id<I>;
+export type Envelope = {
+    id?: Id;
     payload: Payload;
     created_at?: Date;
     deleted?: boolean;
@@ -39,24 +39,21 @@ export type Envelope<I> = {
 
 
 
-export interface Repository <I>{
-    create: (envelope: Envelope<I>, tokens?: string[]) => Promise<Envelope<I>>;
-    read: (id: Id<I>, tokens?: string[], createdAt?: Date) => Promise<Envelope<I>>;
-    list: (tokens?: string[]) => Promise<Envelope<I>[]>;
-    remove: (id: Id<I>, tokens?: string[]) => Promise<boolean>;
-    createMany: (payloads: Envelope<I>[], tokens?: string[]) => Promise<Envelope<I>[]>;
-    readMany: (ids: Id<I>[], tokens?: string[]) => Promise<Envelope<I>[]>;
-    removeMany: (ids: Id<I>[], tokens?: string[]) => Promise<Record<Id<I>, boolean>>;
+export interface Repository{
+    create: (envelope: Envelope, tokens?: string[]) => Promise<Envelope>;
+    read: (id: Id, tokens?: string[], createdAt?: Date) => Promise<Envelope>;
+    list: (tokens?: string[]) => Promise<Envelope[]>;
+    remove: (id: Id, tokens?: string[]) => Promise<boolean>;
+    createMany: (payloads: Envelope[], tokens?: string[]) => Promise<Envelope[]>;
+    readMany: (ids: Id[], tokens?: string[]) => Promise<Envelope[]>;
+    removeMany: (ids: Id[], tokens?: string[]) => Promise<Record<Id, boolean>>;
 }
 
-export interface Searcher<I> {
-    find<I>(queryTemplate: TemplateDelegate, args: Record<string, any>, creds?: string[], timestamp?: number): Promise<Record<string, any>>;
-    findAll<I>(queryTemplate: TemplateDelegate, args: Record<string, any>, creds?: string[],timestamp?: number): Promise<Record<string, any>[]>;
+export interface Searcher {
+    find(queryTemplate: TemplateDelegate, args: Record<string, any>, creds?: string[], timestamp?: number): Promise<Record<string, any>>;
+    findAll(queryTemplate: TemplateDelegate, args: Record<string, any>, creds?: string[],timestamp?: number): Promise<Record<string, any>[]>;
 }
 
 export interface Validator {
     (data: Record<string, any>): Promise<boolean>
 }
-
-export function numvelop(payload: Payload): Envelope<number> { return { payload }; }
-export function strinvelop(payload: Payload): Envelope<string> { return { payload }; }

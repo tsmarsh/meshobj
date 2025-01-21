@@ -23,7 +23,7 @@ export class CasbinAuth implements Auth {
         return await this.enforcer.getRolesForUser(sub[0]);
     }
 
-    async isAuthorized(credentials: string[], data: Envelope<any>): Promise<boolean> {
+    async isAuthorized(credentials: string[], data: Envelope): Promise<boolean> {
         const authorizedTokens = data.authorized_tokens;
 
         // Allow access if authorized_tokens is empty or undefined (this can only happen in a non-prod environment)

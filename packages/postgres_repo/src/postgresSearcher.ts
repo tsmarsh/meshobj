@@ -7,7 +7,7 @@ import { Pool } from "pg";
 
 const logger = getLogger("meshql/postgressearcher");
 
-export class PostgresSearcher implements Searcher<string> {
+export class PostgresSearcher implements Searcher {
     private pool: Pool;
     private table: string;
     private authorizer: Auth;

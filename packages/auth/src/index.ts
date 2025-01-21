@@ -2,7 +2,7 @@ import {Envelope} from "@meshql/common";
 
 export interface Auth {
     getAuthToken(context: Record<string, any>): Promise<string[]>;
-    isAuthorized(credentials: string[], data: Envelope<any>): Promise<boolean>;
+    isAuthorized(credentials: string[], data: Envelope): Promise<boolean>;
 }
 
 export class NoOp implements Auth {
@@ -10,7 +10,7 @@ export class NoOp implements Auth {
         return ["TOKEN"];
     }
 
-    async isAuthorized(creds: string[], data: Envelope<any>): Promise<boolean> {
+    async isAuthorized(creds: string[], data: Envelope): Promise<boolean> {
         return true;
     }
 }

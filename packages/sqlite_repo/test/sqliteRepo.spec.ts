@@ -1,4 +1,4 @@
-import {strinvelop, Repository} from "@meshql/common"
+import {Repository} from "@meshql/common"
 import {RepositoryCertification} from "../../common/test/certification/repository.cert"
 import {SQLiteRepository} from "../src/sqliteRepo";
 import {open, Database} from "sqlite";
@@ -6,7 +6,7 @@ import sqlite3 from "sqlite3";
 
 const dbs: Database<sqlite3.Database, sqlite3.Statement>[] = [];
 
-const createRepository = async () : Promise<Repository<string>> => {
+const createRepository = async () : Promise<Repository> => {
     let db = await open({filename: ":memory:", driver: sqlite3.Database});
 
     dbs.push(db)
@@ -24,4 +24,4 @@ const tearDown = async (): Promise<void> => {
     }));
 }
 
-RepositoryCertification(createRepository, tearDown, strinvelop);
+RepositoryCertification(createRepository, tearDown);

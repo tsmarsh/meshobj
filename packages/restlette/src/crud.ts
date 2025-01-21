@@ -5,14 +5,14 @@ import { Request, Response } from "express";
 
 const logger = Log4js.getLogger("meshql/restlette");
 
-export class Crud<I> {
+export class Crud {
     private _authorizer: Auth;
-    private _repo: Repository<I>;
+    private _repo: Repository;
     private readonly _context: string;
     private readonly _tokens: string[];
     private readonly _validator: Validator;
 
-    constructor(authorizer: Auth, repo: Repository<I>, validator: Validator, context: string, tokens: string[] = []) {
+    constructor(authorizer: Auth, repo: Repository, validator: Validator, context: string, tokens: string[] = []) {
         this._authorizer = authorizer;
         this._repo = repo;
         this._context = context;
@@ -29,8 +29,8 @@ export class Crud<I> {
             return;
         }
 
-        const doc: Envelope<I> = { payload, authorized_tokens };
-        const result: Envelope<I> = await this._repo.create(doc);
+        const doc: Envelope = { payload, authorized_tokens };
+        const result: Envelope = await this._repo.create(doc);
 
         if (result) {
             logger.debug(`Created: ${JSON.stringify(result)}`);
@@ -72,7 +72,7 @@ export class Crud<I> {
             return;
         }
 
-        const envelope: Envelope<I> = {
+        const envelope: Envelope = {
             id,
             payload,
             authorized_tokens: await this.calculateTokens(req),
@@ -124,11 +124,11 @@ export class Crud<I> {
         const docs:Record<string, any>[] = req.body as Record<string, any>[];
         const authorizedTokens = await this.calculateTokens(req);
 
-        const envelopes: Envelope<I>[] = (
+        const envelopes: Envelope[] = (
             await Promise.all(
                 docs.map(async (d: Record<string, any>) => (await this._validator(d) ? { payload: d, authorized_tokens: authorizedTokens } : null))
             )
-        ).filter(Boolean) as Envelope<I>[];
+        ).filter(Boolean) as Envelope[];
 
         const created = await this._repo.createMany(envelopes);
         res.send(created.map(({ id }):string => `${this._context}/${id}`));

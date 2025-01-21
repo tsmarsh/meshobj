@@ -9,20 +9,20 @@ export type TestTemplates = {
     findByNameAndType: TemplateDelegate,
 }
 
-export type Testvelope<I> = Envelope<I> & {
+export type Testvelope = Envelope & {
     payload: { name: string, count: number, type: "A" | "B" };
 }
 
-export function SearcherCertification<I>(createStore: (data: Envelope<string>[]) => Promise<{ saved: Envelope<string>[], searcher: Searcher<string> }>,
+export function SearcherCertification(createStore: (data: Envelope[]) => Promise<{ saved: Envelope[], searcher: Searcher }>,
                                          tearDown: () => Promise<void>,
                                          templates: TestTemplates,
                                          tokens: string[] = ["TOKEN"]
 ) {
-    let searcher: Searcher<I>;
-    let saved: Envelope<I>[] = [];
+    let searcher: Searcher;
+    let saved: Envelope[] = [];
 
     beforeEach(async () => {
-        const testData: Testvelope<I>[] = [
+        const testData: Testvelope[] = [
             { payload: { name: "Bruce", count: 1, type: "A" } }, { payload: { name: "Charlie", count: 2, type: "A" } },
             { payload: { name: "Danny", count: 3, type: "A" } }, { payload: { name: "Ewan", count: 4, type: "A" } },
             { payload: { name: "Fred", count: 5, type: "B" } }, { payload: { name: "Greg", count: 6, type: "B" } },

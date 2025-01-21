@@ -7,7 +7,7 @@ import Log4js from "log4js";
 
 const logger = Log4js.getLogger("meshql/graphlette/root");
 
-export function context<T> (repo: Searcher<T>, authorizer: Auth, config: RootConfig) {
+export function context (repo: Searcher, authorizer: Auth, config: RootConfig) {
     let dtoF = new DTOFactory(config.resolvers);
     let rt = root(repo, dtoF, authorizer, config);
 
@@ -17,7 +17,7 @@ export function context<T> (repo: Searcher<T>, authorizer: Auth, config: RootCon
     };
 };
 
-export function root<T>(repo: Searcher<T>, dtoFactory: DTOFactory, authorizer:Auth, { singletons, vectors }: RootConfig){
+export function root(repo: Searcher, dtoFactory: DTOFactory, authorizer:Auth, { singletons, vectors }: RootConfig){
     let base: Record<string, any> = {};
 
     if (singletons !== undefined) {
@@ -47,7 +47,7 @@ const getTimestamp = (args: Record<string, any>): number => {
     return at;
 }
 
-function vector<T> (repo: Searcher<T>, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: string, name: string){
+function vector (repo: Searcher, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: string, name: string){
     let qt = HandleBars.compile(queryTemplate)
     return async (args: any, context: any): Promise<Record<string, any>[]> => {
         let creds = await authorizer.getAuthToken(context);
@@ -61,7 +61,7 @@ function vector<T> (repo: Searcher<T>, dtoFactory: DTOFactory, authorizer: Auth,
     }
 }
 
-function singleton<T> (repo: Searcher<T>, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: string, name: string) {
+function singleton (repo: Searcher, dtoFactory: DTOFactory, authorizer: Auth, queryTemplate: string, name: string) {
     let qt = HandleBars.compile(queryTemplate)
     return async (args: any, context: any):Promise<Record<string, any>> => {
         let creds = await authorizer.getAuthToken(context);

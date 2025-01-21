@@ -12,14 +12,14 @@ function secureRead(tokens: string[], match: any): any {
     return match;
 }
 
-export class MongoRepository implements Repository<string>{
-    private db: Collection<Envelope<string>>;
+export class MongoRepository implements Repository{
+    private db: Collection<Envelope>;
 
-    constructor(db: Collection<Envelope<string>>) {
+    constructor(db: Collection<Envelope>) {
         this.db = db;
     }
 
-    create = async (doc: Envelope<string>): Promise<Envelope<string>> => {
+    create = async (doc: Envelope): Promise<Envelope> => {
         doc.created_at = new Date();
 
         if (!Object.hasOwnProperty.call(doc, "id")) {
@@ -32,9 +32,9 @@ export class MongoRepository implements Repository<string>{
         return doc
     };
 
-    createMany = async (clean_docs: Envelope<string>[]): Promise<Envelope<string>[]> => {
+    createMany = async (clean_docs: Envelope[]): Promise<Envelope[]> => {
         const created_at = new Date();
-        const docs: Envelope<string>[] = clean_docs.map((doc) => {
+        const docs: Envelope[] = clean_docs.map((doc) => {
             doc.created_at = created_at;
             doc.id = uuid();
             return doc;
@@ -49,8 +49,8 @@ export class MongoRepository implements Repository<string>{
         return docs;
     };
 
-    read = async (id: Id<string>, tokens: string[] = [], created_at: Date = new Date()): Promise<Envelope<string>> => {
-        let results: Envelope<string>[] = [];
+    read = async (id: Id, tokens: string[] = [], created_at: Date = new Date()): Promise<Envelope> => {
+        let results: Envelope[] = [];
 
         let filter: any = {
             id,
@@ -73,7 +73,7 @@ export class MongoRepository implements Repository<string>{
         return results[0];
     };
 
-    readMany = async (ids: Id<string>[], tokens: string[] = []): Promise<Envelope<string>[]> => {
+    readMany = async (ids: Id[], tokens: string[] = []): Promise<Envelope[]> => {
         const match: any = {
             id: {$in: ids},
             deleted: {$exists: false}
@@ -108,24 +108,24 @@ export class MongoRepository implements Repository<string>{
         return results.map((d) => {return {id: d.id, created_at: d.created_at, payload: d.payload}});
     };
 
-    remove = async (id: Id<string>, tokens: string[] = []): Promise<boolean> => {
+    remove = async (id: Id, tokens: string[] = []): Promise<boolean> => {
         await this.db.updateMany(secureRead(tokens, {id}), {$set: {deleted: true}});
         return true;
     };
 
-    removeMany = async (ids: Id<string>[], tokens: string[] = []): Promise<Record<Id<string>, boolean>> => {
+    removeMany = async (ids: Id[], tokens: string[] = []): Promise<Record<Id, boolean>> => {
         await this.db.updateMany(secureRead(tokens,
                                                 {id: {$in: ids}}),
                                 {$set: {deleted: true}});
         //hack: should compare match to modified then figure out what didn't get removed
-        let result: Record<Id<string>, boolean> = {}
+        let result: Record<Id, boolean> = {}
         for(let id of ids){
             result[id] = true
         }
         return result;
     };
 
-    list = async (tokens:string[] = []): Promise<Envelope<string>[]> => {
+    list = async (tokens:string[] = []): Promise<Envelope[]> => {
         const match = secureRead(tokens, {deleted: {$exists: false}});
 
         let results: Document[] = [];

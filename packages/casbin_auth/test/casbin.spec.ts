@@ -60,7 +60,7 @@ describe("CasbinAuth", () => {
     it("should authorize correctly when credentials match tokens", async () => {
         const casbinAuth = await CasbinAuth.create(["model.conf", "policy.csv"], mockAuth);
 
-        const envelope: Envelope<any> = {
+        const envelope: Envelope = {
             payload: { pay: "load" },
             authorized_tokens: ["token1", "token2"],
         };
@@ -73,7 +73,7 @@ describe("CasbinAuth", () => {
     it("should deny authorization when credentials do not match tokens", async () => {
         const casbinAuth = await CasbinAuth.create(["model.conf", "policy.csv"], mockAuth);
 
-        const envelope: Envelope<any> = {
+        const envelope: Envelope = {
             payload: { pay: "load" },
             authorized_tokens: ["token1", "token2"],
         };
@@ -86,7 +86,7 @@ describe("CasbinAuth", () => {
     it("should authorize everyone when authorized_tokens is empty", async () => {
         const casbinAuth = await CasbinAuth.create(["model.conf", "policy.csv"], mockAuth);
 
-        const envelope: Envelope<any> = {
+        const envelope: Envelope = {
             payload: { pay: "load" },
             authorized_tokens: [],
         };

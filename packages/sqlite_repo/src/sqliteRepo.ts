@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { Envelope, Id, Repository } from "@meshql/common";
 import {Database} from "sqlite";
 
-export class SQLiteRepository implements Repository<string> {
+export class SQLiteRepository implements Repository {
     private db: Database;
     private table: string;
 
@@ -25,7 +25,7 @@ export class SQLiteRepository implements Repository<string> {
         `);
     }
 
-    create = async (doc: Envelope<string>, tokens: string[] = []): Promise<Envelope<string>> => {
+    create = async (doc: Envelope, tokens: string[] = []): Promise<Envelope> => {
         const query = `
             INSERT INTO ${this.table} (id, payload, authorized_tokens)
             VALUES (?, ?, ?);
@@ -37,10 +37,10 @@ export class SQLiteRepository implements Repository<string> {
         return { ...doc, id, deleted: false, created_at: new Date() };
     };
 
-    createMany = async (payloads: Envelope<string>[]): Promise<Envelope<string>[]> => {
+    createMany = async (payloads: Envelope[]): Promise<Envelope[]> => {
         const now = Date.now();
 
-        let created: Envelope<string>[] = [];
+        let created: Envelope[] = [];
         await this.db.run("BEGIN TRANSACTION");
         for (const envelope of payloads) {
             created.push(await this.create({ ...envelope, created_at: new Date(now) }));
@@ -50,7 +50,7 @@ export class SQLiteRepository implements Repository<string> {
         return created;
     };
 
-    read = async (id: Id<string>, tokens: string[] = []): Promise<Envelope<string>> => {
+    read = async (id: Id, tokens: string[] = []): Promise<Envelope> => {
         const query = `
             SELECT * FROM ${this.table}
             WHERE id = ? AND deleted = 0
@@ -72,7 +72,7 @@ export class SQLiteRepository implements Repository<string> {
         };
     };
 
-    readMany = async (ids: Id<string>[], tokens: string[] = []): Promise<Envelope<string>[]> => {
+    readMany = async (ids: Id[], tokens: string[] = []): Promise<Envelope[]> => {
         const query = `
             SELECT * FROM ${this.table}
             WHERE id IN (${ids.map(() => "?").join(", ")}) AND deleted = 0
@@ -91,7 +91,7 @@ export class SQLiteRepository implements Repository<string> {
         }))
     };
 
-    remove = async (id: Id<string>, tokens: string[] = []): Promise<boolean> => {
+    remove = async (id: Id, tokens: string[] = []): Promise<boolean> => {
         const query = `
             UPDATE ${this.table}
             SET deleted = 1
@@ -104,8 +104,8 @@ export class SQLiteRepository implements Repository<string> {
         return result.changes! > 0;
     };
 
-    removeMany = async (ids: Id<string>[]): Promise<Record<Id<string>, boolean>> => {
-        const result: Record<Id<string>, boolean> = {};
+    removeMany = async (ids: Id[]): Promise<Record<Id, boolean>> => {
+        const result: Record<Id, boolean> = {};
 
         await this.db.run("BEGIN TRANSACTION");
         for (const id of ids) {
@@ -116,7 +116,7 @@ export class SQLiteRepository implements Repository<string> {
         return result;
     }
 
-    list = async (tokens: string[] = []): Promise<Envelope<string>[]> => {
+    list = async (tokens: string[] = []): Promise<Envelope[]> => {
         const query = `
             SELECT * FROM ${this.table}
             WHERE deleted = 0

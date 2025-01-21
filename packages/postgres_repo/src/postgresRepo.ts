@@ -2,7 +2,7 @@ import { Pool, types } from "pg";
 import { v4 as uuid } from "uuid";
 import { Envelope, Id, Repository } from "@meshql/common";
 
-export class PostgresRepository implements Repository<string> {
+export class PostgresRepository implements Repository {
     private pool: Pool;
     private table: string;
 
@@ -22,23 +22,39 @@ export class PostgresRepository implements Repository<string> {
         const query = `
             CREATE TABLE IF NOT EXISTS ${this.table} (
                 id TEXT PRIMARY KEY,
-                payload JSONB NOT NULL,
-                created_at TIMESTAMP DEFAULT NOW(),
+                payload JSONB,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
                 deleted BOOLEAN DEFAULT FALSE,
-                authorized_tokens TEXT[]
+                readers TEXT[]
             );
         `;
         await this.pool.query(query);
+
+        await this.pool.query(`
+            CREATE INDEX IF NOT EXISTS idx_${this.table}_created_at
+            ON ${this.table} (created_at);
+        `);
+
+        await this.pool.query(`
+            CREATE INDEX IF NOT EXISTS idx_${this.table}_deleted
+            ON ${this.table} (deleted);
+        `);
+
+        await this.pool.query(`
+            CREATE INDEX IF NOT EXISTS idx_${this.table}_readers
+            ON ${this.table} USING GIN (readers);
+        `);
     }
 
-    create = async (doc: Envelope<string>): Promise<Envelope<string>> => {
+    create = async (doc: Envelope, readers: string[] = []): Promise<Envelope> => {
         const query = `
-            INSERT INTO ${this.table} (id, payload, created_at, authorized_tokens)
-            VALUES ($1, $2::jsonb, NOW(), $3)
+            INSERT INTO ${this.table} (id, payload, created_at, updated_at, deleted, readers)
+            VALUES ($1, $2::jsonb, NOW(), NOW(), FALSE, $3)
             RETURNING *;
         `;
         const id = doc.id || uuid();
-        const values = [id, doc.payload, doc.authorized_tokens || []];
+        const values = [id, doc.payload, readers];
 
         const result = await this.pool.query(query, values);
 
@@ -46,87 +62,99 @@ export class PostgresRepository implements Repository<string> {
         return row;
     };
 
-    createMany = async (docs: Envelope<string>[]): Promise<Envelope<string>[]> => {
+    createMany = async (docs: Envelope[], readers: string[] = []): Promise<Envelope[]> => {
         const query = `
-            INSERT INTO ${this.table} (id, payload, created_at, authorized_tokens)
+            INSERT INTO ${this.table} (id, payload, created_at, updated_at, deleted, readers)
             VALUES ${docs
-            .map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}::jsonb, NOW(), $${i * 3 + 3})`)
+            .map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}::jsonb, NOW(), NOW(), FALSE, $${i * 3 + 3})`)
             .join(", ")}
             RETURNING *;
         `;
-        const values = docs.flatMap(doc => [doc.id || uuid(), doc.payload, doc.authorized_tokens || []]);
+        const values = docs.flatMap(doc => [doc.id || uuid(), doc.payload, readers]);
 
         const result = await this.pool.query(query, values);
         return result.rows;
     };
 
-    read = async (id: Id<string>, tokens: string[] = []): Promise<Envelope<string>> => {
+    read = async (id: Id, tokens: string[] = [], createdAt: Date = new Date()): Promise<Envelope> => {
         const query = `
-            SELECT * FROM ${this.table}
-            WHERE id = $1 AND deleted IS FALSE
-            ${tokens.length > 0 ? "AND authorized_readers && $2" : ""}
+            SELECT *
+            FROM ${this.table}
+            WHERE id = $1
+              AND deleted IS FALSE
+              AND created_at <= $2
             ORDER BY created_at DESC
             LIMIT 1;
         `;
-        const values = tokens.length > 0 ? [id, tokens] : [id];
-
+        const values = [id, createdAt];
         const result = await this.pool.query(query, values);
-        return result.rows[0];
+
+        
+        const row = result.rows[0];
+
+        if (!row) return row;
+        
+        return {
+            id: row.id,
+            payload: row.payload,
+            created_at: row.created_at,
+            deleted: !!row.deleted,
+        };
     };
 
-    readMany = async (ids: Id<string>[], tokens: string[] = []): Promise<Envelope<string>[]> => {
+    readMany = async (ids: Id[], readers: string[] = []): Promise<Envelope[]> => {
         const query = `
             SELECT DISTINCT ON (id) *
             FROM ${this.table}
             WHERE id = ANY($1) AND deleted IS FALSE
-            ${tokens.length > 0 ? "AND authorized_readers && $2" : ""}
+            ${readers.length > 0 ? "AND readers && $2" : ""}
             ORDER BY id, created_at DESC;
         `;
-        const values = tokens.length > 0 ? [ids, tokens] : [ids];
+        const values = readers.length > 0 ? [ids, readers] : [ids];
 
         const result = await this.pool.query(query, values);
         return result.rows;
     };
 
-    remove = async (id: Id<string>, tokens: string[] = []): Promise<boolean> => {
+    remove = async (id: Id, readers: string[] = []): Promise<boolean> => {
         const query = `
             UPDATE ${this.table}
             SET deleted = TRUE
             WHERE id = $1
-            ${tokens.length > 0 ? "AND authorized_readers && $2" : ""};
+            ${readers.length > 0 ? "AND readers && $2" : ""};
         `;
-        const values = tokens.length > 0 ? [id, tokens] : [id];
+        const values = readers.length > 0 ? [id, readers] : [id];
 
         await this.pool.query(query, values);
         return true;
     };
 
-    removeMany = async (ids: Id<string>[], tokens: string[] = []): Promise<Record<Id<string>, boolean>> => {
+    removeMany = async (ids: Id[], readers: string[] = []): Promise<Record<Id, boolean>> => {
         const query = `
             UPDATE ${this.table}
             SET deleted = TRUE
             WHERE id = ANY($1)
-            ${tokens.length > 0 ? "AND authorized_readers && $2" : ""};
+            ${readers.length > 0 ? "AND readers && $2" : ""};
         `;
-        const values = tokens.length > 0 ? [ids, tokens] : [ids];
+        const values = readers.length > 0 ? [ids, readers] : [ids];
 
         await this.pool.query(query, values);
 
         return ids.reduce((result, id) => {
             result[id] = true;
             return result;
-        }, {} as Record<Id<string>, boolean>);
+        }, {} as Record<Id, boolean>);
     };
 
-    list = async (tokens: string[] = []): Promise<Envelope<string>[]> => {
+    list = async (readers: string[] = []): Promise<Envelope[]> => {
         const query = `
         SELECT DISTINCT ON (id) *
         FROM ${this.table}
         WHERE deleted IS FALSE
-        ${tokens.length > 0 ? "AND authorized_readers && $1" : ""}
+        ${readers.length > 0 ? "AND readers && $1" : ""}
         ORDER BY id, created_at DESC;
     `;
-        const values = tokens.length > 0 ? [tokens] : [];
+        const values = readers.length > 0 ? [readers] : [];
 
         const result = await this.pool.query(query, values);
 

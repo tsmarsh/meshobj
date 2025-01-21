@@ -2,11 +2,10 @@ import { describe, it, beforeEach, afterAll, expect } from 'vitest';
 import { Repository, Envelope, Id, Payload } from "../../src";
 
 export function RepositoryCertification<I>(
-    createRepository: () => Promise<Repository<I>>,
+    createRepository: () => Promise<Repository>,
     tearDown: () => Promise<void>,
-    enveloper: (payload: Payload) => Envelope<I>
 ) {
-    let repository: Repository<I>;
+    let repository: Repository;
 
     beforeEach(async () => {
         repository = await createRepository();
@@ -18,12 +17,10 @@ export function RepositoryCertification<I>(
 
     describe('Repository Certification Tests', () => {
         it('create should store and return the envelope', async () => {
-            const data: Payload = { name: "Create Test", count: 3 };
+            const payload: Payload = { name: "Create Test", count: 3 };
             const now = new Date();
 
-            const envelope = enveloper(data);
-
-            const result = await repository.create(envelope);
+            const result = await repository.create({payload});
 
             expect(result.id).not.toBeNull();
             expect(result.created_at?.getTime()).toBeGreaterThanOrEqual(now.getTime());
@@ -31,11 +28,10 @@ export function RepositoryCertification<I>(
         });
 
         it('read should retrieve an existing envelope by ID', async () => {
-            const data: Payload = { name: "Read Test", count: 51 };
-            const envelope = enveloper(data);
+            const payload: Payload = { name: "Read Test", count: 51 };
 
-            const create_result: Envelope<I> = await repository.create(envelope);
-            const id: Id<I> = create_result.id!;
+            const create_result: Envelope = await repository.create({payload});
+            const id: Id = create_result.id!;
 
             const result = await repository.read(id);
 
@@ -44,10 +40,10 @@ export function RepositoryCertification<I>(
 
         it('list should retrieve all created envelopes', async () => {
             const envelopes = [
-                { name: "test1", count: 4 },
-                { name: "test2", count: 45 },
-                { name: "test3", count: 2 }
-            ].map(enveloper);
+                {payload: { name: "test1", count: 4 }},
+                {payload: { name: "test2", count: 45 }},
+                {payload: { name: "test3", count: 2 }}
+            ]
 
             await Promise.all(envelopes.map((e) => repository.create(e)));
 
@@ -56,11 +52,11 @@ export function RepositoryCertification<I>(
         });
 
         it('remove should delete an envelope by ID', async () => {
-            const data: Payload = { name: "Read Test", count: 51 };
-            const envelope = enveloper(data);
+            const payload: Payload = { name: "Read Test", count: 51 };
 
-            const create_result: Envelope<I> = await repository.create(envelope);
-            const id: Id<I> = create_result.id!;
+
+            const create_result: Envelope = await repository.create({payload});
+            const id: Id = create_result.id!;
 
             const result = await repository.remove(id);
             expect(result).toBe(true);
@@ -70,10 +66,10 @@ export function RepositoryCertification<I>(
 
         it('createMany should store multiple envelopes', async () => {
             const envelopes = [
-                { name: "test1", count: 4 },
-                { name: "test2", count: 45 },
-                { name: "test3", count: 2 }
-            ].map(enveloper);
+                {payload: { name: "test1", count: 4 }},
+                {payload:{ name: "test2", count: 45 }},
+                {payload:{ name: "test3", count: 2 }}
+            ]
 
             const result = await repository.createMany(envelopes);
             expect(result.length).toEqual(envelopes.length);
@@ -81,10 +77,10 @@ export function RepositoryCertification<I>(
 
         it('readMany should retrieve multiple envelopes by IDs', async () => {
             const envelopes = [
-                { name: "test1", count: 4 },
-                { name: "test2", count: 45 },
-                { name: "test3", count: 2 }
-            ].map(enveloper);
+                {payload:{ name: "test1", count: 4 }},
+                {payload:{ name: "test2", count: 45 }},
+                {payload:{ name: "test3", count: 2 }}
+            ]
 
             const create_result = await repository.createMany(envelopes);
 
@@ -95,10 +91,10 @@ export function RepositoryCertification<I>(
 
         it('removeMany should delete multiple envelopes by IDs', async () => {
             const envelopes = [
-                { name: "test1", count: 4 },
-                { name: "test2", count: 45 },
-                { name: "test3", count: 2 }
-            ].map(enveloper);
+                {payload:{ name: "test1", count: 4 }},
+                {payload:{ name: "test2", count: 45 }},
+                {payload:{ name: "test3", count: 2 }}
+            ]
 
             const create_result = await repository.createMany(envelopes);
 

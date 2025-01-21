@@ -47,9 +47,9 @@ const swaggerOptions = (apiPath: string, port: number, schema: Record<string, an
     paths: paths(apiPath),
 });
 
-export function init<I>(
+export function init(
     app: express.Application,
-    crud: Crud<I>,
+    crud: Crud,
     apiPath: string,
     port: number,
     jsonSchema: Record<string, any>
@@ -69,7 +69,7 @@ export function init<I>(
     return app;
 }
 
-function createRestletteRouter<I>(apiPath: string, crud: Crud<I>): Router {
+function createRestletteRouter(apiPath: string, crud: Crud): Router {
     const router = Router();
 
     router.post("/bulk", crud.bulk_create);

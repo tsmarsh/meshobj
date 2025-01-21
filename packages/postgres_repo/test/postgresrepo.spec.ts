@@ -2,7 +2,6 @@ import { Pool } from "pg";
 import { PostgresRepository } from "../src/postgresRepo"; // Assuming the repository is in this file
 import { GenericContainer, StartedTestContainer } from "testcontainers";
 import {RepositoryCertification} from "../../common/test/certification/repository.cert";
-import {strinvelop} from "@meshql/common";
 import {Environment} from "testcontainers/build/types";
 
 let container: StartedTestContainer | null = null;
@@ -51,4 +50,4 @@ const tearDown = async (): Promise<void> => {
     }
 }
 
-RepositoryCertification(createRepository, tearDown, strinvelop);
+RepositoryCertification(createRepository, tearDown);

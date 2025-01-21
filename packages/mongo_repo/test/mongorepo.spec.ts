@@ -1,4 +1,4 @@
-import {strinvelop, Repository} from "@meshql/common"
+import {Repository} from "@meshql/common"
 import {RepositoryCertification} from "../../common/test/certification/repository.cert"
 import { MongoMemoryServer } from "mongodb-memory-server";
 import {MongoRepository} from "../src/mongoRepo";
@@ -6,7 +6,7 @@ import {MongoClient} from "mongodb";
 
 let mongod: MongoMemoryServer;
 const mongos: MongoClient[] = []
-const createRepository = async () : Promise<Repository<string>> => {
+const createRepository = async () : Promise<Repository> => {
     if(!mongod) {
         mongod = await MongoMemoryServer.create();
     }
@@ -25,4 +25,4 @@ const tearDown = async (): Promise<void> => {
     }));
     await mongod.stop()
 }
-RepositoryCertification(createRepository, tearDown, strinvelop);
+RepositoryCertification(createRepository, tearDown);
