@@ -26,7 +26,6 @@ import { SQLiteRepository } from "@meshql/sqlite_repo";
 import { JWTSubAuthorizer } from "@meshql/jwt_auth";
 import { Auth } from "@meshql/auth";
 import { CasbinAuth } from "@meshql/casbin_auth";
-import { InMemory } from "@meshql/memory_repo";
 import cors from 'cors';
 
 let port = 3030;
@@ -67,8 +66,6 @@ async function processGraphlette(
             searcher = new SQLiteSearcher(lite, sqlConfig.collection, dtoFactory, auth);
             break;
         }
-        case "memory":
-            throw new Error("Unsupported storage type: memory");
     }
 
     const rt = root(searcher, dtoFactory, auth, rootConfig);
@@ -92,8 +89,6 @@ async function buildRepository(storage: StorageConfig): Promise<Repository<any>>
             sqLiteRepository.initialize();
             return sqLiteRepository;
         }
-        case "memory":
-            return new InMemory();
     }
 }
 
