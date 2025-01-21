@@ -1,4 +1,4 @@
-import {Envelope, Id, Repository} from "@meshql/common";
+import {Envelope, Id, Repository} from "../src";
 
 export class InMemory implements Repository<number>{
     db:Record<Id<number>, Envelope<number>> = {}
