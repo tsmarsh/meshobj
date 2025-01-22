@@ -36,7 +36,7 @@ export function ServerCertificiation( setup, cleanup, configPath){
         const parser = require("@pushcorn/hocon-parser");
         globalThis.__CONFIG__ = await parser.parse({ url: configPath });
 
-        console.log(JSON.stringify(globalThis.__CONFIG__,null, 2))
+        //console.log(JSON.stringify(globalThis.__CONFIG__,null, 2))
 
         // Initialize and start the Express app
         app = express();

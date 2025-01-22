@@ -8,6 +8,7 @@ import {
     Restlette,
     SQLConfig,
     StorageConfig,
+    PostgresConfig,
 } from "./configTypes";
 import {
     Envelope,
@@ -19,6 +20,8 @@ import { MongoSearcher, MongoRepository } from "@meshql/mongo_repo";
 import { SQLiteSearcher } from "@meshql/sqlite_repo";
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
+import { Pool } from "pg";
+import { PostgresSearcher, PostgresRepository } from "@meshql/postgres_repo";
 import { Collection, MongoClient } from "mongodb";
 import { Crud } from "@meshql/restlette";
 import { JSONSchemaValidator } from "@meshql/restlette";
@@ -27,6 +30,11 @@ import { JWTSubAuthorizer } from "@meshql/jwt_auth";
 import { Auth } from "@meshql/auth";
 import { CasbinAuth } from "@meshql/casbin_auth";
 import cors from 'cors';
+
+// Import our new helper factories
+import { createMongoSearcher, createMongoRepository } from "./helpers/mongo";
+import { createSQLiteSearcher, createSQLiteRepository } from "./helpers/sqlite";
+import { createPostgresSearcher, createPostgresRepository } from "./helpers/postgres";
 
 let port = 3030;
 
@@ -40,6 +48,17 @@ async function buildMongoCollection(mongoConfig: MongoConfig) {
     return collection;
 }
 
+// New helper to build a Postgres Pool
+function buildPostgresPool(config: PostgresConfig): Pool {
+    return new Pool({
+        host: config.host,
+        port: config.port,
+        database: config.db,
+        user: config.user,
+        password: config.password,
+    });
+}
+
 async function processGraphlette(
     graphlette: Graphlette,
     auth: Auth,
@@ -47,25 +66,31 @@ async function processGraphlette(
 ) {
     const { schema, storage, path, rootConfig } = graphlette;
 
-    let searcher: Searcher;
     const dtoFactory = new DTOFactory(rootConfig.resolvers);
+    let searcher: Searcher;
 
     switch (storage.type) {
-        case "mongo": {
-            const mongoConfig = storage as MongoConfig;
-            const collection = await buildMongoCollection(mongoConfig);
-            searcher = new MongoSearcher(collection, dtoFactory, auth);
+        case "mongo":
+            searcher = await createMongoSearcher(
+                storage as MongoConfig,
+                dtoFactory,
+                auth
+            );
             break;
-        }
-        case "sql": {
-            const sqlConfig = storage as SQLConfig;
-            const lite = await open({
-                filename: sqlConfig.uri,
-                driver: sqlite3.Database,
-            });
-            searcher = new SQLiteSearcher(lite, sqlConfig.collection, dtoFactory, auth);
+        case "sql":
+            searcher = await createSQLiteSearcher(
+                storage as SQLConfig,
+                dtoFactory,
+                auth
+            );
             break;
-        }
+        case "postgres":
+            searcher = createPostgresSearcher(
+                storage as PostgresConfig,
+                dtoFactory,
+                auth
+            );
+            break;
     }
 
     const rt = root(searcher, dtoFactory, auth, rootConfig);
@@ -74,21 +99,12 @@ async function processGraphlette(
 
 async function buildRepository(storage: StorageConfig): Promise<Repository> {
     switch (storage.type) {
-        case "mongo": {
-            const mongoConfig = storage as MongoConfig;
-            const collection = await buildMongoCollection(mongoConfig);
-            return new MongoRepository(collection);
-        }
-        case "sql": {
-            const sqlConfig = storage as SQLConfig;
-            const lite = await open({
-                filename: sqlConfig.uri,
-                driver: sqlite3.Database,
-            });
-            let sqLiteRepository = new SQLiteRepository(lite, sqlConfig.collection);
-            sqLiteRepository.initialize();
-            return sqLiteRepository;
-        }
+        case "mongo":
+            return createMongoRepository(storage as MongoConfig);
+        case "sql":
+            return createSQLiteRepository(storage as SQLConfig);
+        case "postgres":
+            return createPostgresRepository(storage as PostgresConfig);
     }
 }
 
@@ -99,8 +115,8 @@ async function processRestlette(
     port: number
 ) {
     const validator: Validator = JSONSchemaValidator(restlette.schema);
-    const repo: any = await buildRepository(restlette.storage);
-    const crud: any = new Crud(auth, repo, validator, restlette.path, restlette.tokens);
+    const repo: Repository = await buildRepository(restlette.storage);
+    const crud = new Crud(auth, repo, validator, restlette.path, restlette.tokens);
     rest_init(app, crud, restlette.path, port, restlette.schema);
 }
 
