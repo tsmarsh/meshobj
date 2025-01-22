@@ -49,7 +49,7 @@ export class MongoRepository implements Repository{
         return docs;
     };
 
-    read = async (id: Id, tokens: string[] = [], created_at: Date = new Date()): Promise<Envelope> => {
+    read = async (id: Id, tokens: string[] = [], created_at: Date = new Date()): Promise<Envelope | undefined> => {
         let results: Envelope[] = [];
 
         let filter: any = {

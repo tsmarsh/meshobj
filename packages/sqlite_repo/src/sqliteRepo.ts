@@ -50,7 +50,7 @@ export class SQLiteRepository implements Repository {
         return created;
     };
 
-    read = async (id: Id, tokens: string[] = []): Promise<Envelope> => {
+    read = async (id: Id, tokens: string[] = []): Promise<Envelope | undefined> => {
         const query = `
             SELECT * FROM ${this.table}
             WHERE id = ? AND deleted = 0
@@ -62,7 +62,7 @@ export class SQLiteRepository implements Repository {
 
         const row: any = await this.db.get(query, values);
 
-        if (!row) return row;
+        if (!row) return undefined;
 
         return {
             id: row.id,

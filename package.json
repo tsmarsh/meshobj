@@ -7,9 +7,9 @@
   "version": "0.1.0",
   "scripts": {
     "build": "lerna run build",
-    "quickbuild": "lerna run build --since main",
+    "qb": "lerna run build --since main",
     "test": "yarn vitest --run --coverage",
-    "quicktest": "lerna run test --since main",
+    "qt": "lerna run test --since main",
     "coverage": "yarn run c8 report --report-dir=.nyc_output --reporter=text --reporter=html --reporter=lcov"
   },
   "dependencies": {

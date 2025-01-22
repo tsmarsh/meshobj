@@ -41,7 +41,7 @@ export type Envelope = {
 
 export interface Repository{
     create: (envelope: Envelope, tokens?: string[]) => Promise<Envelope>;
-    read: (id: Id, tokens?: string[], createdAt?: Date) => Promise<Envelope>;
+    read: (id: Id, tokens?: string[], createdAt?: Date) => Promise<Envelope | undefined>;
     list: (tokens?: string[]) => Promise<Envelope[]>;
     remove: (id: Id, tokens?: string[]) => Promise<boolean>;
     createMany: (payloads: Envelope[], tokens?: string[]) => Promise<Envelope[]>;
