@@ -52,4 +52,4 @@ describe('Example Suite', () => {
   });
 });
 
-//ServerCertificiation(setup, cleanup, configPath);
+ServerCertificiation(setup, cleanup, configPath);
