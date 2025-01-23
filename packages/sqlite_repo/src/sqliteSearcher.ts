@@ -33,6 +33,7 @@ export class SQLiteSearcher implements Searcher {
 
         if (result && result.payload) {
             result.payload = JSON.parse(result.payload);
+            result.authorized_tokens = JSON.parse(result.authorized_tokens);
 
             if (await this.authorizer.isAuthorized(creds, result)) {
 
@@ -50,7 +51,11 @@ export class SQLiteSearcher implements Searcher {
         let sql = this.processQueryTemplate(args, queryTemplate);
 
         const rows = await this.db.all(sql, []);
-        const envelopes: Envelope[] = rows.map((i) => i.payload = JSON.parse(i.payload));
+        const envelopes: Envelope[] = rows.map((i) => {
+            i.payload = JSON.parse(i.payload)
+            i.authorized_tokens = JSON.parse(i.authorized_tokens)
+            return i
+        });
 
         const authorizedResults = rows.filter((row) => this.authorizer.isAuthorized(creds, row));
 

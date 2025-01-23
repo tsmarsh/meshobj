@@ -31,7 +31,7 @@ export class PostgresRepository implements Repository {
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
                 deleted BOOLEAN DEFAULT FALSE,
-                readers TEXT[]
+                authorized_tokens TEXT[]
             );
         `;
         await this.pool.query(query);
@@ -52,8 +52,8 @@ export class PostgresRepository implements Repository {
         `);
 
         await this.pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_${this.table}_readers
-            ON ${this.table} USING GIN (readers);
+            CREATE INDEX IF NOT EXISTS idx_${this.table}_tokens
+            ON ${this.table} USING GIN (authorized_tokens);
         `);
     }
 
@@ -61,7 +61,7 @@ export class PostgresRepository implements Repository {
     // while "pk" remains unique.
     create = async (doc: Envelope, readers: string[] = []): Promise<Envelope> => {
         const query = `
-            INSERT INTO ${this.table} (id, payload, created_at, updated_at, deleted, readers)
+            INSERT INTO ${this.table} (id, payload, created_at, updated_at, deleted, authorized_tokens)
             VALUES ($1, $2::jsonb, NOW(), NOW(), FALSE, $3)
             RETURNING *;
         `;
@@ -84,7 +84,7 @@ export class PostgresRepository implements Repository {
         if (!docs.length) return [];
 
         const query = `
-            INSERT INTO ${this.table} (id, payload, created_at, updated_at, deleted, readers)
+            INSERT INTO ${this.table} (id, payload, created_at, updated_at, deleted, authorized_tokens)
             VALUES ${docs
                 .map(
                     (_, i) =>
@@ -141,7 +141,7 @@ export class PostgresRepository implements Repository {
             FROM ${this.table}
             WHERE id = ANY($1)
               AND deleted IS FALSE
-              ${readers.length > 0 ? "AND readers && $2" : ""}
+              ${readers.length > 0 ? "AND authorized_tokens && $2" : ""}
             ORDER BY id, created_at DESC;
         `;
         const values = readers.length > 0 ? [ids, readers] : [ids];
@@ -160,7 +160,7 @@ export class PostgresRepository implements Repository {
             UPDATE ${this.table}
             SET deleted = TRUE
             WHERE id = $1
-            ${readers.length > 0 ? "AND readers && $2" : ""};
+            ${readers.length > 0 ? "AND authorized_tokens && $2" : ""};
         `;
         const values = readers.length > 0 ? [id, readers] : [id];
 
@@ -175,7 +175,7 @@ export class PostgresRepository implements Repository {
             UPDATE ${this.table}
             SET deleted = TRUE
             WHERE id = ANY($1)
-            ${readers.length > 0 ? "AND readers && $2" : ""};
+            ${readers.length > 0 ? "AND authorized_tokens && $2" : ""};
         `;
         const values = readers.length > 0 ? [ids, readers] : [ids];
         await this.pool.query(query, values);

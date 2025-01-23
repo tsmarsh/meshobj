@@ -16,8 +16,8 @@ export class SQLiteRepository implements Repository {
         await this.db.exec( `
             CREATE TABLE IF NOT EXISTS ${this.table} (
                 _id INTEGER PRIMARY KEY,
-                id TEXT UNIQUE,
-                payload TEXT NOT NULL,
+                id TEXT,
+                payload JSON NOT NULL,
                 created_at INTEGER DEFAULT (strftime('%s', 'now')),
                 deleted INTEGER DEFAULT 0,
                 authorized_tokens JSON
