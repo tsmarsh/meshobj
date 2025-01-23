@@ -2,6 +2,7 @@ import { GenericContainer, StartedTestContainer } from "testcontainers";
 import { Pool } from "pg";
 import Log4js from "log4js";
 import { ServerCertificiation } from "../../meshql/test/the_farm.cert";
+import { describe } from "vitest";
 
 let container: StartedTestContainer | null = null;
 let pool: Pool | null = null;
@@ -65,5 +66,6 @@ const cleanup = async () => {
 
 const configPath = `${__dirname}/config/config.conf`;
 
-// Run the shared server-level certification tests
-//ServerCertificiation(setup, cleanup, configPath);
+describe.skip("The Farm", () => {
+    ServerCertificiation(setup, cleanup, configPath);
+});
