@@ -1,10 +1,10 @@
-import {describe, it, expect, beforeEach, afterAll, beforeAll} from "vitest";
+import { describe, it, expect, beforeEach, afterAll, beforeAll } from "vitest";
 import { callSubgraph } from "@meshql/graphlette";
 import Log4js from "log4js";
 import express from "express";
-import {init} from "../src/server";
-import {Document, OpenAPIClient, OpenAPIClientAxios} from "openapi-client-axios";
-import {Restlette} from "../src/configTypes";
+import { init } from "../src/server";
+import { Document, OpenAPIClient, OpenAPIClientAxios } from "openapi-client-axios";
+import { Restlette } from "../src/configTypes";
 import * as jwt from "jsonwebtoken";
 
 globalThis.__MONGO_URI__ = ""; // Placeholder for MongoDB URI
@@ -23,7 +23,7 @@ let hen_api: any;
 let coop_api: any;
 let farm_api: any;
 
-export function ServerCertificiation( setup, cleanup, configPath){
+export function ServerCertificiation(setup, cleanup, configPath) {
 
     beforeAll(async () => {
         await setup();
@@ -56,6 +56,9 @@ export function ServerCertificiation( setup, cleanup, configPath){
     });
 
     afterAll(async () => {
+        if (app) {
+            await app.close();
+        }
         await cleanup();
     });
 
@@ -229,7 +232,7 @@ async function getSwaggerDocs() {
 
 async function buildApi(swagger_docs: Document[], token: string) {
     const authHeaders = { Authorization: `Bearer ${token}` };
-    const apis:OpenAPIClient[] = await Promise.all(
+    const apis: OpenAPIClient[] = await Promise.all(
         swagger_docs.map(async (doc: Document): Promise<OpenAPIClient> => {
             if (!doc.paths || Object.keys(doc.paths).length === 0) {
                 throw new Error(`Swagger document for ${doc.info.title} has no paths defined`);
@@ -245,11 +248,12 @@ async function buildApi(swagger_docs: Document[], token: string) {
     );
 
     for (const api: OpenAPIClient of apis) {
-        if (Object.keys(api.paths)[0].includes("hen")) {
+        const firstPath = Object.keys(api.paths)[0];
+        if (firstPath.includes("hen")) {
             hen_api = api;
-        } else if (Object.keys(api.paths)[0].includes("coop")) {
+        } else if (firstPath.includes("coop")) {
             coop_api = api;
-        } else if (Object.keys(api.paths)[0].includes("farm")) {
+        } else if (firstPath.includes("farm")) {
             farm_api = api;
         }
     }

@@ -5,7 +5,6 @@ import { ServerCertificiation } from "../../meshql/test/the_farm.cert";
 import { describe } from "vitest";
 
 let container: StartedTestContainer | null = null;
-let pool: Pool | null = null;
 
 Log4js.configure({
   appenders: {
@@ -43,22 +42,12 @@ const setup = async () => {
     process.env.PREFIX = "farm";
     process.env.PLATFORM_URL = "http://localhost:3033";
 
-    pool = new Pool({
-      user: "postgres",
-      host,
-      database: "test",
-      password: "password",
-      port,
-    });
   } catch (err) {
     console.error(JSON.stringify(err));
   }
 };
 
 const cleanup = async () => {
-  if (pool) {
-    await pool.end();
-  }
   if (container) {
     await container.stop();
   }
@@ -66,6 +55,6 @@ const cleanup = async () => {
 
 const configPath = `${__dirname}/config/config.conf`;
 
-describe.skip("The Farm", () => {
+describe("The Farm", () => {
     ServerCertificiation(setup, cleanup, configPath);
 });
