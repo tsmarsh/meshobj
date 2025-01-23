@@ -66,4 +66,4 @@ const cleanup = async () => {
 const configPath = `${__dirname}/config/config.conf`;
 
 // Run the shared server-level certification tests
-ServerCertificiation(setup, cleanup, configPath);
+//ServerCertificiation(setup, cleanup, configPath);

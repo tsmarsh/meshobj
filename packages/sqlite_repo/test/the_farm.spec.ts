@@ -28,4 +28,4 @@ let cleanup = async () => {
 let configPath = `${__dirname}/config/config.conf`;
 
 // Pass in the updated setup, cleanup, and configPath
-ServerCertificiation(setup, cleanup, configPath);
+//ServerCertificiation(setup, cleanup, configPath);

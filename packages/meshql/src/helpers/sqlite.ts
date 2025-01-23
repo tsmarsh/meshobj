@@ -12,6 +12,7 @@ import { DTOFactory } from "@meshql/graphlette";
 
 export async function buildSqliteDb(sqlConfig: SQLConfig): Promise<Database<sqlite3.Database, sqlite3.Statement>> {
     const db = await open({
+        
         filename: sqlConfig.uri,
         driver: sqlite3.Database,
     });
