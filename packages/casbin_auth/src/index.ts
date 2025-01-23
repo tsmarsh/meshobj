@@ -24,14 +24,7 @@ export class CasbinAuth implements Auth {
     }
 
     async isAuthorized(credentials: string[], data: Envelope): Promise<boolean> {
-        const authorizedTokens = data.authorized_tokens;
-
-        // Allow access if authorized_tokens is empty or undefined (this can only happen in a non-prod environment)
-        if (!authorizedTokens || authorizedTokens.length === 0) {
-            return true;
-        }
-
-        return authorizedTokens.some((token) => credentials.includes(token));
+        return await this.jwtAuth.isAuthorized(credentials, data)
     }
 
 }
