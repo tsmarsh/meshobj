@@ -54,7 +54,7 @@ export class MongoRepository implements Repository{
 
         let filter: any = {
             id,
-            created_at: {$lt: created_at},
+            created_at: {$lte: created_at},
             deleted: {$exists: false},
         }
 
