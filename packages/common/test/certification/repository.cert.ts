@@ -120,14 +120,14 @@ export function RepositoryCertification<I>(
 
             const doc2 = {id: doc1.id, authorized_tokens: doc1.authorized_tokens, payload: { version: "v2", msg: "Second version" }}
 
-
             console.log("doc1", JSON.stringify(doc1, null, 2));
             console.log("doc2", JSON.stringify(doc2, null, 2));
 
-            await repository.create(doc2);
+            const created_doc2 = await repository.create(doc2);
+
 
             const doc_read2 =await repository.read(doc1.id!)
-            const doc_read3 = await repository.read(doc1.id!, [], doc_read1!.created_at)
+            const doc_read3 = await repository.read(doc1.id!, [], new Date(created_doc2.created_at!.getTime() - 10) )
 
             expect(doc_read1!.payload.version).toBe("v1");
             expect(doc_read2!.payload.version).toBe("v2");
