@@ -7,7 +7,7 @@ import {Database, open} from "sqlite";
 import sqlite3 from "sqlite3";
 import {SQLiteRepository} from "../src/sqliteRepo";
 import {SQLiteSearcher} from "../src/sqliteSearcher";
-
+import {describe} from "vitest";
 const dbs: Database[] = []
 
 const createSearcher = async (): Promise<{repository: Repository, searcher: Searcher}> => {
@@ -48,4 +48,6 @@ const templates: TestTemplates = {
     findByNameAndType: compile(findByNameAndType)
 }
 
-SearcherCertification(createSearcher, tearDown, templates);
+describe("SQLite Searcher", () => {
+    SearcherCertification(createSearcher, tearDown, templates);
+});

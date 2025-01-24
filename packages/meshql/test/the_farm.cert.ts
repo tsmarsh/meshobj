@@ -289,7 +289,12 @@ async function buildModels() {
     ];
 
     const savedHens = await Promise.all(hens.map((hen) => hen_api.create(null, hen)));
+
+    console.log("Saved Hens: ", JSON.stringify(savedHens.map((hen: any) => hen.data), null, 2));
+    
     savedHens.forEach((hen: any) => {
         globalThis.hen_ids[hen.data.name] = hen.headers["x-canonical-id"];
     });
+
+    console.log("Hens ids: ", JSON.stringify(globalThis.hen_ids, null, 2));
 }
