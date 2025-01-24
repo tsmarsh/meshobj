@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterAll, beforeAll } from "vitest";
+import { describe, it, expect, afterAll, beforeAll } from "vitest";
 import { callSubgraph } from "@meshql/graphlette";
 import Log4js from "log4js";
 import express, { Application } from "express";
 import { Server } from "http";
-import { init } from "../src/server";
+import { init, cleanServer } from "../src/server";
 import { Document, OpenAPIClient, OpenAPIClientAxios } from "openapi-client-axios";
 import { Restlette } from "../src/configTypes";
 import * as jwt from "jsonwebtoken";
@@ -57,18 +57,11 @@ export function ServerCertificiation(setup, cleanup, configPath) {
     });
 
     afterAll(async () => { 
-        try {
-            if(server){
-                server.close();
-            }
-        } catch (err) {
-            console.error(err);
+        cleanServer();
+        if(server){
+            server.close();
         }
-        try {
-            await cleanup();
-        } catch (err) {
-            console.error(err);
-        }
+        await cleanup();
     })
 
     describe("The Farm", () => {

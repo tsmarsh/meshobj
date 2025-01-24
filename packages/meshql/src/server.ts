@@ -32,8 +32,12 @@ import { createPostgresSearcher, createPostgresRepository } from "./helpers/post
 
 let port = 3030;
 
+let pools: Pool[] = [];
+let clients: MongoClient[] = [];
+
 async function buildMongoCollection(mongoConfig: MongoConfig) {
     const client = new MongoClient(mongoConfig.uri);
+    clients.push(client);
     await client.connect();
     const mongoDb = client.db(mongoConfig.db);
     const collection: Collection<Envelope> = mongoDb.collection(
@@ -44,13 +48,15 @@ async function buildMongoCollection(mongoConfig: MongoConfig) {
 
 // New helper to build a Postgres Pool
 function buildPostgresPool(config: PostgresConfig): Pool {
-    return new Pool({
+    const pool = new Pool({
         host: config.host,
         port: config.port,
         database: config.db,
         user: config.user,
         password: config.password,
     });
+    pools.push(pool);
+    return pool;
 }
 
 async function processGraphlette(
@@ -158,4 +164,13 @@ export async function init(config: Config): Promise<Application> {
     };
 
     return app;
+}
+
+export async function cleanServer() {
+    for (const client of clients) {
+        await client.close();
+    }
+    for (const pool of pools) {
+        await pool.end();
+    }
 }
