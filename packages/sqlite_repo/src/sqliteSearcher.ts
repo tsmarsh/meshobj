@@ -13,6 +13,34 @@ export class SQLiteSearcher implements Searcher {
     private authorizer: Auth;
     private dtoFactory: DTOFactory;
 
+    private singletonTemplate = Handlebars.compile(`
+        SELECT *
+        FROM {{_name}}
+        WHERE {{{filters}}}
+         AND created_at <= {{_created_at}}
+        ORDER BY created_at DESC
+        LIMIT 1
+    `);
+
+    private vectorTemplate = Handlebars.compile(
+        `WITH latest AS (
+        SELECT
+            id,
+            MAX(created_at) AS max_created_at
+        FROM {{_name}}
+        WHERE {{{filters}}}
+            AND created_at <= {{_created_at}}
+            AND deleted = 0
+        GROUP BY id
+        )
+        SELECT t1.*
+        FROM {{_name}} t1
+        JOIN latest t2
+        ON t1.id = t2.id
+        AND t1.created_at = t2.max_created_at
+        WHERE t1.deleted = 0`
+    );
+
     constructor(db: Database,table: string, dtoFactory: DTOFactory, authorizer: Auth) {
         this.db = db;
         this.table =table;
@@ -27,7 +55,8 @@ export class SQLiteSearcher implements Searcher {
     async find(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>> {
         args._created_at = timestamp;
         args._name = this.table
-        let sql = this.processQueryTemplate(args, queryTemplate);
+        args.filters = this.processQueryTemplate(args, queryTemplate);
+        let sql = this.processQueryTemplate(args, this.singletonTemplate);
 
         const result = await this.db.get(sql, []);
 
@@ -48,7 +77,8 @@ export class SQLiteSearcher implements Searcher {
     async findAll(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>[]> {
         args._created_at = timestamp;
         args._name = this.table
-        let sql = this.processQueryTemplate(args, queryTemplate);
+        args.filters = this.processQueryTemplate(args, queryTemplate);
+        let sql = this.processQueryTemplate(args, this.vectorTemplate);
 
         const rows = await this.db.all(sql, []);
         const envelopes: Envelope[] = rows.map((i) => {

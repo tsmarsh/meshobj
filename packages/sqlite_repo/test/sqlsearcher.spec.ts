@@ -33,53 +33,13 @@ const tearDown = async (): Promise<void> => {
     }));
 }
 
-const findById = `
-            SELECT *
-            FROM {{_name}}
-            WHERE id = '{{id}}'
-              AND created_at <= {{_created_at}}
-            ORDER BY created_at DESC
-            LIMIT 1`
+const findById = `id = '{{id}}'`
 
-const findByName =`
-            SELECT *
-            FROM {{_name}}
-            WHERE json_extract(payload, '$.name') = '{{id}}'
-              AND created_at <= {{_created_at}}
-            ORDER BY created_at DESC
-            LIMIT 1`
+const findByName =`json_extract(payload, '$.name') = '{{id}}'`
 
-const findAllByType = `
-SELECT t1.*
-FROM {{_name}} t1
-JOIN (
-    SELECT id, MAX(created_at) AS max_created_at
-    FROM {{_name}}
-    WHERE json_extract(payload, '$.type') = '{{id}}'
-      AND created_at <= {{_created_at}}
-      AND deleted = 0
-    GROUP BY id
-) t2 ON t1.id = t2.id AND t1.created_at = t2.max_created_at
-WHERE json_extract(t1.payload, '$.type') = '{{id}}'
-  AND t1.created_at <= {{_created_at}}
-  AND t1.deleted = 0`;
+const findAllByType = `json_extract(payload, '$.type') = '{{id}}'`;
 
-const findByNameAndType = `
-SELECT t1.*
-FROM {{_name}} t1
-JOIN (
-    SELECT id, MAX(created_at) AS max_created_at
-    FROM {{_name}}
-    WHERE json_extract(payload, '$.type') = '{{type}}'
-      AND json_extract(payload, '$.name') = '{{name}}'
-      AND created_at <= {{_created_at}}
-      AND deleted = 0
-    GROUP BY id
-) t2 ON t1.id = t2.id AND t1.created_at = t2.max_created_at
-WHERE json_extract(t1.payload, '$.type') = '{{type}}'
-  AND json_extract(t1.payload, '$.name') = '{{name}}'
-  AND t1.created_at <= {{_created_at}}
-  AND t1.deleted = 0`;
+const findByNameAndType = `json_extract(payload, '$.type') = '{{type}}' AND json_extract(payload, '$.name') = '{{name}}'`;
 
 const templates: TestTemplates = {
     findById: compile(findById),
