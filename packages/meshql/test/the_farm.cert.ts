@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterAll, beforeAll } from "vitest";
 import { callSubgraph } from "@meshql/graphlette";
 import Log4js from "log4js";
-import express from "express";
+import express, { Application } from "express";
+import { Server } from "http";
 import { init } from "../src/server";
 import { Document, OpenAPIClient, OpenAPIClientAxios } from "openapi-client-axios";
 import { Restlette } from "../src/configTypes";
@@ -11,7 +12,8 @@ globalThis.__MONGO_URI__ = ""; // Placeholder for MongoDB URI
 globalThis.__TOKEN__ = "";    // Placeholder for JWT token
 globalThis.__CONFIG__ = {};
 
-let app;
+let app: Application;
+let server: Server;
 
 globalThis.farm_id = "";
 globalThis.coop1_id = ""
@@ -39,11 +41,10 @@ export function ServerCertificiation(setup, cleanup, configPath) {
         //console.log(JSON.stringify(globalThis.__CONFIG__,null, 2))
 
         // Initialize and start the Express app
-        app = express();
         app = await init(globalThis.__CONFIG__);
         let port = globalThis.__CONFIG__.port;
 
-        app.listen(port, () => {
+        server = await app.listen(port, () => {
             console.log(`Server running on http://localhost:${port}`);
         });
 
@@ -55,27 +56,28 @@ export function ServerCertificiation(setup, cleanup, configPath) {
         await buildModels();
     });
 
-    afterAll(async () => {
-        if (app) {
-            await app.close();
+    afterAll(async () => { 
+        if(server){
+            await server.close();
         }
+
         await cleanup();
     });
 
     describe("The Farm", () => {
         it("should build a server with multiple nodes", async () => {
             const query = `{
-      getById(id: "${globalThis.farm_id}") {
-        name 
-        coops {
-          name
-          hens {
-            eggs
-            name
-          }
-        }
-      }
-    }`;
+                getById(id: "${globalThis.farm_id}") {
+                    name 
+                    coops {
+                        name
+                        hens {
+                            eggs
+                            name
+                        }
+                    }
+                }
+            }`;
 
             const json = await callSubgraph(
                 new URL(`http://localhost:${globalThis.__CONFIG__.port}/farm/graph`),
@@ -90,11 +92,11 @@ export function ServerCertificiation(setup, cleanup, configPath) {
 
         it("should answer simple queries", async () => {
             const query = `{
-      getByName(name: "duck") {
-        id
-        name
-      }
-    }`;
+                getByName(name: "duck") {
+                    id
+                    name
+                }
+            }`;
 
             const json = await callSubgraph(
                 new URL(`http://localhost:${globalThis.__CONFIG__.port}/hen/graph`),
@@ -109,17 +111,17 @@ export function ServerCertificiation(setup, cleanup, configPath) {
 
         it("should query in both directions", async () => {
             const query = `{
-      getByCoop(id: "${globalThis.coop1_id}") {
-        name
-        eggs
-        coop {
-          name
-          farm {
-            name
-          }
-        }
-      }
-    }`;
+                getByCoop(id: "${globalThis.coop1_id}") {
+                    name
+                    eggs
+                    coop {
+                    name
+                    farm {
+                        name
+                    }
+                    }
+                }
+            }`;
 
             const json = await callSubgraph(
                 new URL(`http://localhost:${globalThis.__CONFIG__.port}/hen/graph`),
@@ -137,11 +139,11 @@ export function ServerCertificiation(setup, cleanup, configPath) {
 
         it("should get latest by default", async () => {
             const query = `{
-      getById(id: "${globalThis.coop1_id}") {
-        id
-        name
-      }
-    }`;
+                getById(id: "${globalThis.coop1_id}") {
+                    id
+                    name
+                }
+            }`;
 
             const json = await callSubgraph(
                 new URL(`http://localhost:${globalThis.__CONFIG__.port}/coop/graph`),
@@ -156,10 +158,10 @@ export function ServerCertificiation(setup, cleanup, configPath) {
 
         it("should get closest to the timestamp when specified", async () => {
             const query = `{
-      getById(id: "${globalThis.coop1_id}", at: ${globalThis.first_stamp}) {
-        name
-      }
-    }`;
+                getById(id: "${globalThis.coop1_id}", at: ${globalThis.first_stamp}) {
+                    name
+                }
+            }`;
 
             const json = await callSubgraph(
                 new URL(`http://localhost:${globalThis.__CONFIG__.port}/coop/graph`),
@@ -173,12 +175,12 @@ export function ServerCertificiation(setup, cleanup, configPath) {
 
         it("should obey the timestamps", async () => {
             const query = `{
-      getById(id: "${globalThis.farm_id}", at: ${globalThis.first_stamp}) {
-        coops {
-          name
-        }
-      }
-    }`;
+                getById(id: "${globalThis.farm_id}", at: ${globalThis.first_stamp}) {
+                    coops {
+                    name
+                    }
+                }
+            }`;
 
             const json = await callSubgraph(
                 new URL(`http://localhost:${globalThis.__CONFIG__.port}/farm/graph`),
@@ -193,12 +195,12 @@ export function ServerCertificiation(setup, cleanup, configPath) {
 
         it("should pass timestamps to next layer", async () => {
             const query = `{
-      getById(id: "${globalThis.farm_id}", at: ${Date.now()}) {
-        coops {
-          name
-        }
-      }
-    }`;
+                getById(id: "${globalThis.farm_id}", at: ${Date.now()}) {
+                    coops {
+                    name
+                    }
+                }
+            }`;
 
             const json = await callSubgraph(
                 new URL(`http://localhost:${globalThis.__CONFIG__.port}/farm/graph`),
@@ -219,7 +221,7 @@ async function getSwaggerDocs() {
     return await Promise.all(
         globalThis.__CONFIG__.restlettes.map(async (restlette: Restlette) => {
             let url = `http://localhost:${globalThis.__CONFIG__.port}${restlette.path}/api-docs/swagger.json`;
-            console.log("Url", url);
+
             const response = await fetch(
                 url
             );
@@ -258,13 +260,13 @@ async function buildApi(swagger_docs: Document[], token: string) {
         }
     }
 
-    console.log("Swagger paths for Farm API:", Object.keys(farm_api.paths));
+    //console.log("Swagger paths for Farm API:", Object.keys(farm_api.paths));
 }
 
 async function buildModels() {
 
     const farm = await farm_api.create(null, { name: "Emerdale" });
-    console.log("Farm: ", JSON.stringify(farm.data));
+
     globalThis.farm_id = farm.request.path.slice(-36);
 
     const coop1 = await coop_api.create(null, { name: "red", farm_id: globalThis.farm_id });

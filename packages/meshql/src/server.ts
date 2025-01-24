@@ -127,7 +127,7 @@ export async function init(config: Config): Promise<Application> {
     port = config.port;
     const auth: Auth = await processAuth(config);
 
-    const app = express();
+    const app: Application = express();
     app.use(express.json());
 
     // Use CORS middleware

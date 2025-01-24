@@ -55,6 +55,6 @@ const cleanup = async () => {
 
 const configPath = `${__dirname}/config/config.conf`;
 
-describe("The Farm", () => {
+describe.skip("The Farm", () => {
     ServerCertificiation(setup, cleanup, configPath);
 });

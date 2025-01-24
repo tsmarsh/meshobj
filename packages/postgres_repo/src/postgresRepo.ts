@@ -19,8 +19,7 @@ export class PostgresRepository implements Repository {
         types.setTypeParser(TIMESTAMP_OID, (value: string) => new Date(value));
         types.setTypeParser(TIMESTAMPTZ_OID, (value: string) => new Date(value));
 
-        // The table keeps an auto-generated pk (UUID) as the primary key
-        // and a separate "id" column for the user-facing/logical ID.
+        // The table has a primary key "pk" but we also add a unique constraint on (id, created_at)
         const query = `
             CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -31,7 +30,8 @@ export class PostgresRepository implements Repository {
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
                 deleted BOOLEAN DEFAULT FALSE,
-                authorized_tokens TEXT[]
+                authorized_tokens TEXT[],
+                CONSTRAINT ${this.table}_id_created_at_uniq UNIQUE (id, created_at)
             );
         `;
         await this.pool.query(query);
@@ -57,9 +57,16 @@ export class PostgresRepository implements Repository {
         `);
     }
 
-    // Creates a new row. "id" may be repeated across rows to store versions, 
-    // while "pk" remains unique.
-    create = async (doc: Envelope, readers: string[] = []): Promise<Envelope> => {
+    /**
+     * Create one record. If the UNIQUE (id, created_at) constraint
+     * fails, wait 2ms and retry up to 5 times.
+     */
+    create = async (
+        doc: Envelope,
+        readers: string[] = [],
+        retryCount = 0
+    ): Promise<Envelope> => {
+        const maxRetries = 5;
         const query = `
             INSERT INTO ${this.table} (id, payload, created_at, updated_at, deleted, authorized_tokens)
             VALUES ($1, $2::jsonb, NOW(), NOW(), FALSE, $3)
@@ -67,45 +74,39 @@ export class PostgresRepository implements Repository {
         `;
         const logicalId = doc.id || uuid();
         const values = [logicalId, doc.payload, readers];
-        const result = await this.pool.query(query, values);
-        const row = result.rows[0];
 
-        return {
-            id: row.id,
-            payload: row.payload,
-            created_at: row.created_at,
-            deleted: !!row.deleted,
-        };
+        try {
+            const result = await this.pool.query(query, values);
+            const row = result.rows[0];
+            return {
+                id: row.id,
+                payload: row.payload,
+                created_at: row.created_at,
+                deleted: !!row.deleted,
+            };
+        } catch (err: any) {
+            // Postgres uses "23505" for unique violation
+            if (err.code === "23505" && retryCount < maxRetries) {
+                await new Promise((resolve) => setTimeout(resolve, 2));
+                return this.create(doc, readers, retryCount + 1);
+            }
+            throw err;
+        }
     };
 
-    // Bulk creation with the same approach: 
-    // each doc has a unique pk but possibly the same "id".
-    createMany = async (docs: Envelope[], readers: string[] = []): Promise<Envelope[]> => {
-        if (!docs.length) return [];
-
-        const query = `
-            INSERT INTO ${this.table} (id, payload, created_at, updated_at, deleted, authorized_tokens)
-            VALUES ${docs
-                .map(
-                    (_, i) =>
-                        `($${i * 3 + 1}, $${i * 3 + 2}::jsonb, NOW(), NOW(), FALSE, $${i * 3 + 3})`
-                )
-                .join(", ")}
-            RETURNING *;
-        `;
-        const values = docs.flatMap((doc) => [
-            doc.id || uuid(),
-            doc.payload,
-            readers
-        ]);
-        const result = await this.pool.query(query, values);
-
-        return result.rows.map((row) => ({
-            id: row.id,
-            payload: row.payload,
-            created_at: row.created_at,
-            deleted: !!row.deleted,
-        }));
+    /**
+     * Create many records. If any insert conflicts on (id, created_at),
+     * retry (sleep 2ms, up to 5 times) for each doc.
+     */
+    createMany = async (
+        docs: Envelope[],
+        readers: string[] = []
+    ): Promise<Envelope[]> => {
+        const created: Envelope[] = [];
+        for (const doc of docs) {
+            created.push(await this.create(doc, readers));
+        }
+        return created;
     };
 
     // Read the latest non-deleted version by id, sorted by created_at descending.

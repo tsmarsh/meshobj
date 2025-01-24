@@ -39,8 +39,8 @@ export class PostgresSearcher implements Searcher {
         args._createdAt = new Date(timestamp).toISOString();
         args._name = this.table;
 
-        console.log("Args:", JSON.stringify(args, null, 2));
-        console.log("timestamp:", timestamp);
+        // console.log("Args:", JSON.stringify(args, null, 2));
+        // console.log("timestamp:", timestamp);
 
         const sql = this.processQueryTemplate(args, queryTemplate);
 

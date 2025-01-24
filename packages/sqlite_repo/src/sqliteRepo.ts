@@ -33,43 +33,54 @@ export class SQLiteRepository implements Repository {
                 payload JSON NOT NULL,
                 created_at INTEGER DEFAULT (strftime('%s', 'now')),
                 deleted INTEGER DEFAULT 0,
-                authorized_tokens JSON
+                authorized_tokens JSON,
+                UNIQUE (id, created_at)
             );
         `);
     }
 
-    create = async (doc: Envelope, tokens: string[] = []): Promise<Envelope> => {
-        const query = `
-            INSERT INTO ${this.table} (id, payload, created_at, authorized_tokens)
-            VALUES (?, ?, ?, ?);
-        `;
-        const id = doc.id || uuid();
-        const created_at = Date.now();
-        const values = [id, JSON.stringify(doc.payload), created_at, JSON.stringify(tokens || [])];
-
-        await this.db.run(query, values );
-        const row = await this.db.get(
-            `SELECT * FROM ${this.table} WHERE rowid = last_insert_rowid()`
-        );
+    private rowToEnvelope = (row: any, tokens: string[]): Envelope => {
         return {
             id: row.id,
             payload: JSON.parse(row.payload),
             created_at: new Date(row.created_at),
             deleted: !!row.deleted,
-            authorized_tokens: tokens,
+            authorized_tokens: JSON.parse(row.authorized_tokens ?? "[]"),
         };
+    }
+
+    create = async (doc: Envelope, tokens: string[] = []): Promise<Envelope> => {
+
+        const query = `
+            INSERT INTO ${this.table} (id, payload, created_at, authorized_tokens)
+            VALUES (?, ?, ?, ?);
+        `;
+        const id = doc.id || uuid();
+        const createdAt = Date.now();
+        const values = [id, JSON.stringify(doc.payload), createdAt, JSON.stringify(tokens || [])];
+
+        try {
+            await this.db.run(query, values);
+            const row = await this.db.get(
+                `SELECT * FROM ${this.table} WHERE rowid = last_insert_rowid()`
+            );
+            return this.rowToEnvelope(row, tokens);
+        } catch (err: any) {
+            if (err.code === "SQLITE_CONSTRAINT") {
+                await new Promise((resolve) => setTimeout(resolve, 2));
+                return this.create(doc, tokens);
+            }
+            throw err;
+        }
     };
 
-    createMany = async (payloads: Envelope[]): Promise<Envelope[]> => {
-        const now = Date.now();
-
-        let created: Envelope[] = [];
+    createMany = async (payloads: Envelope[], tokens: string[] = []): Promise<Envelope[]> => {
+        const created: Envelope[] = [];
         await this.db.run("BEGIN TRANSACTION");
         for (const envelope of payloads) {
-            created.push(await this.create({ ...envelope, created_at: new Date(now) }));
+            created.push(await this.create(envelope, tokens));
         }
         await this.db.run("COMMIT");
-
         return created;
     };
 
@@ -89,13 +100,7 @@ export class SQLiteRepository implements Repository {
 
         if (!row) return undefined;
 
-        return {
-            id: row.id,
-            payload: JSON.parse(row.payload),
-            created_at: new Date(row.created_at),
-            deleted: !!row.deleted,
-            authorized_tokens: JSON.parse(row.authorized_tokens ?? "[]"),
-        };
+        return this.rowToEnvelope(row, tokens);
     };
 
     readMany = async (ids: Id[], tokens: string[] = []): Promise<Envelope[]> => {
@@ -119,13 +124,7 @@ export class SQLiteRepository implements Repository {
         for (const row of rows) {
             if (!seen.has(row.id)) {
                 seen.add(row.id);
-                envelopes.push({
-                    id: row.id,
-                    payload: JSON.parse(row.payload),
-                    created_at: new Date(row.created_at),
-                    deleted: !!row.deleted,
-                    authorized_tokens: JSON.parse(row.authorized_tokens ?? "[]"),
-                });
+                envelopes.push(this.rowToEnvelope(row, tokens));
             }
         }
 
@@ -173,13 +172,7 @@ export class SQLiteRepository implements Repository {
         for (const row of rows) {
             if (!seen.has(row.id)) {
                 seen.add(row.id);
-                envelopes.push({
-                    id: row.id,
-                    payload: JSON.parse(row.payload),
-                    created_at: new Date(row.created_at),
-                    deleted: !!row.deleted,
-                    authorized_tokens: JSON.parse(row.authorized_tokens ?? "[]"),
-                });
+                envelopes.push(this.rowToEnvelope(row, tokens));
             }
         }
         return envelopes;

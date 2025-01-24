@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, afterAll, expect } from 'vitest';
 import { Envelope, Searcher } from "../../src";
 import { TemplateDelegate } from "handlebars";
+import { Repository } from '@meshql/common';
 
 export type TestTemplates = {
     findById: TemplateDelegate,
@@ -13,7 +14,7 @@ export type Testvelope = Envelope & {
     payload: { name: string, count: number, type: "A" | "B" };
 }
 
-export function SearcherCertification(createStore: (data: Envelope[]) => Promise<{ saved: Envelope[], searcher: Searcher }>,
+export function SearcherCertification(init: () => Promise<{repository: Repository, searcher: Searcher}>,
                                          tearDown: () => Promise<void>,
                                          templates: TestTemplates,
                                          tokens: string[] = ["TOKEN"]
@@ -26,11 +27,20 @@ export function SearcherCertification(createStore: (data: Envelope[]) => Promise
             { payload: { name: "Bruce", count: 1, type: "A" } }, { payload: { name: "Charlie", count: 2, type: "A" } },
             { payload: { name: "Danny", count: 3, type: "A" } }, { payload: { name: "Ewan", count: 4, type: "A" } },
             { payload: { name: "Fred", count: 5, type: "B" } }, { payload: { name: "Greg", count: 6, type: "B" } },
-            { payload: { name: "Henry", count: 7, type: "B" } }, { payload: { name: "Ian", count: 8, type: "B" } }];
+            { payload: { name: "Henry", count: 7, type: "B" } }, { payload: { name: "Ian", count: 8, type: "B" } },
+            { payload: { name: "Gretchen", count: 9, type: "B" } }, { payload: { name: "Casie", count: 9, type: "A" } }];
 
-        let store = await createStore(testData);
-        searcher = store.searcher;
-        saved = store.saved;
+        const {repository, searcher: search} = await init();
+        saved = await repository.createMany(testData, tokens);
+
+        const gretchen: Envelope = saved.find((e) => e.payload.name === "Gretchen")!;
+        await repository.remove(gretchen.id!, tokens);
+        
+
+        const cassie = saved.find((e) => e.payload.name === "Casie")!;
+        let updatedCass = {id: cassie.id, tokens: tokens, payload: { name: "Cassie", count: 10, type: "A" }}
+        await repository.create(updatedCass);
+        searcher = search;
     });
 
     afterAll(async () => {
@@ -68,7 +78,10 @@ export function SearcherCertification(createStore: (data: Envelope[]) => Promise
 
             const result = await searcher.findAll(templates["findAllByType"], { id });
 
-            expect(result.length).toEqual(4);
+            if(result.length !== 5){
+                console.log("Bad result", JSON.stringify(result, null, 2));
+            }
+            expect(result.length).toEqual(5);
             let charlie = result.filter((f) => f.name === "Charlie")[0];
             expect(charlie.count).toEqual(2);
         });

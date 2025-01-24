@@ -1,4 +1,4 @@
-import {Searcher, Envelope} from "@meshql/common"
+import {Searcher, Envelope, Repository} from "@meshql/common"
 import {SearcherCertification, TestTemplates} from "../../common/test/certification/searcher.cert"
 import { MongoMemoryServer } from "mongodb-memory-server";
 import {MongoRepository} from "../src/mongoRepo";
@@ -11,10 +11,12 @@ import {compile} from "handlebars";
 let mongod: MongoMemoryServer;
 const mongos: MongoClient[] = []
 
-const createSearcher = async (data: Envelope[]): Promise<{saved: Envelope[], searcher: Searcher}> => {
+const createSearcher = async (data: Envelope[]): Promise<{repository: Repository, searcher: Searcher}> => {
+
     if(!mongod) {
         mongod = await MongoMemoryServer.create();
     }
+
     let client: MongoClient = new MongoClient(mongod.getUri());
     await client.connect();
     mongos.push(client)
@@ -25,9 +27,8 @@ const createSearcher = async (data: Envelope[]): Promise<{saved: Envelope[], sea
     let auth: Auth = new NoOp();
 
     let repo = new MongoRepository(collection);
-    let saved = await repo.createMany(data);
 
-    return {saved, searcher: new MongoSearcher(collection, dtoFactory, auth)};
+    return {repository: repo, searcher: new MongoSearcher(collection, dtoFactory, auth)};
 
 }
 
