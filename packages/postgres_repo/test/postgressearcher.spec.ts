@@ -50,40 +50,13 @@ const tearDown = async (): Promise<void> => {
     }
 };
 
-const findById = `
-            SELECT *
-            FROM {{_name}}
-            WHERE id = '{{id}}'
-              AND created_at <= '{{_createdAt}}'
-              AND deleted = false
-            ORDER BY created_at DESC
-            LIMIT 1`;
+const findById = `id = '{{id}}'`;
 
-const findByName = `
-            SELECT *
-            FROM {{_name}}
-            WHERE payload->>'name' = '{{id}}'
-              AND created_at <= '{{_createdAt}}'
-              AND deleted = false
-            ORDER BY created_at DESC
-            LIMIT 1`;
+const findByName = `payload->>'name' = '{{id}}'`;
 
-const findAllByType = `
-            SELECT DISTINCT ON (id) *
-            FROM {{_name}}
-            WHERE payload->>'type' = '{{id}}'
-              AND created_at <= '{{_createdAt}}'
-              AND deleted = false
-            ORDER BY id, created_at DESC`;
+const findAllByType = `payload->>'type' = '{{id}}'`;
 
-const findByNameAndType = `
-            SELECT DISTINCT ON (id) *
-            FROM {{_name}}
-            WHERE payload->>'type' = '{{type}}'
-              AND payload->>'name' = '{{name}}'
-              AND created_at <= '{{_createdAt}}'
-              AND deleted = false
-            ORDER BY id, created_at DESC`;
+const findByNameAndType = `payload->>'type' = '{{type}}' AND payload->>'name' = '{{name}}'`;
 
 const templates: TestTemplates = {
     findById: compile(findById),

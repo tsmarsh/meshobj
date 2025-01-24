@@ -13,6 +13,25 @@ export class PostgresSearcher implements Searcher {
     private authorizer: Auth;
     private dtoFactory: DTOFactory;
 
+    private singletonQuery = Handlebars.compile(`
+        SELECT *
+        FROM {{_name}}
+        WHERE {{{filters}}}
+          AND created_at <= '{{_createdAt}}'
+          AND deleted = false
+        ORDER BY created_at DESC
+        LIMIT 1
+        `);
+
+    private vectorQuery = Handlebars.compile(`
+        SELECT DISTINCT ON (id) *
+        FROM {{_name}}
+        WHERE {{{filters}}}
+          AND created_at <= '{{_createdAt}}'
+          AND deleted = false
+        ORDER BY id, created_at DESC
+        `);
+
     constructor(pool: Pool, table: string, dtoFactory: DTOFactory, authorizer: Auth) {
         this.pool = pool;
         this.table = table;
@@ -38,11 +57,12 @@ export class PostgresSearcher implements Searcher {
     ): Promise<Record<string, any>> {
         args._createdAt = new Date(timestamp).toISOString();
         args._name = this.table;
+        args.filters = this.processQueryTemplate(args, queryTemplate);
 
         // console.log("Args:", JSON.stringify(args, null, 2));
         // console.log("timestamp:", timestamp);
 
-        const sql = this.processQueryTemplate(args, queryTemplate);
+        const sql = this.processQueryTemplate(args, this.singletonQuery);
 
         console.log("Executing find query:", sql);
 
@@ -75,7 +95,9 @@ export class PostgresSearcher implements Searcher {
     ): Promise<Record<string, any>[]> {
         args._createdAt = new Date(timestamp).toISOString();
         args._name = this.table;
-        const sql = this.processQueryTemplate(args, queryTemplate);
+        args.filters = this.processQueryTemplate(args, queryTemplate);
+        
+        const sql = this.processQueryTemplate(args, this.vectorQuery);
 
         console.log("Executing findAll query:", sql);
         try {
