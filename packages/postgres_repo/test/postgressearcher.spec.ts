@@ -11,7 +11,7 @@ import { PostgresSearcher } from "../src/postgresSearcher";
 const dbs: Pool[] = [];
 let container: StartedTestContainer | null = null;
 
-const createSearcher = async (data: Envelope[]): Promise<{ repository: Repository, searcher: Searcher }> => {
+const createSearcher = async (): Promise<{ repository: Repository, searcher: Searcher }> => {
     if (!container) {
         container = await new GenericContainer("postgres")
             .withExposedPorts(5432)
@@ -55,6 +55,7 @@ const findById = `
             FROM {{_name}}
             WHERE id = '{{id}}'
               AND created_at <= '{{_createdAt}}'
+              AND deleted = false
             ORDER BY created_at DESC
             LIMIT 1`;
 
@@ -63,6 +64,7 @@ const findByName = `
             FROM {{_name}}
             WHERE payload->>'name' = '{{id}}'
               AND created_at <= '{{_createdAt}}'
+              AND deleted = false
             ORDER BY created_at DESC
             LIMIT 1`;
 
@@ -71,6 +73,7 @@ const findAllByType = `
             FROM {{_name}}
             WHERE payload->>'type' = '{{id}}'
               AND created_at <= '{{_createdAt}}'
+              AND deleted = false
             ORDER BY id, created_at DESC`;
 
 const findByNameAndType = `
@@ -79,6 +82,7 @@ const findByNameAndType = `
             WHERE payload->>'type' = '{{type}}'
               AND payload->>'name' = '{{name}}'
               AND created_at <= '{{_createdAt}}'
+              AND deleted = false
             ORDER BY id, created_at DESC`;
 
 const templates: TestTemplates = {
