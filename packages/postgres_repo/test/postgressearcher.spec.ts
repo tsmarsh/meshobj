@@ -7,6 +7,7 @@ import { Pool } from "pg";
 import { GenericContainer, StartedTestContainer } from "testcontainers";
 import { PostgresRepository } from "../src/postgresRepo";
 import { PostgresSearcher } from "../src/postgresSearcher";
+import {describe} from "vitest";
 
 const dbs: Pool[] = [];
 let container: StartedTestContainer | null = null;
@@ -65,4 +66,6 @@ const templates: TestTemplates = {
     findByNameAndType: compile(findByNameAndType),
 };
 
-SearcherCertification(createSearcher, tearDown, templates);
+describe("Postgres Searcher", () => {
+    SearcherCertification(createSearcher, tearDown, templates);
+});

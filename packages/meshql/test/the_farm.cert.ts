@@ -57,12 +57,19 @@ export function ServerCertificiation(setup, cleanup, configPath) {
     });
 
     afterAll(async () => { 
-        if(server){
-            await server.close();
+        try {
+            if(server){
+                server.close();
+            }
+        } catch (err) {
+            console.error(err);
         }
-
-        await cleanup();
-    });
+        try {
+            await cleanup();
+        } catch (err) {
+            console.error(err);
+        }
+    })
 
     describe("The Farm", () => {
         it("should build a server with multiple nodes", async () => {

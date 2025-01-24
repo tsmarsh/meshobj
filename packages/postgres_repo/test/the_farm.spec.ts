@@ -1,5 +1,4 @@
 import { GenericContainer, StartedTestContainer } from "testcontainers";
-import { Pool } from "pg";
 import Log4js from "log4js";
 import { ServerCertificiation } from "../../meshql/test/the_farm.cert";
 import { describe } from "vitest";
@@ -55,6 +54,6 @@ const cleanup = async () => {
 
 const configPath = `${__dirname}/config/config.conf`;
 
-describe.skip("The Farm", () => {
+describe("The Farm", () => {
     ServerCertificiation(setup, cleanup, configPath);
 });
