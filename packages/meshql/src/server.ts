@@ -167,10 +167,16 @@ export async function init(config: Config): Promise<Application> {
 }
 
 export async function cleanServer() {
+    console.log("Cleaning server");
+    let count = 1;
     for (const client of clients) {
+        console.log(`Closing client ${count}`);
         await client.close();
+        count++;
     }
     for (const pool of pools) {
+        console.log(`Closing pool ${count}`);
         await pool.end();
+        count++;
     }
 }

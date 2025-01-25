@@ -57,7 +57,7 @@ export function ServerCertificiation(setup, cleanup, configPath) {
     });
 
     afterAll(async () => { 
-        cleanServer();
+        await cleanServer();
         if(server){
             server.close();
         }
@@ -117,10 +117,10 @@ export function ServerCertificiation(setup, cleanup, configPath) {
                     name
                     eggs
                     coop {
-                    name
-                    farm {
                         name
-                    }
+                        farm {
+                            name
+                        }
                     }
                 }
             }`;

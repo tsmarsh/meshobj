@@ -48,7 +48,7 @@ const setup = async () => {
 
 const cleanup = async () => {
   if (container) {
-    await container.stop();
+    await container.stop({ timeout: 10000 });
   }
 };
 
