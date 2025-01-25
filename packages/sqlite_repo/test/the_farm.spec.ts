@@ -21,13 +21,17 @@ let setup = async () => {
 };
 
 let cleanup = async () => {
-    // If you create or reference a shared in-memory DB, you could close it here.
-    // For SQLite in-memory mode, there is no usual server process to stop.
+    const fs = require('fs');
+    try {
+        fs.unlinkSync('./thefarm.db');
+    } catch (err) {
+        // Ignore errors if file doesn't exist
+    }
 };
 
 let configPath = `${__dirname}/config/config.conf`;
 
 // Pass in the updated setup, cleanup, and configPath
-describe.skip("The Farm", () => {
+describe("The Farm", () => {
     ServerCertificiation(setup, cleanup, configPath);
 });

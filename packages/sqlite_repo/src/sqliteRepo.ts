@@ -50,7 +50,6 @@ export class SQLiteRepository implements Repository {
     }
 
     create = async (doc: Envelope, tokens: string[] = []): Promise<Envelope> => {
-
         const query = `
             INSERT INTO ${this.table} (id, payload, created_at, authorized_tokens)
             VALUES (?, ?, ?, ?);
@@ -58,12 +57,15 @@ export class SQLiteRepository implements Repository {
         const id = doc.id || uuid();
         const createdAt = Date.now();
         const values = [id, JSON.stringify(doc.payload), createdAt, JSON.stringify(tokens || [])];
-
+        console.log("Envelope: ", JSON.stringify(doc, null, 2));
         try {
-            await this.db.run(query, values);
+            const { lastID } = await this.db.run(query, values);
+            
             const row = await this.db.get(
-                `SELECT * FROM ${this.table} WHERE rowid = last_insert_rowid()`
+                `SELECT * FROM ${this.table} WHERE rowid = ?`,
+                [lastID]
             );
+            console.log("Row: ", JSON.stringify(this.rowToEnvelope(row, tokens), null, 2));
             return this.rowToEnvelope(row, tokens);
         } catch (err: any) {
             if (err.code === "SQLITE_CONSTRAINT") {

@@ -58,8 +58,6 @@ export class SQLiteSearcher implements Searcher {
         args.filters = this.processQueryTemplate(args, queryTemplate);
         let sql = this.processQueryTemplate(args, this.singletonTemplate);
 
-        console.log("SQL: ", sql);
-
         const result = await this.db.get(sql, []);
 
         if (result && result.payload) {
@@ -82,7 +80,6 @@ export class SQLiteSearcher implements Searcher {
         args.filters = this.processQueryTemplate(args, queryTemplate);
         let sql = this.processQueryTemplate(args, this.vectorTemplate);
 
-        console.log("SQL: ", sql);
         const rows = await this.db.all(sql, []);
         const envelopes: Envelope[] = rows.map((i) => {
             i.payload = JSON.parse(i.payload)

@@ -105,6 +105,8 @@ export function ServerCertificiation(setup, cleanup, configPath) {
                 `Bearer ${globalThis.__TOKEN__}`
             );
 
+            console.log("JSON: ", JSON.stringify(json, null, 2));
+
             expect(json[0].id).toBe(globalThis.hen_ids["duck"]);
             expect(json[0].name).toBe("duck");
         });
