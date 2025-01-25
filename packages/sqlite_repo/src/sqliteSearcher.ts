@@ -87,7 +87,7 @@ export class SQLiteSearcher implements Searcher {
             return i
         });
 
-        const authorizedResults = rows.filter((row) => this.authorizer.isAuthorized(creds, row));
+        const authorizedResults = envelopes.filter((row) => this.authorizer.isAuthorized(creds, row));
 
         return authorizedResults.map((row) => {
             const result = row as Envelope;

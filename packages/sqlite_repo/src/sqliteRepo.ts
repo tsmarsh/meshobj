@@ -39,7 +39,7 @@ export class SQLiteRepository implements Repository {
         `);
     }
 
-    private rowToEnvelope = (row: any, tokens: string[]): Envelope => {
+    private rowToEnvelope = (row: any): Envelope => {
         return {
             id: row.id,
             payload: JSON.parse(row.payload),
@@ -66,7 +66,7 @@ export class SQLiteRepository implements Repository {
                 [lastID]
             );
 
-            return this.rowToEnvelope(row, tokens);
+            return this.rowToEnvelope(row);
         } catch (err: any) {
             if (err.code === "SQLITE_CONSTRAINT") {
                 await new Promise((resolve) => setTimeout(resolve, 2));
@@ -102,7 +102,7 @@ export class SQLiteRepository implements Repository {
 
         if (!row) return undefined;
 
-        return this.rowToEnvelope(row, tokens);
+        return this.rowToEnvelope(row);
     };
 
     readMany = async (ids: Id[], tokens: string[] = []): Promise<Envelope[]> => {
@@ -126,7 +126,7 @@ export class SQLiteRepository implements Repository {
         for (const row of rows) {
             if (!seen.has(row.id)) {
                 seen.add(row.id);
-                envelopes.push(this.rowToEnvelope(row, tokens));
+                envelopes.push(this.rowToEnvelope(row));
             }
         }
 
@@ -174,7 +174,7 @@ export class SQLiteRepository implements Repository {
         for (const row of rows) {
             if (!seen.has(row.id)) {
                 seen.add(row.id);
-                envelopes.push(this.rowToEnvelope(row, tokens));
+                envelopes.push(this.rowToEnvelope(row));
             }
         }
         return envelopes;

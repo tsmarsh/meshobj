@@ -3,9 +3,9 @@ import Log4js from "log4js";
 import {
     DocumentNode,
     FieldNode,
-    GraphQLSchema, isOutputType,
+    GraphQLSchema,
     parse,
-    print, SelectionNode,
+    print,
     SelectionSetNode,
     TypeInfo,
     visit,

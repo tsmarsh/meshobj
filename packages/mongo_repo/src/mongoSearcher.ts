@@ -37,7 +37,7 @@ export class MongoSearcher implements Searcher {
             throw e;
         }
         return json;
-    };
+    }
 
     async find(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: [string], timestamp: number = Date.now()): Promise<Record<string, any>> {
         let query = this.processQueryTemplate(args, queryTemplate);
@@ -71,7 +71,7 @@ export class MongoSearcher implements Searcher {
         return {};
 
 
-    };
+    }
 
     async findAll(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>[]> {
         let time_filter = {
@@ -110,5 +110,5 @@ export class MongoSearcher implements Searcher {
             r.payload.id = r.id;
             return r.payload;
         })
-    };
+    }
 }

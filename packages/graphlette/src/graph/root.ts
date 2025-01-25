@@ -15,7 +15,7 @@ export function context (repo: Searcher, authorizer: Auth, config: RootConfig) {
         dtoFactory: dtoF,
         root: rt,
     };
-};
+}
 
 export function root(repo: Searcher, dtoFactory: DTOFactory, authorizer:Auth, { singletons, vectors }: RootConfig){
     let base: Record<string, any> = {};
