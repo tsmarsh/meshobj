@@ -38,8 +38,6 @@ export function ServerCertificiation(setup, cleanup, configPath) {
         const parser = require("@pushcorn/hocon-parser");
         globalThis.__CONFIG__ = await parser.parse({ url: configPath });
 
-        //console.log(JSON.stringify(globalThis.__CONFIG__,null, 2))
-
         // Initialize and start the Express app
         app = await init(globalThis.__CONFIG__);
         let port = globalThis.__CONFIG__.port;
@@ -104,8 +102,6 @@ export function ServerCertificiation(setup, cleanup, configPath) {
                 "getByName",
                 `Bearer ${globalThis.__TOKEN__}`
             );
-
-            console.log("JSON: ", JSON.stringify(json, null, 2));
 
             expect(json[0].id).toBe(globalThis.hen_ids["duck"]);
             expect(json[0].name).toBe("duck");
@@ -262,7 +258,6 @@ async function buildApi(swagger_docs: Document[], token: string) {
         }
     }
 
-    //console.log("Swagger paths for Farm API:", Object.keys(farm_api.paths));
 }
 
 async function buildModels() {
@@ -291,12 +286,8 @@ async function buildModels() {
     ];
 
     const savedHens = await Promise.all(hens.map((hen) => hen_api.create(null, hen)));
-
-    console.log("Saved Hens: ", JSON.stringify(savedHens.map((hen: any) => hen.data), null, 2));
     
     savedHens.forEach((hen: any) => {
         globalThis.hen_ids[hen.data.name] = hen.headers["x-canonical-id"];
     });
-
-    console.log("Hens ids: ", JSON.stringify(globalThis.hen_ids, null, 2));
 }

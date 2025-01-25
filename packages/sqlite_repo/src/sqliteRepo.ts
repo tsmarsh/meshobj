@@ -57,7 +57,7 @@ export class SQLiteRepository implements Repository {
         const id = doc.id || uuid();
         const createdAt = Date.now();
         const values = [id, JSON.stringify(doc.payload), createdAt, JSON.stringify(tokens || [])];
-        console.log("Envelope: ", JSON.stringify(doc, null, 2));
+
         try {
             const { lastID } = await this.db.run(query, values);
             
@@ -65,7 +65,7 @@ export class SQLiteRepository implements Repository {
                 `SELECT * FROM ${this.table} WHERE rowid = ?`,
                 [lastID]
             );
-            console.log("Row: ", JSON.stringify(this.rowToEnvelope(row, tokens), null, 2));
+
             return this.rowToEnvelope(row, tokens);
         } catch (err: any) {
             if (err.code === "SQLITE_CONSTRAINT") {

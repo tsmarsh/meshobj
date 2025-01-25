@@ -120,9 +120,6 @@ export function RepositoryCertification<I>(
 
             const doc2 = {id: doc1.id, authorized_tokens: doc1.authorized_tokens, payload: { version: "v2", msg: "Second version" }}
 
-            console.log("doc1", JSON.stringify(doc1, null, 2));
-            console.log("doc2", JSON.stringify(doc2, null, 2));
-
             const created_doc2 = await repository.create(doc2);
 
 
