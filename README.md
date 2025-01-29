@@ -1,71 +1,227 @@
-## MeshQL Overview
+# MeshQL: Domain-Driven Service Mesh
 
-**Project Name:** MeshQL  
-**Repository:** [tsmarsh/meshql](https://github.com/tsmarsh/meshql)
+MeshQL is a powerful service mesh that automatically generates REST and GraphQL endpoints from your domain model. It's designed to be easily configurable and supports multiple storage backends including MongoDB, SQLite, and PostgreSQL.
 
-### Description
-MeshQL is a lightweight and dynamic GraphQL-based service mesh aimed at simplifying the integration and orchestration of microservices in a distributed environment. Its core functionality allows for seamless communication between services while providing robust features for querying and manipulating data in real time.
+## Architecture Overview
 
-### Key Features
-1. **Dynamic GraphQL Schema**: Automatically adapt to changes in microservice endpoints or business logic without requiring extensive manual updates.
-2. **Service Discovery**: Built-in mechanisms to detect and integrate services on the network.
-3. **High Performance**: Designed with low overhead to ensure efficient communication between services.
-4. **Security**: Fine-grained access controls to ensure secure communication and data access.
-5. **Flexibility**: Cloud-agnostic and suitable for hybrid environments.
+MeshQL consists of two main components:
 
-### Getting Started
-#### Prerequisites
-1. Node.js (v16+ recommended)
-2. Yarn or npm
-3. Docker (optional, for running services in containers)
+1. **Restlettes**: Auto-generated REST endpoints that provide CRUD operations for your domain entities
+2. **Graphlettes**: Auto-generated GraphQL endpoints that provide query capabilities with relationship resolution
 
-#### Installation
-Clone the repository:
-```bash
-git clone https://github.com/tsmarsh/meshql.git
-cd meshql
+### Core Concepts
+
+- **Storage Backends**: Each entity can be stored in MongoDB, SQLite, or PostgreSQL
+- **Temporal Querying**: Built-in support for querying data at specific points in time
+- **Relationship Resolution**: Automatic resolution of relationships between entities
+- **JWT Authentication**: Built-in support for JWT-based authentication
+- **RBAC Authorization**: Optional CASBIN-based role-based access control
+
+## Configuration Generation
+
+To generate a configuration from a domain model, you need to understand the following components:
+
+### 1. Domain Model Definition
+
+Start with a Mermaid diagram that defines your entities and their relationships. For example:
+
+```mermaid
+erDiagram
+    Farm ||--o{ Coop : contains
+    Coop ||--o{ Hen : houses
+    Farm {
+        string name
+        string id
+    }
+    Coop {
+        string name
+        string id
+        string farm_id
+    }
+    Hen {
+        string name
+        string id
+        string coop_id
+        int eggs
+        date dob
+    }
 ```
-Install dependencies:
+
+### 2. Configuration Structure
+
+The configuration consists of two main sections:
+
+```hocon
+{
+  port: 3030,
+  graphlettes: [ ... ],
+  restlettes: [ ... ]
+}
+```
+
+### 3. Storage Configuration
+
+For each entity, define its storage configuration. Examples for different backends:
+
+```hocon
+// MongoDB
+storage = {
+  type = "mongo"
+  uri = "mongodb://localhost:27017"
+  db = "farm_db"
+  collection = "farms"
+}
+
+// PostgreSQL
+storage = {
+  type = "postgres"
+  host = "localhost"
+  port = 5432
+  db = "farm_db"
+  user = "postgres"
+  password = "secret"
+  table = "farms"
+}
+
+// SQLite
+storage = {
+  type = "sql"
+  uri = ":memory:"
+  collection = "farms"
+}
+```
+
+### 4. GraphQL Configuration
+
+For each entity, define its GraphQL schema and resolvers:
+
+```hocon
+graphlettes = [
+  {
+    path = "/farm/graph"
+    storage = ${farmDB}
+    schema = """
+      type Farm {
+        name: String!
+        id: ID
+        coops: [Coop]
+      }
+      
+      type Query {
+        getById(id: ID): Farm
+        getByName(name: String): [Farm]
+      }
+    """
+    rootConfig {
+      singletons = [
+        {
+          name = "getById"
+          query = "{\"id\": \"{{id}}\"}"  // MongoDB
+          // query = "id = '{{id}}'"      // SQL/Postgres
+        }
+      ]
+      resolvers = [
+        {
+          name = "coops"
+          queryName = "getByFarm"
+          url = "http://localhost:3030/coop/graph"
+        }
+      ]
+    }
+  }
+]
+```
+
+### 5. REST Configuration
+
+For each entity, define its REST endpoints:
+
+```hocon
+restlettes = [
+  {
+    path = "/farm/api"
+    storage = ${farmDB}
+    schema = {
+      type = "object"
+      properties = {
+        name = { type = "string" }
+        id = { type = "string" }
+      }
+      required = ["name"]
+    }
+  }
+]
+```
+
+## Example: Converting Domain Model to Configuration
+
+Given a domain model like the Farm example above:
+
+1. Create a storage configuration for each entity
+2. Generate GraphQL schemas with appropriate types and queries
+3. Define resolvers for relationships (e.g., Farm -> Coops -> Hens)
+4. Create REST endpoints with JSON schemas
+5. Configure authentication and authorization if needed
+
+The system will automatically:
+- Generate CRUD REST endpoints
+- Create GraphQL queries with relationship resolution
+- Handle temporal queries with the `at` parameter
+- Manage data persistence in your chosen storage backend
+- Apply authentication and authorization rules
+
+## Testing Your Configuration
+
+Use the certification test pattern to verify your configuration:
+
+```typescript
+describe("The Domain", () => {
+  it("should build a server with multiple nodes", async () => {
+    const query = `{
+      getById(id: "${entityId}") {
+        name
+        relationships {
+          name
+        }
+      }
+    }`;
+
+    const json = await callSubgraph(
+      new URL(`http://localhost:${port}/entity/graph`),
+      query,
+      "getById",
+      `Bearer ${token}`
+    );
+
+    expect(json.name).toBe("Expected");
+    expect(json.relationships).toHaveLength(expected);
+  });
+});
+```
+
+## Security Considerations
+
+1. Always use environment variables for sensitive configuration
+2. Configure CORS appropriately for your environment
+3. Use HTTPS in production
+4. Implement appropriate rate limiting
+5. Configure authentication and authorization
+
+## Getting Started
+
+1. Install dependencies:
 ```bash
 yarn install
 ```
 
-#### Running the Application
-To start the MeshQL service locally:
+2. Create your configuration file:
+```bash
+cp config/config.example.conf config/config.conf
+```
+
+3. Start the server:
 ```bash
 yarn start
 ```
-The service will run on `http://localhost:4000` by default.
 
-### Architecture
-MeshQL consists of the following core components:
-1. **GraphQL Gateway**: Central point for querying services.
-2. **Service Connectors**: Modules that interact with individual microservices.
-3. **Orchestration Engine**: Manages routing and execution of complex queries.
-4. **Security Layer**: Handles authentication and authorization.
-
-### Contribution
-We welcome contributions to MeshQL! To contribute:
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature-name`).
-3. Commit your changes (`git commit -m 'Add feature name'`).
-4. Push your branch (`git push origin feature-name`).
-5. Open a pull request.
-
-### License
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/tsmarsh/meshql/blob/main/LICENSE) file for details.
-
-### Community & Support
-- **Issues**: Report bugs or suggest features via the [Issues page](https://github.com/tsmarsh/meshql/issues).
-- **Discussions**: Join the conversation on the [Discussions page](https://github.com/tsmarsh/meshql/discussions).
-- **Slack**: Connect with the community for real-time discussions (link TBD).
-
-### Future Roadmap
-1. Expand service discovery for heterogeneous environments.
-2. Add support for advanced analytics and monitoring.
-3. Provide integrations for popular CI/CD pipelines.
-
-### Acknowledgments
-Thanks to all contributors and the open-source community for making MeshQL possible.
-
-# meshql
+For more examples and detailed documentation, see the `packages/meshql/test/config` directory.
