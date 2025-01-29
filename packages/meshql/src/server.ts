@@ -9,6 +9,7 @@ import {
     SQLConfig,
     StorageConfig,
     PostgresConfig,
+    MySQLConfig,
 } from "./configTypes";
 import {
     Envelope,
@@ -18,6 +19,7 @@ import {
 } from "@meshql/common";
 import { Pool } from "pg";
 import { Collection, MongoClient } from "mongodb";
+import { Pool as MySQLPool, createPool } from "mysql2/promise";
 import { Crud } from "@meshql/restlette";
 import { JSONSchemaValidator } from "@meshql/restlette";
 import { JWTSubAuthorizer } from "@meshql/jwt_auth";
@@ -29,8 +31,13 @@ import cors from 'cors';
 import { createMongoSearcher, createMongoRepository } from "./helpers/mongo";
 import { createSQLiteSearcher, createSQLiteRepository } from "./helpers/sqlite";
 import { createPostgresSearcher, createPostgresRepository } from "./helpers/postgres";
+import { MySQLRepository, MySQLSearcher } from "@meshql/mysql_repo";
 
 let port = 3030;
+
+let pgPools: Pool[] = [];
+let mysqlPools: MySQLPool[] = [];
+let clients: MongoClient[] = [];
 
 async function buildMongoCollection(mongoConfig: MongoConfig) {
     const client = new MongoClient(mongoConfig.uri);
@@ -51,6 +58,41 @@ function buildPostgresPool(config: PostgresConfig): Pool {
         user: config.user,
         password: config.password,
     });
+    pgPools.push(pool);
+    return pool;
+}
+
+
+function buildMySQLPool(config: MySQLConfig): MySQLPool {
+    const pool = createPool({
+        host: config.host,
+        port: config.port,
+        database: config.db,
+        user: config.user,
+        password: config.password,
+        waitForConnections: true,
+        connectionLimit: 10,
+        maxIdle: 10,
+        idleTimeout: 60000,
+        queueLimit: 0,
+        enableKeepAlive: true,
+        keepAliveInitialDelay: 0
+    });
+    mysqlPools.push(pool);
+    return pool;
+}
+function createMySQLSearcher(config: MySQLConfig, dtoFactory: DTOFactory, auth: Auth): Searcher {
+    const pool = buildMySQLPool(config);
+    return new MySQLSearcher(pool, config.table);
+}
+
+function createMySQLRepository(config: MySQLConfig): Repository {
+    const pool = buildMySQLPool(config);
+    const repo = new MySQLRepository(pool, config.table);
+    repo.initialize().catch(err => {
+        console.error(`Failed to initialize MySQL repository: ${err}`);
+    });
+    return repo;
 }
 
 async function processGraphlette(
@@ -85,6 +127,13 @@ async function processGraphlette(
                 auth
             );
             break;
+        case "mysql":
+            searcher = createMySQLSearcher(
+                storage as MySQLConfig,
+                dtoFactory,
+                auth
+            );
+            break;
     }
 
     const rt = root(searcher, dtoFactory, auth, rootConfig);
@@ -99,6 +148,8 @@ async function buildRepository(storage: StorageConfig): Promise<Repository> {
             return createSQLiteRepository(storage as SQLConfig);
         case "postgres":
             return createPostgresRepository(storage as PostgresConfig);
+        case "mysql":
+            return createMySQLRepository(storage as MySQLConfig);
     }
 }
 
@@ -158,4 +209,24 @@ export async function init(config: Config): Promise<Application> {
     };
 
     return app;
+}
+
+export async function cleanServer() {
+    console.log("Cleaning server");
+    let count = 1;
+    for (const client of clients) {
+        console.log(`Closing client ${count}`);
+        await client.close();
+        count++;
+    }
+    for (const pool of pgPools) {
+        console.log(`Closing PostgreSQL pool ${count}`);
+        await pool.end();
+        count++;
+    }
+    for (const pool of mysqlPools) {
+        console.log(`Closing MySQL pool ${count}`);
+        await pool.end();
+        count++;
+    }
 }

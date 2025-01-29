@@ -1,5 +1,15 @@
 import {RootConfig} from "@meshql/common";
 
+export type MySQLConfig = {
+    type: "mysql";
+    host: string;
+    port: number;
+    db: string;
+    user: string;
+    password: string;
+    table: string;
+};
+
 export type PostgresConfig = {
     type: "postgres";
     host: string;
@@ -10,7 +20,7 @@ export type PostgresConfig = {
     table: string;
 };
 
-export type StorageConfig = {type: "mongo" | "sql" | "postgres"} & (PostgresConfig| MongoConfig | SQLConfig);
+export type StorageConfig = {type: "mongo" | "sql" | "postgres" | "mysql"} & (PostgresConfig | MongoConfig | SQLConfig | MySQLConfig);
 
 export type MongoConfig = {
     uri: string;

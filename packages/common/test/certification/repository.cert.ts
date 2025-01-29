@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, afterAll, expect } from 'vitest';
 import { Repository, Envelope, Id, Payload } from "../../src";
 
-export function RepositoryCertification<I>(
+export function RepositoryCertification(
     createRepository: () => Promise<Repository>,
     tearDown: () => Promise<void>,
 ) {
