@@ -13,11 +13,14 @@ Log4js.configure({
     },
 });
 
+let serverPort: string = "5255";
+
 let setup = async () => {
     // Set environment variables for sqlite_repo/test/config/config.conf
     process.env.ENV = "test";
+    process.env.PORT = serverPort;
     process.env.PREFIX = "farm";
-    process.env.PLATFORM_URL = "http://localhost:3033";
+    process.env.PLATFORM_URL = `http://localhost:${serverPort}`;
 };
 
 let cleanup = async () => {
