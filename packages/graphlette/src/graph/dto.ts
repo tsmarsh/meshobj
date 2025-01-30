@@ -12,7 +12,15 @@ export class DTOFactory {
     constructor(config?: Resolver[]) {
         if (config !== undefined) {
             for (const c of config) {
-                this.resolvers[c.name] = assignResolver(c.id, c.queryName, new URL(c.url));
+                try {
+                    let url:URL = new URL(c.url);
+                    this.resolvers[c.name] = assignResolver(c.id, c.queryName,  url);
+                } catch (e) {
+                    logger.error(`Invalid URL: ${c.url}`);
+                    throw `Invalid URL: ${c.url}`;
+                }
+
+
             }
         }
     }

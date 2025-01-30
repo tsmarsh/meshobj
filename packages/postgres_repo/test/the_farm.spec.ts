@@ -4,6 +4,7 @@ import { ServerCertificiation } from "../../meshql/test/the_farm.cert";
 import { describe } from "vitest";
 
 let container: StartedTestContainer | null = null;
+let serverPort: string =  "4242";
 
 Log4js.configure({
   appenders: {
@@ -38,8 +39,9 @@ const setup = async () => {
 
     // Other environment variables you might need for your application
     process.env.ENV = "test";
+    process.env.PORT = serverPort;
     process.env.PREFIX = "farm";
-    process.env.PLATFORM_URL = "http://localhost:3033";
+    process.env.PLATFORM_URL = `http://localhost:${serverPort}`;
 
   } catch (err) {
     console.error(JSON.stringify(err));
