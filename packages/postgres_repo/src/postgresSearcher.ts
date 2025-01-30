@@ -39,12 +39,7 @@ export class PostgresSearcher implements Searcher {
         args._createdAt = new Date(timestamp).toISOString();
         args._name = this.table;
 
-        console.log("Args:", JSON.stringify(args, null, 2));
-        console.log("timestamp:", timestamp);
-
         const sql = this.processQueryTemplate(args, queryTemplate);
-
-        console.log("Executing find query:", sql);
 
         try {
             const result = await this.pool.query(sql);
@@ -77,7 +72,6 @@ export class PostgresSearcher implements Searcher {
         args._name = this.table;
         const sql = this.processQueryTemplate(args, queryTemplate);
 
-        console.log("Executing findAll query:", sql);
         try {
             const result = await this.pool.query(sql);
 
