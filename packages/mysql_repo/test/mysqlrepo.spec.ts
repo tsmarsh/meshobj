@@ -4,6 +4,7 @@ import { MySQLRepository } from "../src/mysqlRepo";
 import { createPool, Pool } from "mysql2/promise";
 import { GenericContainer, StartedTestContainer } from "testcontainers";
 import { randomUUID } from "crypto";
+import {describe} from "vitest";
 
 let container: StartedTestContainer;
 const pools: Pool[] = [];
@@ -47,4 +48,6 @@ const tearDown = async (): Promise<void> => {
     }
 };
 
-RepositoryCertification(createRepository, tearDown); 
+describe("mySQL Repo", () => {
+    RepositoryCertification(createRepository, tearDown);
+})

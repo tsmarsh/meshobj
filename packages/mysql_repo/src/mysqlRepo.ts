@@ -1,6 +1,6 @@
 import { Pool, RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import { v4 as uuid } from "uuid";
-import { Envelope, Id, Repository } from "@meshql/common";
+import { Envelope, Id, Payload, Repository } from "@meshql/common";
 import Log4js from "log4js";
 
 const logger = Log4js.getLogger("meshql/mysql_repo");
@@ -37,16 +37,24 @@ export class MySQLRepository implements Repository {
         `;
         await this.pool.query(query);
 
-        // Create indexes
-        await this.pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_${this.table}_id
-            ON ${this.table} (id);
-        `);
+        // Create indexes - MySQL way
+        try {
+            await this.pool.query(`
+                CREATE INDEX idx_${this.table}_id
+                ON ${this.table} (id);
+            `);
+        } catch (err) {
+            // Index might already exist, ignore error
+        }
 
-        await this.pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_${this.table}_created_at
-            ON ${this.table} (created_at);
-        `);
+        try {
+            await this.pool.query(`
+                CREATE INDEX idx_${this.table}_created_at
+                ON ${this.table} (created_at);
+            `);
+        } catch (err) {
+            // Index might already exist, ignore error
+        }
     }
 
     create = async (doc: Envelope, readers: string[] = []): Promise<Envelope> => {
@@ -99,7 +107,7 @@ export class MySQLRepository implements Repository {
             const row = rows[0];
             return {
                 id: row.id,
-                payload: JSON.parse(row.payload),
+                payload: row.payload as Payload,
                 created_at: row.created_at,
                 deleted: !!row.deleted,
             };
@@ -131,7 +139,7 @@ export class MySQLRepository implements Repository {
             const [rows] = await this.pool.query<MySQLRow[]>(query, values);
             return rows.map(row => ({
                 id: row.id,
-                payload: JSON.parse(row.payload),
+                payload: row.payload as Payload,
                 created_at: row.created_at,
                 deleted: !!row.deleted,
             }));
@@ -201,7 +209,7 @@ export class MySQLRepository implements Repository {
             const [rows] = await this.pool.query<MySQLRow[]>(query, values);
             return rows.map(row => ({
                 id: row.id,
-                payload: JSON.parse(row.payload),
+                payload: row.payload as Payload,
                 created_at: row.created_at,
                 deleted: !!row.deleted,
             }));

@@ -1,5 +1,5 @@
 import { Pool, RowDataPacket } from "mysql2/promise";
-import { Searcher } from "@meshql/common";
+import { Payload, Searcher } from "@meshql/common";
 import { TemplateDelegate } from "handlebars";
 import Log4js from "log4js";
 
@@ -55,7 +55,7 @@ export class MySQLSearcher implements Searcher {
             const row = rows[0];
             return {
                 id: row.id,
-                payload: JSON.parse(row.payload),
+                payload: row.payload as Payload,
                 created_at: row.created_at,
                 deleted: row.deleted,
             };
@@ -99,7 +99,7 @@ export class MySQLSearcher implements Searcher {
             const [rows] = await this.pool.query<MySQLRow[]>(query, values);
             return rows.map(row => ({
                 id: row.id,
-                payload: JSON.parse(row.payload),
+                payload: row.payload as Payload,
                 created_at: row.created_at,
                 deleted: row.deleted,
             }));
