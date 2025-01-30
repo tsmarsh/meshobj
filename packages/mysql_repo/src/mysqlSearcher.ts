@@ -55,7 +55,7 @@ export class MySQLSearcher implements Searcher {
             const row = rows[0];
             return {
                 id: row.id,
-                payload: row.payload as Payload,
+                payload: row.payload as unknown as Payload,
                 created_at: row.created_at,
                 deleted: row.deleted,
             };
@@ -99,7 +99,7 @@ export class MySQLSearcher implements Searcher {
             const [rows] = await this.pool.query<MySQLRow[]>(query, values);
             return rows.map(row => ({
                 id: row.id,
-                payload: row.payload as Payload,
+                payload: row.payload as unknown as Payload,
                 created_at: row.created_at,
                 deleted: row.deleted,
             }));

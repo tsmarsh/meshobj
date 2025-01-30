@@ -51,20 +51,20 @@ async function buildMongoCollection(mongoConfig: MongoConfig) {
 
 // New helper to build a Postgres Pool
 function buildPostgresPool(config: PostgresConfig): Pool {
-    return new Pool({
+    let p =  new Pool({
         host: config.host,
         port: config.port,
         database: config.db,
         user: config.user,
         password: config.password,
     });
-    pgPools.push(pool);
-    return pool;
+    pgPools.push(p);
+    return p;
 }
 
 
 function buildMySQLPool(config: MySQLConfig): MySQLPool {
-    const pool = createPool({
+    const p = createPool({
         host: config.host,
         port: config.port,
         database: config.db,
@@ -78,8 +78,8 @@ function buildMySQLPool(config: MySQLConfig): MySQLPool {
         enableKeepAlive: true,
         keepAliveInitialDelay: 0
     });
-    mysqlPools.push(pool);
-    return pool;
+    mysqlPools.push(p);
+    return p;
 }
 function createMySQLSearcher(config: MySQLConfig, dtoFactory: DTOFactory, auth: Auth): Searcher {
     const pool = buildMySQLPool(config);
