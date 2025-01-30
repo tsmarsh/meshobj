@@ -89,7 +89,7 @@ export class MySQLRepository implements Repository {
 
     read = async (id: Id, tokens: string[] = [], createdAt: Date = new Date()): Promise<Envelope | undefined> => {
         const query = `
-            SELECT id, payload, created_at, deleted
+            SELECT *
             FROM ${this.table}
             WHERE id = ?
               AND deleted = FALSE
@@ -105,9 +105,10 @@ export class MySQLRepository implements Repository {
             if (!rows.length) return undefined;
 
             const row = rows[0];
+            
             return {
                 id: row.id,
-                payload: row.payload as Payload,
+                payload: row.payload as unknown as Payload,
                 created_at: row.created_at,
                 deleted: !!row.deleted,
             };
@@ -139,7 +140,7 @@ export class MySQLRepository implements Repository {
             const [rows] = await this.pool.query<MySQLRow[]>(query, values);
             return rows.map(row => ({
                 id: row.id,
-                payload: row.payload as Payload,
+                payload: row.payload as unknown as Payload,
                 created_at: row.created_at,
                 deleted: !!row.deleted,
             }));
@@ -209,7 +210,7 @@ export class MySQLRepository implements Repository {
             const [rows] = await this.pool.query<MySQLRow[]>(query, values);
             return rows.map(row => ({
                 id: row.id,
-                payload: row.payload as Payload,
+                payload: row.payload as unknown as Payload,
                 created_at: row.created_at,
                 deleted: !!row.deleted,
             }));
