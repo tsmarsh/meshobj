@@ -29,7 +29,7 @@ export type Id = string | number;
 
 export type Payload = Record<string, any>;
 
-export type Envelope = {
+export interface Envelope {
     id?: Id;
     payload: Payload;
     created_at?: Date;

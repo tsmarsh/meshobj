@@ -1,16 +1,9 @@
-import { Pool, RowDataPacket } from "mysql2/promise";
-import { Payload, Searcher } from "@meshql/common";
+import { Pool } from "mysql2/promise";
+import {Envelope, Payload, Searcher} from "@meshql/common";
 import { TemplateDelegate } from "handlebars";
 import Log4js from "log4js";
-
+import {EnvelopeRow} from "./mysqlRepo";
 const logger = Log4js.getLogger("meshql/mysql_searcher");
-
-interface MySQLRow extends RowDataPacket {
-    id: string;
-    payload: string;
-    created_at: Date;
-    deleted: boolean;
-}
 
 export class MySQLSearcher implements Searcher {
     private pool: Pool;
@@ -49,13 +42,13 @@ export class MySQLSearcher implements Searcher {
             : [createdAt];
 
         try {
-            const [rows] = await this.pool.query<MySQLRow[]>(query, values);
+            const [rows] = await this.pool.query<EnvelopeRow[]>(query, values);
             if (!rows.length) return {};
 
             const row = rows[0];
             return {
                 id: row.id,
-                payload: row.payload as unknown as Payload,
+                payload: row.payload as Payload,
                 created_at: row.created_at,
                 deleted: row.deleted,
             };
@@ -96,10 +89,10 @@ export class MySQLSearcher implements Searcher {
             : [createdAt];
 
         try {
-            const [rows] = await this.pool.query<MySQLRow[]>(query, values);
+            const [rows] = await this.pool.query<EnvelopeRow[]>(query, values);
             return rows.map(row => ({
                 id: row.id,
-                payload: row.payload as unknown as Payload,
+                payload: row.payload as Payload,
                 created_at: row.created_at,
                 deleted: row.deleted,
             }));

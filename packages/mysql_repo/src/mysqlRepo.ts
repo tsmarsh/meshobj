@@ -5,11 +5,13 @@ import Log4js from "log4js";
 
 const logger = Log4js.getLogger("meshql/mysql_repo");
 
-interface MySQLRow extends RowDataPacket {
+export interface EnvelopeRow extends RowDataPacket {
     id: string;
-    payload: string;
-    created_at: Date;
+    payload: Payload;
+    created_at: bigint;
+    updated_at: bigint;
     deleted: boolean;
+    authorized_tokens: string[];
 }
 
 export class MySQLRepository implements Repository {
@@ -28,8 +30,8 @@ export class MySQLRepository implements Repository {
                 pk BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
                 id VARCHAR(255),
                 payload JSON,
-                created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6),
-                updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+                created_at BIGINT UNSIGNED NOT NULL,
+                updated_at BIGINT UNSIGNED NOT NULL,
                 deleted BOOLEAN DEFAULT FALSE,
                 authorized_tokens JSON,
                 UNIQUE KEY unique_id_created (id, created_at)
@@ -59,18 +61,19 @@ export class MySQLRepository implements Repository {
 
     create = async (doc: Envelope, readers: string[] = []): Promise<Envelope> => {
         const logicalId = doc.id || uuid();
+        const now = Date.now();
         const query = `
-            INSERT INTO ${this.table} (id, payload, authorized_tokens)
-            VALUES (?, ?, ?);
+            INSERT INTO ${this.table} (id, payload, authorized_tokens, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?);
         `;
-        const values = [logicalId, JSON.stringify(doc.payload), JSON.stringify(readers)];
+        const values = [logicalId, JSON.stringify(doc.payload), JSON.stringify(readers), now, now];
 
         try {
             await this.pool.query<ResultSetHeader>(query, values);
             return {
                 id: logicalId,
                 payload: doc.payload,
-                created_at: new Date(),
+                created_at: new Date(now),
                 deleted: false,
             };
         } catch (err) {
@@ -98,18 +101,20 @@ export class MySQLRepository implements Repository {
             ORDER BY created_at DESC
             LIMIT 1;
         `;
-        const values = tokens.length ? [id, createdAt, JSON.stringify(tokens)] : [id, createdAt];
+        const values = tokens.length ?
+            [id, createdAt.getTime(), JSON.stringify(tokens)] :
+            [id, createdAt.getTime()];
 
         try {
-            const [rows] = await this.pool.query<MySQLRow[]>(query, values);
+            const [rows] = await this.pool.query<EnvelopeRow[]>(query, values);
             if (!rows.length) return undefined;
 
             const row = rows[0];
-            
+
             return {
                 id: row.id,
-                payload: row.payload as unknown as Payload,
-                created_at: row.created_at,
+                payload: row.payload as Payload,
+                created_at: new Date(Number(row.created_at)),
                 deleted: !!row.deleted,
             };
         } catch (err) {
@@ -137,11 +142,11 @@ export class MySQLRepository implements Repository {
         const values = readers.length ? [...ids, JSON.stringify(readers)] : ids;
 
         try {
-            const [rows] = await this.pool.query<MySQLRow[]>(query, values);
+            const [rows] = await this.pool.query<EnvelopeRow[]>(query, values);
             return rows.map(row => ({
                 id: row.id,
-                payload: row.payload as unknown as Payload,
-                created_at: row.created_at,
+                payload: row.payload as Payload,
+                created_at: new Date(Number(row.created_at)),
                 deleted: !!row.deleted,
             }));
         } catch (err) {
@@ -207,11 +212,11 @@ export class MySQLRepository implements Repository {
         const values = readers.length ? [JSON.stringify(readers)] : [];
 
         try {
-            const [rows] = await this.pool.query<MySQLRow[]>(query, values);
+            const [rows] = await this.pool.query<EnvelopeRow[]>(query, values);
             return rows.map(row => ({
                 id: row.id,
-                payload: row.payload as unknown as Payload,
-                created_at: row.created_at,
+                payload: row.payload as Payload,
+                created_at: new Date(Number(row.created_at)),
                 deleted: !!row.deleted,
             }));
         } catch (err) {
