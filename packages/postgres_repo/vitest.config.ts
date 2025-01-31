@@ -6,15 +6,7 @@ export default defineConfig({
         environment: "node",
         hookTimeout: 30000,
         coverage: {
-            provider: "v8",
-            reporter: ["text", "json", "html"],
-            reportsDirectory: '../../coverage',
-            exclude: [
-                '**/dist/**',
-                '**/node_modules/**',
-                '**/test/**',
-                '**/*.spec.ts',
-            ],
+            reportsDirectory: '../../coverage'
         },
     },
     esbuild: {
