@@ -247,7 +247,7 @@ async function buildApi(swagger_docs: Document[], token: string) {
         })
     );
 
-    for (const api: OpenAPIClient of apis) {
+    for (const api of apis) {
         const firstPath = Object.keys(api.paths)[0];
         if (firstPath.includes("hen")) {
             hen_api = api;

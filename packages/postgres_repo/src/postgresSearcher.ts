@@ -59,12 +59,8 @@ export class PostgresSearcher implements Searcher {
         args._name = this.table;
         args.filters = this.processQueryTemplate(args, queryTemplate);
 
-        // console.log("Args:", JSON.stringify(args, null, 2));
-        // console.log("timestamp:", timestamp);
-
         const sql = this.processQueryTemplate(args, this.singletonQuery);
 
-        console.log("Executing find query:", sql);
 
         try {
             const result = await this.pool.query(sql);
@@ -99,7 +95,6 @@ export class PostgresSearcher implements Searcher {
         
         const sql = this.processQueryTemplate(args, this.vectorQuery);
 
-        console.log("Executing findAll query:", sql);
         try {
             const result = await this.pool.query(sql);
 

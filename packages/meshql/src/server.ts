@@ -32,32 +32,8 @@ import { createPostgresSearcher, createPostgresRepository } from "./helpers/post
 
 let port = 3030;
 
-let pools: Pool[] = [];
-let clients: MongoClient[] = [];
-
-async function buildMongoCollection(mongoConfig: MongoConfig) {
-    const client = new MongoClient(mongoConfig.uri);
-    clients.push(client);
-    await client.connect();
-    const mongoDb = client.db(mongoConfig.db);
-    const collection: Collection<Envelope> = mongoDb.collection(
-        mongoConfig.collection
-    );
-    return collection;
-}
-
-// New helper to build a Postgres Pool
-function buildPostgresPool(config: PostgresConfig): Pool {
-    const pool = new Pool({
-        host: config.host,
-        port: config.port,
-        database: config.db,
-        user: config.user,
-        password: config.password,
-    });
-    pools.push(pool);
-    return pool;
-}
+let pools: Record<string, Pool> = {};
+let clients: Record<string, MongoClient> = {};
 
 async function processGraphlette(
     graphlette: Graphlette,
@@ -74,7 +50,8 @@ async function processGraphlette(
             searcher = await createMongoSearcher(
                 storage as MongoConfig,
                 dtoFactory,
-                auth
+                auth,
+                clients
             );
             break;
         case "sql":
@@ -88,7 +65,8 @@ async function processGraphlette(
             searcher = createPostgresSearcher(
                 storage as PostgresConfig,
                 dtoFactory,
-                auth
+                auth,
+                pools
             );
             break;
     }
@@ -100,11 +78,11 @@ async function processGraphlette(
 async function buildRepository(storage: StorageConfig): Promise<Repository> {
     switch (storage.type) {
         case "mongo":
-            return createMongoRepository(storage as MongoConfig);
+            return createMongoRepository(storage as MongoConfig, clients);
         case "sql":
             return createSQLiteRepository(storage as SQLConfig);
         case "postgres":
-            return createPostgresRepository(storage as PostgresConfig);
+            return createPostgresRepository(storage as PostgresConfig, pools);
     }
 }
 
@@ -169,14 +147,14 @@ export async function init(config: Config): Promise<Application> {
 export async function cleanServer() {
     console.log("Cleaning server");
     let count = 1;
-    for (const client of clients) {
+    for (const client in clients) {
         console.log(`Closing client ${count}`);
-        await client.close();
+        await clients[client].close();
         count++;
     }
-    for (const pool of pools) {
+    for (const pool in pools) {
         console.log(`Closing pool ${count}`);
-        await pool.end();
+        await pools[pool].end();
         count++;
     }
 }
