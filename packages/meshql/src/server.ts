@@ -8,16 +8,15 @@ import {
     Restlette,
     SQLConfig,
     StorageConfig,
-    PostgresConfig,
+    PostgresConfig, MySQLConfig,
 } from "./configTypes";
 import {
-    Envelope,
     Repository,
     Searcher,
     Validator,
 } from "@meshql/common";
 import { Pool } from "pg";
-import { Collection, MongoClient } from "mongodb";
+import { MongoClient } from "mongodb";
 import { Crud } from "@meshql/restlette";
 import { JSONSchemaValidator } from "@meshql/restlette";
 import { JWTSubAuthorizer } from "@meshql/jwt_auth";
@@ -29,11 +28,12 @@ import cors from 'cors';
 import { createMongoSearcher, createMongoRepository } from "./helpers/mongo";
 import { createSQLiteSearcher, createSQLiteRepository } from "./helpers/sqlite";
 import { createPostgresSearcher, createPostgresRepository } from "./helpers/postgres";
-
-let port = 3030;
+import {createMySQLRepository, createMySQLSearcher} from "./helpers/mysql";
+import {Pool as MySQLPool} from "mysql2/promise";
 
 let pools: Record<string, Pool> = {};
 let clients: Record<string, MongoClient> = {};
+let mysqlPools: Record<string, MySQLPool> = {};
 
 async function processGraphlette(
     graphlette: Graphlette,
@@ -69,6 +69,13 @@ async function processGraphlette(
                 pools
             );
             break;
+        case "mysql":
+            searcher = createMySQLSearcher(
+                storage as MySQLConfig,
+                dtoFactory,
+                auth,
+                mysqlPools
+            )
     }
 
     const rt = root(searcher, dtoFactory, auth, rootConfig);
@@ -83,6 +90,8 @@ async function buildRepository(storage: StorageConfig): Promise<Repository> {
             return createSQLiteRepository(storage as SQLConfig);
         case "postgres":
             return createPostgresRepository(storage as PostgresConfig, pools);
+        case "mysql":
+            return createMySQLRepository(storage as MySQLConfig, mysqlPools);
     }
 }
 
@@ -108,7 +117,6 @@ async function processAuth(config: Config): Promise<Auth> {
 }
 
 export async function init(config: Config): Promise<Application> {
-    port = config.port;
     const auth: Auth = await processAuth(config);
 
     const app: Application = express();
@@ -131,16 +139,6 @@ export async function init(config: Config): Promise<Application> {
         await processRestlette(restlette, auth, app, config.port);
     }
 
-    // Swagger setup
-    const swaggerDocument = {
-        openapi: "3.0.0",
-        info: {
-            title: "API Documentation",
-            version: "1.0.0",
-        },
-        servers: [{ url: `http://localhost:${port}` }],
-    };
-
     return app;
 }
 
@@ -153,8 +151,13 @@ export async function cleanServer() {
         count++;
     }
     for (const pool in pools) {
-        console.log(`Closing pool ${count}`);
+        console.log(`Closing pg ${count}`);
         await pools[pool].end();
+        count++;
+    }
+    for (const pool in mysqlPools) {
+        console.log(`Closing mysql ${count}`);
+        await mysqlPools[pool].end();
         count++;
     }
 }

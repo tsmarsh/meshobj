@@ -10,7 +10,7 @@ export type PostgresConfig = {
     table: string;
 };
 
-export type StorageConfig = {type: "mongo" | "sql" | "postgres"} & (PostgresConfig| MongoConfig | SQLConfig);
+export type StorageConfig = {type: "mongo" | "sql" | "postgres" | "mysql"} & (PostgresConfig| MongoConfig | MySQLConfig | SQLConfig);
 
 export type MongoConfig = {
     uri: string;
@@ -19,6 +19,15 @@ export type MongoConfig = {
     options: {
         directConnection: boolean;
     };
+}
+
+export interface MySQLConfig {
+    host: string;
+    port: number;
+    db: string;
+    user: string;
+    password: string;
+    table: string;
 }
 
 export type SQLConfig = {

@@ -290,4 +290,6 @@ async function buildModels() {
     savedHens.forEach((hen: any) => {
         globalThis.hen_ids[hen.data.name] = hen.headers["x-canonical-id"];
     });
+
+    console.log("Hens:", JSON.stringify(globalThis.hen_ids))
 }
