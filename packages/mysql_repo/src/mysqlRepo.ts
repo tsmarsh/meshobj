@@ -15,6 +15,7 @@ export interface EnvelopeRow extends RowDataPacket {
 }
 
 export const rowToEnvelope = (row: EnvelopeRow): Envelope => {
+    row.payload.id = row.id
     return {
         id: row.id,
         payload: row.payload,

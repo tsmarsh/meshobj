@@ -105,6 +105,7 @@ export class MongoSearcher implements Searcher {
         if (args !== undefined) {
             results = results.filter((r: Document) => this.authorizer.isAuthorized(creds, r as Envelope));
         }
+
         return results.map((d) => {
             let r = d as Schema
             r.payload.id = r.id;
