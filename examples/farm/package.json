@@ -1,0 +1,15 @@
+{
+    "name": "@meshql/farm-example",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "start": "node src/index.js",
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@meshql/meshql": "workspace:*"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    }
+}
