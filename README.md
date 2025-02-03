@@ -1,29 +1,30 @@
 # MeshQL: Domain-Driven Service Mesh
 
-MeshQL is a powerful service mesh that automatically generates REST and GraphQL endpoints from your domain model. It's designed to be easily configurable and supports multiple storage backends including MongoDB, SQLite, and PostgreSQL.
+MeshQL is a service mesh that auto-generates REST and GraphQL endpoints based on a structured domain model. It supports multiple storage backends, including MongoDB, PostgreSQL, and MySQL, and integrates seamlessly with Kafka for event-driven architectures.
 
 ## Architecture Overview
 
-MeshQL consists of two main components:
+MeshQL consists of three primary components:
 
-1. **Restlettes**: Auto-generated REST endpoints that provide CRUD operations for your domain entities
-2. **Graphlettes**: Auto-generated GraphQL endpoints that provide query capabilities with relationship resolution
+1. **Restlettes**: Auto-generated REST endpoints for CRUD operations.
+2. **Graphlettes**: Auto-generated GraphQL endpoints with relationship resolution.
+3. **Worklettes**: Asynchronous event-driven processors for background tasks.
 
 ### Core Concepts
 
-- **Storage Backends**: Each entity can be stored in MongoDB, SQLite, or PostgreSQL
-- **Temporal Querying**: Built-in support for querying data at specific points in time
-- **Relationship Resolution**: Automatic resolution of relationships between entities
-- **JWT Authentication**: Built-in support for JWT-based authentication
-- **RBAC Authorization**: Optional CASBIN-based role-based access control
+- **Storage Backends**: Each entity can persist in MongoDB, PostgreSQL, or MySQL.
+- **Temporal Querying**: Query snapshots of data at specific points in time.
+- **Relationship Resolution**: Automatic dependency resolution across entities.
+- **Event-Driven Processing**: Kafka-based event streams ensure scalable workflows.
+- **JWT Authentication & RBAC**: Supports JWT-based authentication and CASBIN for fine-grained role-based access control.
 
 ## Configuration Generation
 
-To generate a configuration from a domain model, you need to understand the following components:
+To configure MeshQL, start with a structured domain model:
 
 ### 1. Domain Model Definition
 
-Start with a Mermaid diagram that defines your entities and their relationships. For example:
+Define entities and relationships using a Mermaid entity-relationship diagram:
 
 ```mermaid
 erDiagram
@@ -49,29 +50,22 @@ erDiagram
 
 ### 2. Configuration Structure
 
-The configuration consists of two main sections:
+The configuration consists of storage definitions, API exposure, and event handling:
 
 ```hocon
 {
   port: 3030,
   graphlettes: [ ... ],
-  restlettes: [ ... ]
+  restlettes: [ ... ],
+  worklettes: [ ... ]
 }
 ```
 
 ### 3. Storage Configuration
 
-For each entity, define its storage configuration. Examples for different backends:
+Each entity is mapped to a storage backend:
 
 ```hocon
-// MongoDB
-storage = {
-  type = "mongo"
-  uri = "mongodb://localhost:27017"
-  db = "farm_db"
-  collection = "farms"
-}
-
 // PostgreSQL
 storage = {
   type = "postgres"
@@ -83,17 +77,29 @@ storage = {
   table = "farms"
 }
 
-// SQLite
+// MySQL
 storage = {
-  type = "sql"
-  uri = ":memory:"
+  type = "mysql"
+  host = "localhost"
+  port = 3306
+  db = "farm_db"
+  user = "root"
+  password = "secret"
+  table = "farms"
+}
+
+// MongoDB
+storage = {
+  type = "mongo"
+  uri = "mongodb://localhost:27017"
+  db = "farm_db"
   collection = "farms"
 }
 ```
 
 ### 4. GraphQL Configuration
 
-For each entity, define its GraphQL schema and resolvers:
+Define entity relationships and GraphQL schema:
 
 ```hocon
 graphlettes = [
@@ -116,8 +122,7 @@ graphlettes = [
       singletons = [
         {
           name = "getById"
-          query = "{\"id\": \"{{id}}\"}"  // MongoDB
-          // query = "id = '{{id}}'"      // SQL/Postgres
+          query = "id = '{{id}}'"  // SQL/Postgres/MySQL
         }
       ]
       resolvers = [
@@ -134,7 +139,7 @@ graphlettes = [
 
 ### 5. REST Configuration
 
-For each entity, define its REST endpoints:
+Expose entity CRUD operations via REST:
 
 ```hocon
 restlettes = [
@@ -153,59 +158,63 @@ restlettes = [
 ]
 ```
 
+### 6. Worklettes (Event Processing)
+
+MeshQL integrates with Kafka to enable **event-driven workflows**:
+
+```hocon
+worklettes = [
+  {
+    topic = "farm-events"
+    storage = ${farmDB}
+    handler = "com.example.FarmEventProcessor"
+  }
+]
+```
+
 ## Example: Converting Domain Model to Configuration
 
-Given a domain model like the Farm example above:
+1. Define the **domain model** using Mermaid.
+2. Configure **storage** for each entity.
+3. Create **GraphQL & REST schemas** for query & CRUD operations.
+4. Implement **Worklettes** for event-driven processing.
+5. Configure **authentication & authorization**.
 
-1. Create a storage configuration for each entity
-2. Generate GraphQL schemas with appropriate types and queries
-3. Define resolvers for relationships (e.g., Farm -> Coops -> Hens)
-4. Create REST endpoints with JSON schemas
-5. Configure authentication and authorization if needed
-
-The system will automatically:
-- Generate CRUD REST endpoints
-- Create GraphQL queries with relationship resolution
-- Handle temporal queries with the `at` parameter
-- Manage data persistence in your chosen storage backend
-- Apply authentication and authorization rules
+MeshQL will automatically:
+- Generate REST & GraphQL endpoints
+- Process **temporal queries**
+- Sync data **across multiple storage backends**
+- Enable event-driven **asynchronous processing**
+- Manage **authentication & authorization**
 
 ## Testing Your Configuration
 
-Use the certification test pattern to verify your configuration:
+Use automated tests to validate the configuration:
 
 ```typescript
 describe("The Domain", () => {
-  it("should build a server with multiple nodes", async () => {
+  it("should build a service mesh with multiple entities", async () => {
     const query = `{
       getById(id: "${entityId}") {
         name
-        relationships {
+        coops {
           name
         }
       }
     }`;
 
     const json = await callSubgraph(
-      new URL(`http://localhost:${port}/entity/graph`),
+      new URL(`http://localhost:${port}/farm/graph`),
       query,
       "getById",
       `Bearer ${token}`
     );
 
     expect(json.name).toBe("Expected");
-    expect(json.relationships).toHaveLength(expected);
+    expect(json.coops).toHaveLength(expected);
   });
 });
 ```
-
-## Security Considerations
-
-1. Always use environment variables for sensitive configuration
-2. Configure CORS appropriately for your environment
-3. Use HTTPS in production
-4. Implement appropriate rate limiting
-5. Configure authentication and authorization
 
 ## Getting Started
 
@@ -214,7 +223,7 @@ describe("The Domain", () => {
 yarn install
 ```
 
-2. Create your configuration file:
+2. Create a configuration file:
 ```bash
 cp config/config.example.conf config/config.conf
 ```
@@ -224,4 +233,4 @@ cp config/config.example.conf config/config.conf
 yarn start
 ```
 
-For more examples and detailed documentation, see the `packages/meshql/test/config` directory.
+For full documentation, see the `packages/meshql/test/config` directory.
