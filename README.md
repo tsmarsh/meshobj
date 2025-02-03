@@ -8,7 +8,7 @@ MeshQL consists of three primary components:
 
 1. **Restlettes**: Auto-generated REST endpoints for CRUD operations
 2. **Graphlettes**: Auto-generated GraphQL endpoints with relationship resolution
-3. **Worklettes**: Asynchronous event-driven processors (future feature)
+3. **Worklettes**: Asynchronous event-driven processors (implemented by the app, not the libary)
 
 ### Core Features
 
