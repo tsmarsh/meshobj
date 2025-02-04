@@ -6,10 +6,10 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_DATABASE=farm_db
+      - MONGO_INITDB_DATABASE=farm_development
 
   farm-service:
-    build: 
+    build:
       context: ../..
       dockerfile: examples/farm/Dockerfile
     ports:
@@ -21,4 +21,4 @@ services:
       - PREFIX=farm
       - PLATFORM_URL=http://localhost:3033
     depends_on:
-      - mongodb 
+      - mongodb
