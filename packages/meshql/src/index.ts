@@ -1,6 +1,7 @@
 import {init} from "./server.js"
 const parser = require("@pushcorn/hocon-parser");
 import yargs from 'yargs';
+export {init}
 
 const argv: any = yargs(process.argv)
     .option('config', {

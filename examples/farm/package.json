@@ -2,8 +2,9 @@
     "name": "@farmql/farm-example",
     "version": "0.1.0",
     "private": true,
+    "main": "dist/index.js",
     "scripts": {
-        "start": "node src/index.js",
+        "start": "node dist/index.js",
         "build": "tsc"
     },
     "dependencies": {

@@ -10,8 +10,8 @@ services:
 
   farm-service:
     build: 
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: examples/farm/Dockerfile
     ports:
       - "3033:3033"
     environment:
