@@ -819,7 +819,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshql/common@workspace:*, @meshql/common@workspace:packages/common":
+"@meshql/common@workspace:*, @meshql/common@workspace:^, @meshql/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@meshql/common@workspace:packages/common"
   dependencies:
@@ -839,12 +839,15 @@ __metadata:
   dependencies:
     "@meshql/auth": "workspace:*"
     "@meshql/common": "workspace:*"
+    "@types/express": "npm:^4"
     "@types/handlebars": "npm:^4.1.0"
     c8: "npm:^10.1.3"
+    express: "npm:^4.21.2"
     express-graphql: "npm:^0.12.0"
     fetch-mock: "npm:^12.2.0"
     graphql: "npm:^15.10.1"
     handlebars: "npm:^4.7.8"
+    http: "npm:^0.0.1-security"
     log4js: "npm:^6.9.1"
     typescript: "npm:^5.7.2"
     vitest: "npm:^2.1.8"
@@ -857,9 +860,12 @@ __metadata:
   dependencies:
     "@meshql/auth": "workspace:*"
     "@meshql/common": "workspace:*"
+    "@types/express": "npm:^4"
     "@types/node": "npm:^22.10.6"
     c8: "npm:^10.1.3"
+    express: "npm:^4.21.2"
     jsonwebtoken: "npm:^9.0.2"
+    log4js: "npm:^6.9.1"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.3"
     vitest: "npm:^3.0.1"
@@ -876,12 +882,16 @@ __metadata:
     "@meshql/graphlette": "workspace:*"
     "@meshql/jwt_auth": "workspace:*"
     "@meshql/mongo_repo": "workspace:*"
+    "@meshql/mysql_repo": "workspace:^"
+    "@meshql/postgres_repo": "workspace:^"
     "@meshql/restlette": "workspace:*"
     "@meshql/sqlite_repo": "workspace:*"
     "@pushcorn/hocon-parser": "npm:^1.3.1"
     "@types/cors": "npm:^2"
     "@types/dotenv": "npm:^8.2.3"
+    "@types/express": "npm:^5.0.0"
     "@types/node": "npm:^22.10.6"
+    "@types/pg": "npm:^8"
     "@types/yargs": "npm:^17.0.33"
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:^3.0.1"
@@ -890,10 +900,17 @@ __metadata:
     cors: "npm:^2.8.5"
     dotenv: "npm:^16.4.7"
     express: "npm:^4.21.2"
+    express-graphql: "npm:^0.12.0"
+    graphql: "npm:^16.10.0"
     js-yaml: "npm:^4.1.0"
     jsonwebtoken: "npm:^9.0.2"
     log4js: "npm:^6.9.1"
+    mongodb: "npm:^6.13.0"
+    mysql2: "npm:^3.12.0"
     openapi-client-axios: "npm:^7.5.5"
+    pg: "npm:^8.13.1"
+    sqlite: "npm:^5.1.1"
+    sqlite3: "npm:^5.1.7"
     swagger-ui-express: "npm:^5.0.1"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.3"
@@ -909,9 +926,11 @@ __metadata:
   resolution: "@meshql/mongo_repo@workspace:packages/mongo_repo"
   dependencies:
     "@meshql/auth": "npm:0.1.0"
+    "@meshql/common": "workspace:^"
     "@meshql/graphlette": "npm:0.1.0"
     "@types/node": "npm:^22.10.6"
     c8: "npm:^10.1.3"
+    log4js: "npm:^6.9.1"
     mongodb: "npm:^6.12.0"
     mongodb-memory-server: "npm:^10.1.3"
     ts-node: "npm:^10.9.2"
@@ -921,7 +940,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshql/mysql_repo@workspace:packages/mysql_repo":
+"@meshql/mysql_repo@workspace:^, @meshql/mysql_repo@workspace:packages/mysql_repo":
   version: 0.0.0-use.local
   resolution: "@meshql/mysql_repo@workspace:packages/mysql_repo"
   dependencies:
@@ -930,6 +949,7 @@ __metadata:
     "@meshql/graphlette": "workspace:*"
     "@types/node": "npm:^22.10.6"
     c8: "npm:^10.1.3"
+    log4js: "npm:^6.9.1"
     mysql2: "npm:^3.12.0"
     testcontainers: "npm:^10.16.0"
     ts-node: "npm:^10.9.2"
@@ -939,15 +959,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshql/postgres_repo@workspace:packages/postgres_repo":
+"@meshql/postgres_repo@workspace:^, @meshql/postgres_repo@workspace:packages/postgres_repo":
   version: 0.0.0-use.local
   resolution: "@meshql/postgres_repo@workspace:packages/postgres_repo"
   dependencies:
     "@meshql/auth": "npm:0.1.0"
+    "@meshql/common": "workspace:^"
     "@meshql/graphlette": "npm:0.1.0"
     "@types/node": "npm:^22.10.6"
     "@types/pg": "npm:^8"
     c8: "npm:^10.1.3"
+    log4js: "npm:^6.9.1"
     pg: "npm:^8.13.1"
     testcontainers: "npm:^10.16.0"
     ts-node: "npm:^10.9.2"
@@ -990,9 +1012,11 @@ __metadata:
     "@meshql/graphlette": "workspace:*"
     "@types/typescript": "npm:^2.0.0"
     c8: "npm:^10.1.3"
+    log4js: "npm:^6.9.1"
     sqlite: "npm:^5.1.1"
     sqlite3: "npm:^5.1.7"
     typescript: "npm:^5.7.2"
+    uuid: "npm:^11.0.5"
     vitest: "npm:^2.1.8"
   languageName: unknown
   linkType: soft
@@ -5421,6 +5445,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql@npm:^16.10.0":
+  version: 16.10.0
+  resolution: "graphql@npm:16.10.0"
+  checksum: 10c0/303730675538c8bd6c76b447dc6f03e61242e2d2596b408c34759666ec4877409e5593a7a0467d590ac5407b8c663b093b599556a77f24f281abea69ddc53de6
+  languageName: node
+  linkType: hard
+
 "handlebars@npm:*, handlebars@npm:^4.7.7, handlebars@npm:^4.7.8":
   version: 4.7.8
   resolution: "handlebars@npm:4.7.8"
@@ -5559,6 +5590,13 @@ __metadata:
     agent-base: "npm:^7.1.0"
     debug: "npm:^4.3.4"
   checksum: 10c0/4207b06a4580fb85dd6dff521f0abf6db517489e70863dca1a0291daa7f2d3d2d6015a57bd702af068ea5cf9f1f6ff72314f5f5b4228d299c0904135d2aef921
+  languageName: node
+  linkType: hard
+
+"http@npm:^0.0.1-security":
+  version: 0.0.1-security
+  resolution: "http@npm:0.0.1-security"
+  checksum: 10c0/c0354c2afb6027a80756a30b1fb06607608c0408d100a5e3610d762dd1a320cb2611b0c3cf5ccb969b80f839e2735237ecc9897841e936d098161c38ee153ee5
   languageName: node
   linkType: hard
 
@@ -7263,6 +7301,40 @@ __metadata:
     socks:
       optional: true
   checksum: 10c0/627d28e1ac6380b81e90880cf88f1bacac9109e18301dd6506d67b0ef58fcc1d15acd3e2527820dfedd81860be737a115f4bd48d6d4a689531c5a1d58587606e
+  languageName: node
+  linkType: hard
+
+"mongodb@npm:^6.13.0":
+  version: 6.13.0
+  resolution: "mongodb@npm:6.13.0"
+  dependencies:
+    "@mongodb-js/saslprep": "npm:^1.1.9"
+    bson: "npm:^6.10.1"
+    mongodb-connection-string-url: "npm:^3.0.0"
+  peerDependencies:
+    "@aws-sdk/credential-providers": ^3.188.0
+    "@mongodb-js/zstd": ^1.1.0 || ^2.0.0
+    gcp-metadata: ^5.2.0
+    kerberos: ^2.0.1
+    mongodb-client-encryption: ">=6.0.0 <7"
+    snappy: ^7.2.2
+    socks: ^2.7.1
+  peerDependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    "@mongodb-js/zstd":
+      optional: true
+    gcp-metadata:
+      optional: true
+    kerberos:
+      optional: true
+    mongodb-client-encryption:
+      optional: true
+    snappy:
+      optional: true
+    socks:
+      optional: true
+  checksum: 10c0/8fe03ef208113a47842a0ae3676abe287d6e1cff81d47414abf501c7b78257c7fecb80cafc5ba16b3e42821fffcd3652c62650302c8f4f58464c802a17910478
   languageName: node
   linkType: hard
 
@@ -10415,17 +10487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:*, typescript@npm:^5.7.2":
-  version: 5.7.2
-  resolution: "typescript@npm:5.7.2"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/a873118b5201b2ef332127ef5c63fb9d9c155e6fdbe211cbd9d8e65877283797cca76546bad742eea36ed7efbe3424a30376818f79c7318512064e8625d61622
-  languageName: node
-  linkType: hard
-
-"typescript@npm:>=3 < 6, typescript@npm:^5.0.0, typescript@npm:^5.7.3":
+"typescript@npm:^5.7.3":
   version: 5.7.3
   resolution: "typescript@npm:5.7.3"
   bin:
@@ -10435,17 +10497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A*#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.7.2#optional!builtin<compat/typescript>":
-  version: 5.7.2
-  resolution: "typescript@patch:typescript@npm%3A5.7.2#optional!builtin<compat/typescript>::version=5.7.2&hash=5786d5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/f3b8082c9d1d1629a215245c9087df56cb784f9fb6f27b5d55577a20e68afe2a889c040aacff6d27e35be165ecf9dca66e694c42eb9a50b3b2c451b36b5675cb
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A>=3 < 6#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.0.0#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.7.3#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^5.7.3#optional!builtin<compat/typescript>":
   version: 5.7.3
   resolution: "typescript@patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"
   bin:
@@ -10614,6 +10666,15 @@ __metadata:
   bin:
     uuid: dist/esm/bin/uuid
   checksum: 10c0/cee762fc76d949a2ff9205770334699e0043d52bb766472593a25f150077c9deed821230251ea3d6ab3943a5ea137d2826678797f1d5f6754c7ce5ce27e9f7a6
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^11.0.5":
+  version: 11.0.5
+  resolution: "uuid@npm:11.0.5"
+  bin:
+    uuid: dist/esm/bin/uuid
+  checksum: 10c0/6f59f0c605e02c14515401084ca124b9cb462b4dcac866916a49862bcf831874508a308588c23a7718269226ad11a92da29b39d761ad2b86e736623e3a33b6e7
   languageName: node
   linkType: hard
 
