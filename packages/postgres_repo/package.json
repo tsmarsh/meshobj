@@ -23,10 +23,10 @@
     "@meshql/auth": "0.1.0",
     "@meshql/common": "workspace:^",
     "@meshql/graphlette": "0.1.0",
+    "handlebars": "^4.7.8",
     "log4js": "^6.9.1",
     "pg": "^8.13.1",
-    "uuid": "^11.0.3",
-    "handlebars": "^4.7.8"
+    "uuid": "^11.0.3"
   },
   "scripts": {
     "build": "tsc",

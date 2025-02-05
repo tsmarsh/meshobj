@@ -22,10 +22,10 @@
     "@meshql/auth": "workspace:*",
     "@meshql/common": "workspace:*",
     "@meshql/graphlette": "workspace:*",
+    "handlebars": "^4.7.8",
     "log4js": "^6.9.1",
     "mysql2": "^3.12.0",
-    "uuid": "^11.0.3",
-    "handlebars": "^4.7.8"
+    "uuid": "^11.0.3"
   },
   "scripts": {
     "build": "tsc",
