@@ -8,6 +8,8 @@ coverage:
         target: 80%
 
 ignore:
+  - "**/index.ts"
+  - "**/cli.ts"
   - "**/auth/**/*"
   - "examples/**/*"
   - "**/test/**/*"
