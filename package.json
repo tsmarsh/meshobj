@@ -13,7 +13,7 @@
     "qt": "lerna run test --since main",
     "coverage": "yarn run c8 report --report-dir=.nyc_output --reporter=text --reporter=html --reporter=lcov",
     "lint": "eslint .",
-    "start": "node ./node_modules/@meshql/meshql/dist/cli.js --config config/config.conf"
+    "start": "node ./packages/meshql/dist/cli.js --config config/config.conf"
   },
   "dependencies": {
     "pnpm": "^9.15.3"
@@ -36,7 +36,8 @@
     "@types/express-serve-static-core": "^4.17.17",
     "graphql": "^15.8.0",
     "typescript": "^5.7.3",
-    "mongodb": "^6.13.0"
+    "mongodb": "^6.13.0",
+    "handlebars": "^4.7.8"
   },
   "packageManager": "yarn@4.6.0",
   "type": "module"

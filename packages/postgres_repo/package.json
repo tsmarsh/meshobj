@@ -25,7 +25,8 @@
     "@meshql/graphlette": "0.1.0",
     "log4js": "^6.9.1",
     "pg": "^8.13.1",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "handlebars": "^4.7.8"
   },
   "scripts": {
     "build": "tsc",

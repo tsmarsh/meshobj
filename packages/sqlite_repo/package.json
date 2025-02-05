@@ -20,7 +20,8 @@
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
     "typescript": "^5.7.2",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "handlebars": "^4.7.8"
   },
   "scripts": {
     "build": "tsc",

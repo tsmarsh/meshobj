@@ -5,7 +5,6 @@ node_modules/
 .DS_Store
 coverage/
 .nyc_output/
-**/dist/
 yarn-error.log
 lerna-debug.log
 .aider*
@@ -16,11 +15,10 @@ bun.lockb
 **/*.spec.ts
 **/*.test.ts
 
-# Build artifacts
+# Only exclude source dist folders, not the built ones
 packages/**/packages/
-packages/**/dist/
 
-# Java artifacts (from your .gitignore)
+# Java artifacts
 target/
 *.class
 *.jar
