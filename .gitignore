@@ -36,3 +36,5 @@ replay_pid*
 .project
 .settings/
 *.iml
+
+test-report.junit.xml
