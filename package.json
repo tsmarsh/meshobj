@@ -9,7 +9,7 @@
   "scripts": {
     "build": "lerna run build",
     "qb": "lerna run build --since main",
-    "test": "yarn vitest --run --coverage",
+    "test": "yarn vitest --run --coverage --reporter=junit --outputFile=test-report.junit.xml",
     "qt": "lerna run test --since main",
     "coverage": "yarn run c8 report --report-dir=.nyc_output --reporter=text --reporter=html --reporter=lcov",
     "lint": "eslint .",
