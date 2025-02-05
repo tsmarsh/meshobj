@@ -3,6 +3,36 @@ coverage:
     project:
       default:
         target: 80%
+      auth:
+        paths: ["packages/auth/**"]
+        target: 80%
+      common:
+        paths: ["packages/common/**"]
+        target: 80%
+      graphlette:
+        paths: ["packages/graphlette/**"]
+        target: 80%
+      jwt_auth:
+        paths: ["packages/jwt_auth/**"]
+        target: 80%
+      meshql:
+        paths: ["packages/meshql/**"]
+        target: 80%
+      mongo_repo:
+        paths: ["packages/mongo_repo/**"]
+        target: 80%
+      mysql_repo:
+        paths: ["packages/mysql_repo/**"]
+        target: 80%
+      postgres_repo:
+        paths: ["packages/postgres_repo/**"]
+        target: 80%
+      restlette:
+        paths: ["packages/restlette/**"]
+        target: 80%
+      sqlite_repo:
+        paths: ["packages/sqlite_repo/**"]
+        target: 80%
     patch:
       default:
         target: 80%
@@ -20,3 +50,36 @@ ignore:
   - "**/*.mjs"
   - "**/*.cjs"
   - "**/*.json"
+
+component_management:
+  individual_components:
+    - component_id: auth
+      name: Auth
+      paths: ["packages/auth/**"]
+    - component_id: common
+      name: Common
+      paths: ["packages/common/**"]
+    - component_id: graphlette
+      name: Graphlette
+      paths: ["packages/graphlette/**"]
+    - component_id: jwt_auth
+      name: JWT Auth
+      paths: ["packages/jwt_auth/**"]
+    - component_id: meshql
+      name: MeshQL
+      paths: ["packages/meshql/**"]
+    - component_id: mongo_repo
+      name: MongoDB Repository
+      paths: ["packages/mongo_repo/**"]
+    - component_id: mysql_repo
+      name: MySQL Repository
+      paths: ["packages/mysql_repo/**"]
+    - component_id: postgres_repo
+      name: PostgreSQL Repository
+      paths: ["packages/postgres_repo/**"]
+    - component_id: restlette
+      name: Restlette
+      paths: ["packages/restlette/**"]
+    - component_id: sqlite_repo
+      name: SQLite Repository
+      paths: ["packages/sqlite_repo/**"]
