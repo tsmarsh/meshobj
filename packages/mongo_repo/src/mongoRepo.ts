@@ -1,18 +1,18 @@
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from "uuid";
 import Log4js from "log4js";
-import {Collection, Document, Filter, UpdateResult} from "mongodb";
-import {Envelope, Id, Repository} from "@meshql/common";
+import { Collection, Document } from "mongodb";
+import { Envelope, Id, Repository } from "@meshql/common";
 
 const logger = Log4js.getLogger("meshql/mongorepo");
 
 function secureRead(tokens: string[], match: any): any {
     if (tokens.length > 0) {
-        match.authorized_readers = {$in: tokens}
+        match.authorized_readers = { $in: tokens }
     }
     return match;
 }
 
-export class MongoRepository implements Repository{
+export class MongoRepository implements Repository {
     private db: Collection<Envelope>;
 
     constructor(db: Collection<Envelope>) {
@@ -27,7 +27,7 @@ export class MongoRepository implements Repository{
         }
 
         await this.db.insertOne(doc, {
-            writeConcern: {w: "majority"},
+            writeConcern: { w: "majority" },
         });
         return doc
     };
@@ -54,17 +54,17 @@ export class MongoRepository implements Repository{
 
         let filter: any = {
             id,
-            created_at: {$lte: created_at},
-            deleted: {$exists: false},
+            created_at: { $lte: created_at },
+            deleted: { $exists: false },
         }
 
-        if(tokens.length > 0){
+        if (tokens.length > 0) {
             filter.authorized_readers = { $in: tokens }
         }
         try {
             results = await this.db
                 .find(filter)
-                .sort({created_at: -1})
+                .sort({ created_at: -1 })
                 .toArray();
         } catch (err) {
             logger.error(`Can't read: ${JSON.stringify(err)}`);
@@ -75,8 +75,8 @@ export class MongoRepository implements Repository{
 
     readMany = async (ids: Id[], tokens: string[] = []): Promise<Envelope[]> => {
         const match: any = {
-            id: {$in: ids},
-            deleted: {$exists: false}
+            id: { $in: ids },
+            deleted: { $exists: false }
         };
         secureRead(tokens, match);
         let results: Document[] = [];
@@ -88,16 +88,16 @@ export class MongoRepository implements Repository{
                         $match: match,
                     },
                     {
-                        $sort: {created_at: -1},
+                        $sort: { created_at: -1 },
                     },
                     {
                         $group: {
                             _id: "$id",
-                            doc: {$first: "$$ROOT"},
+                            doc: { $first: "$$ROOT" },
                         },
                     },
                     {
-                        $replaceRoot: {newRoot: "$doc"},
+                        $replaceRoot: { newRoot: "$doc" },
                     },
                 ])
                 .toArray();
@@ -105,28 +105,28 @@ export class MongoRepository implements Repository{
             logger.error(`Error listing: ${JSON.stringify(err, null, 2)}`);
         }
 
-        return results.map((d) => {return {id: d.id, created_at: d.created_at, payload: d.payload}});
+        return results.map((d) => { return { id: d.id, created_at: d.created_at, payload: d.payload } });
     };
 
     remove = async (id: Id, tokens: string[] = []): Promise<boolean> => {
-        await this.db.updateMany(secureRead(tokens, {id}), {$set: {deleted: true}});
+        await this.db.updateMany(secureRead(tokens, { id }), { $set: { deleted: true } });
         return true;
     };
 
     removeMany = async (ids: Id[], tokens: string[] = []): Promise<Record<Id, boolean>> => {
         await this.db.updateMany(secureRead(tokens,
-                                                {id: {$in: ids}}),
-                                {$set: {deleted: true}});
+            { id: { $in: ids } }),
+            { $set: { deleted: true } });
         //hack: should compare match to modified then figure out what didn't get removed
         let result: Record<Id, boolean> = {}
-        for(let id of ids){
+        for (let id of ids) {
             result[id] = true
         }
         return result;
     };
 
-    list = async (tokens:string[] = []): Promise<Envelope[]> => {
-        const match = secureRead(tokens, {deleted: {$exists: false}});
+    list = async (tokens: string[] = []): Promise<Envelope[]> => {
+        const match = secureRead(tokens, { deleted: { $exists: false } });
 
         let results: Document[] = [];
 
@@ -137,16 +137,16 @@ export class MongoRepository implements Repository{
                         $match: match,
                     },
                     {
-                        $sort: {created_at: -1},
+                        $sort: { created_at: -1 },
                     },
                     {
                         $group: {
                             _id: "$id",
-                            doc: {$first: "$$ROOT"},
+                            doc: { $first: "$$ROOT" },
                         },
                     },
                     {
-                        $replaceRoot: {newRoot: "$doc"},
+                        $replaceRoot: { newRoot: "$doc" },
                     },
                 ])
                 .toArray();
@@ -154,6 +154,6 @@ export class MongoRepository implements Repository{
             logger.error(`Error listing: ${JSON.stringify(err)}`);
         }
 
-        return results.map((d) => {return {id: d.id, created_at: d.created_at, payload: d.payload}});
+        return results.map((d) => { return { id: d.id, created_at: d.created_at, payload: d.payload } });
     };
 }

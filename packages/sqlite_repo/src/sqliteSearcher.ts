@@ -3,9 +3,6 @@ import { Auth } from "@meshql/auth";
 import { DTOFactory } from "@meshql/graphlette";
 import Handlebars from "handlebars";
 import { Database } from "sqlite";
-import { getLogger } from "log4js";
-
-let logger = getLogger("meshql/sqlitesearcher");
 
 export class SQLiteSearcher implements Searcher {
     private db: Database;
@@ -41,9 +38,9 @@ export class SQLiteSearcher implements Searcher {
         WHERE t1.deleted = 0`
     );
 
-    constructor(db: Database,table: string, dtoFactory: DTOFactory, authorizer: Auth) {
+    constructor(db: Database, table: string, dtoFactory: DTOFactory, authorizer: Auth) {
         this.db = db;
-        this.table =table;
+        this.table = table;
         this.dtoFactory = dtoFactory;
         this.authorizer = authorizer;
     }

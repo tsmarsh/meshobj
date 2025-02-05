@@ -11,6 +11,7 @@ export default [
             "**/node_modules/**",
             "**/*.js",  // Ignore compiled output
             "**/coverage/**",
+            'vitest.workspace.ts',
             "**/vitest.config.ts",
             "**/test/**"
         ]
@@ -36,6 +37,8 @@ export default [
         rules: {
             ...eslint.configs.recommended.rules,
             ...tseslint.configs["recommended"].rules,
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-var-requires': 'off',
             // Add your custom rules here
             // "@typescript-eslint/no-explicit-any": "warn"
         }

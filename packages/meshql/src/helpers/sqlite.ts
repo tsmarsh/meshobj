@@ -1,7 +1,7 @@
 import { Database, open } from "sqlite";
 import sqlite3 from "sqlite3";
 import { SQLConfig } from "../configTypes";
-import { Envelope, Repository } from "@meshql/common";
+import { Repository } from "@meshql/common";
 import { SQLiteSearcher, SQLiteRepository } from "@meshql/sqlite_repo";
 import { Auth } from "@meshql/auth";
 import { DTOFactory } from "@meshql/graphlette";
@@ -12,7 +12,7 @@ import { DTOFactory } from "@meshql/graphlette";
 
 export async function buildSqliteDb(sqlConfig: SQLConfig): Promise<Database<sqlite3.Database, sqlite3.Statement>> {
     const db = await open({
-        
+
         filename: sqlConfig.uri,
         driver: sqlite3.Database,
     });

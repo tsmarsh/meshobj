@@ -1,20 +1,6 @@
-import sqlite3 from 'sqlite3';
 import { v4 as uuid } from 'uuid';
 import { Envelope, Id, Repository } from "@meshql/common";
-import {Database} from "sqlite";
-
-/** 
- * In SQLite, we can store creation timestamps in milliseconds since epoch by using
- * the "julianday()" function. The expression:
- *
- *   CAST((julianday('now') - 2440587.5)*86400000 AS INTEGER)
- *
- * calculates the milliseconds since Unix epoch. Explanation:
- * - julianday('now') gives current time in days since noon in Greenwich on November 24, 4714 B.C.
- * - 2440587.5 is the Julian day number for Unix epoch start (1970-01-01T00:00:00Z).
- * - Multiply (days) by 86400000 → milliseconds in a day.
- * - CAST(... AS INTEGER) to store in an integer column.
- */
+import { Database } from "sqlite";
 
 export class SQLiteRepository implements Repository {
     private db: Database;
@@ -26,7 +12,7 @@ export class SQLiteRepository implements Repository {
     }
 
     async initialize(): Promise<void> {
-        await this.db.exec( `
+        await this.db.exec(`
             CREATE TABLE IF NOT EXISTS ${this.table} (
                 _id INTEGER PRIMARY KEY,
                 id TEXT,
@@ -60,7 +46,7 @@ export class SQLiteRepository implements Repository {
 
         try {
             const { lastID } = await this.db.run(query, values);
-            
+
             const row = await this.db.get(
                 `SELECT * FROM ${this.table} WHERE rowid = ?`,
                 [lastID]
@@ -165,7 +151,7 @@ export class SQLiteRepository implements Repository {
             ${tokens.length > 0 ? `AND EXISTS (SELECT 1 FROM json_each(authorized_tokens) WHERE value IN (SELECT value FROM json_each(?)))` : ""}
             ORDER BY created_at DESC;
         `;
-        const values:string[] = tokens.length > 0 ? [JSON.stringify(tokens)] : [];
+        const values: string[] = tokens.length > 0 ? [JSON.stringify(tokens)] : [];
 
         const rows = await this.db.all(query, values);
 

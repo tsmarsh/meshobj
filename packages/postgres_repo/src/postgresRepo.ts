@@ -117,6 +117,7 @@ export class PostgresRepository implements Repository {
             WHERE id = $1
               AND deleted IS FALSE
               AND created_at <= $2
+              ${tokens.length > 0 ? "AND authorized_tokens && $2" : ""}
             ORDER BY created_at DESC
             LIMIT 1;
         `;

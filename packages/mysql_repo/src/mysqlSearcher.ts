@@ -1,9 +1,9 @@
-import { Envelope, Searcher } from "@meshql/common";
+import { Searcher } from "@meshql/common";
 import { Auth } from "@meshql/auth";
 import { DTOFactory } from "@meshql/graphlette";
 import Handlebars from "handlebars";
 import { getLogger } from "log4js";
-import { Pool, RowDataPacket } from "mysql2/promise";
+import { Pool } from "mysql2/promise";
 import { EnvelopeRow, rowToEnvelope } from "./mysqlRepo";
 
 const logger = getLogger("meshql/mysqlsearcher");

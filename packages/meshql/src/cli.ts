@@ -35,7 +35,7 @@ export default async function startServer(configPath?: string) {
 
     const configFile = argv.config;
     log.info(`Using config file: ${configFile}`);
-    
+
     try {
         const config: Config = await parser.parse({ url: configFile });
         log.debug(`Config: ${JSON.stringify(config)}`);
@@ -46,7 +46,7 @@ export default async function startServer(configPath?: string) {
         const app = await init(config);
         await app.listen(config.port);
         log.info(`Server running on port ${config.port}`);
-        
+
         return app;
     } catch (err) {
         log.error('Failed to start server:', err);

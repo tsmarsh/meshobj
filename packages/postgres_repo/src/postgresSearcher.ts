@@ -1,4 +1,4 @@
-import { Searcher, Envelope } from "@meshql/common";
+import { Searcher } from "@meshql/common";
 import { Auth } from "@meshql/auth";
 import { DTOFactory } from "@meshql/graphlette";
 import Handlebars from "handlebars";
@@ -92,7 +92,7 @@ export class PostgresSearcher implements Searcher {
         args._createdAt = new Date(timestamp).toISOString();
         args._name = this.table;
         args.filters = this.processQueryTemplate(args, queryTemplate);
-        
+
         const sql = this.processQueryTemplate(args, this.vectorQuery);
 
         try {
