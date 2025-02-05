@@ -1,0 +1,28 @@
+node_modules/
+.git/
+.gitignore
+.idea/
+.DS_Store
+coverage/
+.nyc_output/
+**/dist/
+yarn-error.log
+lerna-debug.log
+.aider*
+bun.lockb
+
+# Test files
+**/test/
+**/*.spec.ts
+**/*.test.ts
+
+# Build artifacts
+packages/**/packages/
+packages/**/dist/
+
+# Java artifacts (from your .gitignore)
+target/
+*.class
+*.jar
+*.war
+*.ear 
