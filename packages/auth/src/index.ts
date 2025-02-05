@@ -1,4 +1,4 @@
-import { Envelope } from "@meshql/common";
+import { Envelope } from '@meshql/common';
 
 export interface Auth {
     getAuthToken(context: Record<string, any>): Promise<string[]>;
@@ -7,7 +7,7 @@ export interface Auth {
 
 export class NoOp implements Auth {
     async getAuthToken(): Promise<string[]> {
-        return ["TOKEN"];
+        return ['TOKEN'];
     }
 
     async isAuthorized(): Promise<boolean> {
@@ -15,4 +15,4 @@ export class NoOp implements Auth {
     }
 }
 
-export type ReadSecurer<T> = (creds: any, query: any) => Promise<T>
+export type ReadSecurer<T> = (creds: any, query: any) => Promise<T>;

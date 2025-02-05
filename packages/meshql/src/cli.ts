@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs';
-import { init } from "./server";
-import { Config } from "./configTypes";
-const parser = require("@pushcorn/hocon-parser");
-import Log4js from "log4js";
+import { init } from './server';
+import { Config } from './configTypes';
+const parser = require('@pushcorn/hocon-parser');
+import Log4js from 'log4js';
 
 Log4js.configure({
     appenders: {
         out: {
-            type: "stdout",
+            type: 'stdout',
         },
     },
     categories: {
-        default: { appenders: ["out"], level: "debug" },
+        default: { appenders: ['out'], level: 'debug' },
     },
 });
 
@@ -24,11 +24,11 @@ export default async function startServer(configPath?: string) {
         .option('config', {
             type: 'string',
             description: 'Path to the config file',
-            default: configPath || "config/config.conf",
+            default: configPath || 'config/config.conf',
         })
         .option('port', {
             type: 'number',
-            description: 'Override port from config file'
+            description: 'Override port from config file',
         })
         .help()
         .parseAsync();

@@ -1,7 +1,6 @@
-import {Enforcer, newEnforcer} from "casbin";
-import {Auth} from "@meshql/auth"
-import {Envelope} from "@meshql/common";
-
+import { Enforcer, newEnforcer } from 'casbin';
+import { Auth } from '@meshql/auth';
+import { Envelope } from '@meshql/common';
 
 export class CasbinAuth implements Auth {
     enforcer: Enforcer;
@@ -34,5 +33,4 @@ export class CasbinAuth implements Auth {
         // Check if any of the credentials match authorized tokens
         return authorizedTokens.some((token) => credentials.includes(token));
     }
-
 }

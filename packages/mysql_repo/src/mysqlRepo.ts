@@ -1,9 +1,9 @@
-import { Pool, RowDataPacket, ResultSetHeader } from "mysql2/promise";
-import { v4 as uuid } from "uuid";
-import { Envelope, Id, Payload, Repository } from "@meshql/common";
-import Log4js from "log4js";
+import { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
+import { v4 as uuid } from 'uuid';
+import { Envelope, Id, Payload, Repository } from '@meshql/common';
+import Log4js from 'log4js';
 
-const logger = Log4js.getLogger("meshql/mysql_repo");
+const logger = Log4js.getLogger('meshql/mysql_repo');
 
 export interface EnvelopeRow extends RowDataPacket {
     id: string;
@@ -15,7 +15,7 @@ export interface EnvelopeRow extends RowDataPacket {
 }
 
 export const rowToEnvelope = (row: EnvelopeRow): Envelope => {
-    row.payload.id = row.id
+    row.payload.id = row.id;
     return {
         id: row.id,
         payload: row.payload,
@@ -111,9 +111,7 @@ export class MySQLRepository implements Repository {
             ORDER BY created_at DESC
             LIMIT 1;
         `;
-        const values = tokens.length ?
-            [id, createdAt.getTime(), JSON.stringify(tokens)] :
-            [id, createdAt.getTime()];
+        const values = tokens.length ? [id, createdAt.getTime(), JSON.stringify(tokens)] : [id, createdAt.getTime()];
 
         try {
             const [rows] = await this.pool.query<EnvelopeRow[]>(query, values);
@@ -187,10 +185,13 @@ export class MySQLRepository implements Repository {
 
         try {
             await this.pool.query<ResultSetHeader>(query, values);
-            return ids.reduce((acc, id) => {
-                acc[id] = true;
-                return acc;
-            }, {} as Record<Id, boolean>);
+            return ids.reduce(
+                (acc, id) => {
+                    acc[id] = true;
+                    return acc;
+                },
+                {} as Record<Id, boolean>,
+            );
         } catch (err) {
             logger.error(`Failed to remove multiple documents: ${err}`);
             throw err;
@@ -213,7 +214,7 @@ export class MySQLRepository implements Repository {
 
         try {
             const [rows] = await this.pool.query<EnvelopeRow[]>(query, values);
-            return rows.map(row => ({
+            return rows.map((row) => ({
                 id: row.id,
                 payload: row.payload as Payload,
                 created_at: new Date(Number(row.created_at)),
@@ -224,4 +225,4 @@ export class MySQLRepository implements Repository {
             throw err;
         }
     };
-} 
+}

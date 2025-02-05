@@ -1,29 +1,29 @@
 {
-  "name": "@meshql/casbin_auth",
-  "version": "0.1.0",
-  "type": "commonjs",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": "./dist/index.js"
-  },
-  "description": "Simple authorizer for casbin",
-  "author": "Tom Marsh",
-  "license": "MIT",
-  "private": true,
-  "devDependencies": {
-    "@types/typescript": "^2.0.0",
-    "c8": "^10.1.3",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
-  },
-  "scripts": {
-    "build": "tsc",
-    "test": "vitest --run --coverage"
-  },
-  "dependencies": {
-    "@meshql/auth": "workspace:*",
-    "@meshql/common": "workspace:*",
-    "casbin": "^5.36.0"
-  }
+    "name": "@meshql/casbin_auth",
+    "version": "0.1.0",
+    "type": "commonjs",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": "./dist/index.js"
+    },
+    "description": "Simple authorizer for casbin",
+    "author": "Tom Marsh",
+    "license": "MIT",
+    "private": true,
+    "devDependencies": {
+        "@types/typescript": "^2.0.0",
+        "c8": "^10.1.3",
+        "typescript": "^5.7.2",
+        "vitest": "^2.1.8"
+    },
+    "scripts": {
+        "build": "tsc",
+        "test": "vitest --run --coverage"
+    },
+    "dependencies": {
+        "@meshql/auth": "workspace:*",
+        "@meshql/common": "workspace:*",
+        "casbin": "^5.36.0"
+    }
 }

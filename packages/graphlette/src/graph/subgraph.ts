@@ -1,4 +1,4 @@
-import Log4js from "log4js";
+import Log4js from 'log4js';
 
 import {
     DocumentNode,
@@ -9,26 +9,25 @@ import {
     SelectionSetNode,
     TypeInfo,
     visit,
-    visitWithTypeInfo
-} from "graphql";
+    visitWithTypeInfo,
+} from 'graphql';
 
-
-let logger = Log4js.getLogger("meshql/subgraph");
+let logger = Log4js.getLogger('meshql/subgraph');
 
 type HeadersType = {
-    "Content-Type": string;
+    'Content-Type': string;
     Accept: string;
     Authorization?: string;
-}
+};
 
 async function callSibling(query: string, url: URL, authHeader: string | null) {
-    const body: string = JSON.stringify({query: query}, null, 2);
+    const body: string = JSON.stringify({ query: query }, null, 2);
 
-    logger.trace("Subgraph Call: ", url.pathname, JSON.stringify(query, null, 2));
+    logger.trace('Subgraph Call: ', url.pathname, JSON.stringify(query, null, 2));
 
     let headers: HeadersType = {
-        "Content-Type": "application/json",
-        Accept: "application/json",
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
     };
 
     if (authHeader !== null) {
@@ -36,12 +35,12 @@ async function callSibling(query: string, url: URL, authHeader: string | null) {
     }
 
     let response: Response | void = await fetch(url.toString(), {
-        method: "POST",
+        method: 'POST',
         headers,
         body,
     }).catch((err) => {
         logger.error(err);
-    })
+    });
     return response;
 }
 
@@ -54,28 +53,32 @@ async function processResponse(response: Response | void, queryName: string) {
         } catch (err) {
             logger.error(`This isn't json: ${text}`);
             logger.error(`Error parsing json from response: ${err}`);
-            json = {errors: [{message: text}]};
+            json = { errors: [{ message: text }] };
         }
 
-        if (Object.hasOwnProperty.call(json, "errors")) {
+        if (Object.hasOwnProperty.call(json, 'errors')) {
             logger.error(json);
-            throw new Error(json["errors"][0]["message"]);
+            throw new Error(json['errors'][0]['message']);
         }
-        return json["data"][queryName];
+        return json['data'][queryName];
     }
     return {};
 }
 
-export const callSubgraph = async (url: URL, query: string, queryName: string, authHeader: string | null): Promise<Record<string, any>> => {
+export const callSubgraph = async (
+    url: URL,
+    query: string,
+    queryName: string,
+    authHeader: string | null,
+): Promise<Record<string, any>> => {
     let response = await callSibling(query, url, authHeader);
     return await processResponse(response, queryName);
 };
 
 export const processSelectionSet = (selectionSet: SelectionSetNode): string => {
-    return selectionSet.selections.filter((n): n is FieldNode => n.kind === "Field").reduce(
-        (previousValue: string, field: FieldNode) => previousValue + processFieldNode(field),
-        "",
-    );
+    return selectionSet.selections
+        .filter((n): n is FieldNode => n.kind === 'Field')
+        .reduce((previousValue: string, field: FieldNode) => previousValue + processFieldNode(field), '');
 };
 
 export const processFieldNode = (field: FieldNode): string => {
@@ -84,11 +87,16 @@ export const processFieldNode = (field: FieldNode): string => {
                 ${processSelectionSet(field.selectionSet)}
             }\n`;
     } else {
-        return field.name.value + "\n";
+        return field.name.value + '\n';
     }
 };
 
-export const addTimestampToQuery = (query: string, schema: GraphQLSchema, queryName: string, timestamp: number): string => {
+export const addTimestampToQuery = (
+    query: string,
+    schema: GraphQLSchema,
+    queryName: string,
+    timestamp: number,
+): string => {
     let ast: DocumentNode = parse(query);
     const typeInfo: TypeInfo = new TypeInfo(schema);
     ast = visit(
@@ -96,20 +104,25 @@ export const addTimestampToQuery = (query: string, schema: GraphQLSchema, queryN
         visitWithTypeInfo(typeInfo, {
             Field(node) {
                 if (node.name.value === queryName) {
-                    if (!node.arguments?.some((arg) => arg.name.value === "at")) {
+                    if (!node.arguments?.some((arg) => arg.name.value === 'at')) {
                         return {
                             ...node,
                             arguments: node.arguments
-                                ? [...node.arguments, {
-                                    kind: "Argument",
-                                    name: {kind: "Name", value: "at"},
-                                    value: {kind: "IntValue", value: timestamp.toString()},
-                                }]
-                                : [{
-                                    kind: "Argument",
-                                    name: {kind: "Name", value: "at"},
-                                    value: {kind: "IntValue", value: timestamp.toString()},
-                                }],
+                                ? [
+                                      ...node.arguments,
+                                      {
+                                          kind: 'Argument',
+                                          name: { kind: 'Name', value: 'at' },
+                                          value: { kind: 'IntValue', value: timestamp.toString() },
+                                      },
+                                  ]
+                                : [
+                                      {
+                                          kind: 'Argument',
+                                          name: { kind: 'Name', value: 'at' },
+                                          value: { kind: 'IntValue', value: timestamp.toString() },
+                                      },
+                                  ],
                         };
                     }
                 }
@@ -132,5 +145,5 @@ export const processContext = (id: any, context: any, queryName: string, timesta
             return addTimestampToQuery(query, context.schema, queryName, timestamp);
         }
     }
-    throw Error("Context is malformed");
+    throw Error('Context is malformed');
 };

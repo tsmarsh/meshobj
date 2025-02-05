@@ -2,8 +2,8 @@ export const paths = (context: string) => {
     return {
         [`${context}`]: {
             get: {
-                operationId: "list",
-                summary: "Lists all documents",
+                operationId: 'list',
+                summary: 'Lists all documents',
                 security: [
                     {
                         BearerAuth: [],
@@ -11,13 +11,13 @@ export const paths = (context: string) => {
                 ],
                 responses: {
                     200: {
-                        description: "A list of documents",
+                        description: 'A list of documents',
                         content: {
-                            "application/json": {
+                            'application/json': {
                                 schema: {
-                                    type: "array",
+                                    type: 'array',
                                     items: {
-                                        type: "string",
+                                        type: 'string',
                                     },
                                 },
                             },
@@ -26,8 +26,8 @@ export const paths = (context: string) => {
                 },
             },
             post: {
-                operationId: "create",
-                summary: "Creates a document",
+                operationId: 'create',
+                summary: 'Creates a document',
                 security: [
                     {
                         BearerAuth: [],
@@ -36,28 +36,27 @@ export const paths = (context: string) => {
                 requestBody: {
                     required: true,
                     content: {
-                        "application/json": {
+                        'application/json': {
                             schema: {
-                                $ref: "#/components/schemas/State",
+                                $ref: '#/components/schemas/State',
                             },
                         },
                     },
                 },
                 responses: {
                     303: {
-                        description:
-                            "The document was successfully created. You’ll be redirected to its URL.",
+                        description: 'The document was successfully created. You’ll be redirected to its URL.',
                     },
                     404: {
-                        description: "A document with the specified ID was not found.",
+                        description: 'A document with the specified ID was not found.',
                     },
                 },
             },
         },
         [`${context}/{id}`]: {
             get: {
-                summary: "Retrieves a document",
-                operationId: "read",
+                summary: 'Retrieves a document',
+                operationId: 'read',
                 security: [
                     {
                         BearerAuth: [],
@@ -65,41 +64,41 @@ export const paths = (context: string) => {
                 ],
                 parameters: [
                     {
-                        in: "path",
-                        name: "id",
+                        in: 'path',
+                        name: 'id',
                         required: true,
                         schema: {
-                            type: "string",
+                            type: 'string',
                         },
-                        description: "The ID of the document to retrieve.",
+                        description: 'The ID of the document to retrieve.',
                     },
                 ],
                 responses: {
                     200: {
-                        description: "The document was successfully retrieved.",
+                        description: 'The document was successfully retrieved.',
                         headers: {
-                            "X-Canonical-Id": {
+                            'X-Canonical-Id': {
                                 schema: {
-                                    type: "string",
+                                    type: 'string',
                                 },
                             },
                         },
                         content: {
-                            "application/json": {
+                            'application/json': {
                                 schema: {
-                                    $ref: "#/components/schemas/State",
+                                    $ref: '#/components/schemas/State',
                                 },
                             },
                         },
                     },
                     404: {
-                        description: "A document with the specified ID was not found.",
+                        description: 'A document with the specified ID was not found.',
                     },
                 },
             },
             put: {
-                summary: "Creates or updates a document",
-                operationId: "update",
+                summary: 'Creates or updates a document',
+                operationId: 'update',
                 security: [
                     {
                         BearerAuth: [],
@@ -107,45 +106,45 @@ export const paths = (context: string) => {
                 ],
                 parameters: [
                     {
-                        in: "path",
-                        name: "id",
+                        in: 'path',
+                        name: 'id',
                         required: true,
                         schema: {
-                            type: "string",
+                            type: 'string',
                         },
-                        description: "The ID of the document to create or update.",
+                        description: 'The ID of the document to create or update.',
                     },
                 ],
                 requestBody: {
                     required: true,
                     content: {
-                        "application/json": {
+                        'application/json': {
                             schema: {
-                                $ref: "#/components/schemas/State",
+                                $ref: '#/components/schemas/State',
                             },
                         },
                     },
                 },
                 responses: {
                     200: {
-                        description: "The document was successfully updated.",
+                        description: 'The document was successfully updated.',
                     },
                     201: {
-                        description: "The document was successfully created.",
+                        description: 'The document was successfully created.',
                         headers: {
                             Location: {
                                 schema: {
-                                    type: "string",
+                                    type: 'string',
                                 },
-                                description: "URI of the created document.",
+                                description: 'URI of the created document.',
                             },
                         },
                     },
                 },
             },
             delete: {
-                summary: "Deletes a document",
-                operationId: "delete",
+                summary: 'Deletes a document',
+                operationId: 'delete',
                 security: [
                     {
                         BearerAuth: [],
@@ -153,29 +152,29 @@ export const paths = (context: string) => {
                 ],
                 parameters: [
                     {
-                        in: "path",
-                        name: "id",
+                        in: 'path',
+                        name: 'id',
                         required: true,
                         schema: {
-                            type: "string",
+                            type: 'string',
                         },
-                        description: "The ID of the document to delete.",
+                        description: 'The ID of the document to delete.',
                     },
                 ],
                 responses: {
                     200: {
-                        description: "The document was successfully deleted.",
+                        description: 'The document was successfully deleted.',
                     },
                     404: {
-                        description: "A document with the specified ID was not found.",
+                        description: 'A document with the specified ID was not found.',
                     },
                 },
             },
         },
         [`${context}/bulk`]: {
             get: {
-                summary: "Retrieves all documents in bulk",
-                operationId: "bulk_read",
+                summary: 'Retrieves all documents in bulk',
+                operationId: 'bulk_read',
                 security: [
                     {
                         BearerAuth: [],
@@ -183,13 +182,13 @@ export const paths = (context: string) => {
                 ],
                 responses: {
                     200: {
-                        description: "The documents were successfully retrieved.",
+                        description: 'The documents were successfully retrieved.',
                         content: {
-                            "application/json": {
+                            'application/json': {
                                 schema: {
-                                    type: "array",
+                                    type: 'array',
                                     items: {
-                                        $ref: "#/components/schemas/State",
+                                        $ref: '#/components/schemas/State',
                                     },
                                 },
                             },
@@ -198,8 +197,8 @@ export const paths = (context: string) => {
                 },
             },
             post: {
-                summary: "Creates multiple documents",
-                operationId: "bulk_create",
+                summary: 'Creates multiple documents',
+                operationId: 'bulk_create',
                 security: [
                     {
                         BearerAuth: [],
@@ -208,11 +207,11 @@ export const paths = (context: string) => {
                 requestBody: {
                     required: true,
                     content: {
-                        "application/json": {
+                        'application/json': {
                             schema: {
-                                type: "array",
+                                type: 'array',
                                 items: {
-                                    $ref: "#/components/schemas/State",
+                                    $ref: '#/components/schemas/State',
                                 },
                             },
                         },
@@ -220,22 +219,22 @@ export const paths = (context: string) => {
                 },
                 responses: {
                     200: {
-                        description: "The documents were successfully created.",
+                        description: 'The documents were successfully created.',
                         content: {
-                            "application/json": {
+                            'application/json': {
                                 schema: {
-                                    type: "object",
+                                    type: 'object',
                                     properties: {
                                         successful: {
-                                            type: "array",
+                                            type: 'array',
                                             items: {
-                                                $ref: "#/components/schemas/OperationStatus",
+                                                $ref: '#/components/schemas/OperationStatus',
                                             },
                                         },
                                         failed: {
-                                            type: "array",
+                                            type: 'array',
                                             items: {
-                                                $ref: "#/components/schemas/OperationStatus",
+                                                $ref: '#/components/schemas/OperationStatus',
                                             },
                                         },
                                     },

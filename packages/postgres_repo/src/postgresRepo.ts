@@ -1,6 +1,6 @@
-import { Pool, types } from "pg";
-import { v4 as uuid } from "uuid";
-import { Envelope, Id, Repository } from "@meshql/common";
+import { Pool, types } from 'pg';
+import { v4 as uuid } from 'uuid';
+import { Envelope, Id, Repository } from '@meshql/common';
 
 export class PostgresRepository implements Repository {
     private pool: Pool;
@@ -61,11 +61,7 @@ export class PostgresRepository implements Repository {
      * Create one record. If the UNIQUE (id, created_at) constraint
      * fails, wait 2ms and retry up to 5 times.
      */
-    create = async (
-        doc: Envelope,
-        readers: string[] = [],
-        retryCount = 0
-    ): Promise<Envelope> => {
+    create = async (doc: Envelope, readers: string[] = [], retryCount = 0): Promise<Envelope> => {
         const maxRetries = 5;
         const query = `
             INSERT INTO ${this.table} (id, payload, created_at, updated_at, deleted, authorized_tokens)
@@ -86,7 +82,7 @@ export class PostgresRepository implements Repository {
             };
         } catch (err: any) {
             // Postgres uses "23505" for unique violation
-            if (err.code === "23505" && retryCount < maxRetries) {
+            if (err.code === '23505' && retryCount < maxRetries) {
                 await new Promise((resolve) => setTimeout(resolve, 2));
                 return this.create(doc, readers, retryCount + 1);
             }
@@ -98,10 +94,7 @@ export class PostgresRepository implements Repository {
      * Create many records. If any insert conflicts on (id, created_at),
      * retry (sleep 2ms, up to 5 times) for each doc.
      */
-    createMany = async (
-        docs: Envelope[],
-        readers: string[] = []
-    ): Promise<Envelope[]> => {
+    createMany = async (docs: Envelope[], readers: string[] = []): Promise<Envelope[]> => {
         const created: Envelope[] = [];
         for (const doc of docs) {
             created.push(await this.create(doc, readers));
@@ -117,7 +110,7 @@ export class PostgresRepository implements Repository {
             WHERE id = $1
               AND deleted IS FALSE
               AND created_at <= $2
-              ${tokens.length > 0 ? "AND authorized_tokens && $2" : ""}
+              ${tokens.length > 0 ? 'AND authorized_tokens && $2' : ''}
             ORDER BY created_at DESC
             LIMIT 1;
         `;
@@ -134,7 +127,7 @@ export class PostgresRepository implements Repository {
         };
     };
 
-    // Read the latest version of multiple ids at once. 
+    // Read the latest version of multiple ids at once.
     readMany = async (ids: Id[], readers: string[] = []): Promise<Envelope[]> => {
         if (!ids.length) return [];
 
@@ -143,7 +136,7 @@ export class PostgresRepository implements Repository {
             FROM ${this.table}
             WHERE id = ANY($1)
               AND deleted IS FALSE
-              ${readers.length > 0 ? "AND authorized_tokens && $2" : ""}
+              ${readers.length > 0 ? 'AND authorized_tokens && $2' : ''}
             ORDER BY id, created_at DESC;
         `;
         const values = readers.length > 0 ? [ids, readers] : [ids];
@@ -162,7 +155,7 @@ export class PostgresRepository implements Repository {
             UPDATE ${this.table}
             SET deleted = TRUE
             WHERE id = $1
-            ${readers.length > 0 ? "AND authorized_tokens && $2" : ""};
+            ${readers.length > 0 ? 'AND authorized_tokens && $2' : ''};
         `;
         const values = readers.length > 0 ? [id, readers] : [id];
 
@@ -177,15 +170,18 @@ export class PostgresRepository implements Repository {
             UPDATE ${this.table}
             SET deleted = TRUE
             WHERE id = ANY($1)
-            ${readers.length > 0 ? "AND authorized_tokens && $2" : ""};
+            ${readers.length > 0 ? 'AND authorized_tokens && $2' : ''};
         `;
         const values = readers.length > 0 ? [ids, readers] : [ids];
         await this.pool.query(query, values);
 
-        return ids.reduce((acc, docId) => {
-            acc[docId] = true;
-            return acc;
-        }, {} as Record<Id, boolean>);
+        return ids.reduce(
+            (acc, docId) => {
+                acc[docId] = true;
+                return acc;
+            },
+            {} as Record<Id, boolean>,
+        );
     };
 
     list = async (readers: string[] = []): Promise<Envelope[]> => {
@@ -193,7 +189,7 @@ export class PostgresRepository implements Repository {
             SELECT DISTINCT ON (id) *
             FROM ${this.table}
             WHERE deleted IS FALSE
-            ${readers.length > 0 ? "AND readers && $1" : ""}
+            ${readers.length > 0 ? 'AND readers && $1' : ''}
             ORDER BY id, created_at DESC;
         `;
         const values = readers.length > 0 ? [readers] : [];

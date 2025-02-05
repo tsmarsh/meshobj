@@ -16,7 +16,7 @@ describe('JWTSubAuthorizer', () => {
     describe('getAuthToken', () => {
         it('should return empty array when no authorization header', async () => {
             const mockRequest = {
-                headers: {}
+                headers: {},
             } as Request;
 
             const result = await authorizer.getAuthToken(mockRequest);
@@ -26,8 +26,8 @@ describe('JWTSubAuthorizer', () => {
         it('should return empty array when authorization header is not Bearer', async () => {
             const mockRequest = {
                 headers: {
-                    authorization: 'Basic sometoken'
-                }
+                    authorization: 'Basic sometoken',
+                },
             } as Request;
 
             const result = await authorizer.getAuthToken(mockRequest);
@@ -38,8 +38,8 @@ describe('JWTSubAuthorizer', () => {
             const token = jwt.sign({ sub: TEST_SUB }, SECRET);
             const mockRequest = {
                 headers: {
-                    authorization: `Bearer ${token}`
-                }
+                    authorization: `Bearer ${token}`,
+                },
             } as Request;
 
             const result = await authorizer.getAuthToken(mockRequest);

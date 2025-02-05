@@ -1,16 +1,14 @@
 {
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "name"
-  ],
-  "properties": {
-    "id": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "name": {
-      "type": "string"
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["name"],
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "name": {
+            "type": "string"
+        }
     }
-  }
 }

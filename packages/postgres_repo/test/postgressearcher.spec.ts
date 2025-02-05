@@ -1,34 +1,34 @@
-import { Searcher, Envelope, Repository } from "@meshql/common";
-import { SearcherCertification, TestTemplates } from "../../common/test/certification/searcher.cert";
-import { DTOFactory } from "@meshql/graphlette";
-import { NoOp, Auth } from "@meshql/auth";
-import { compile } from "handlebars";
-import { Pool } from "pg";
-import { GenericContainer, StartedTestContainer } from "testcontainers";
-import { PostgresRepository } from "../src/postgresRepo";
-import { PostgresSearcher } from "../src/postgresSearcher";
-import {describe} from "vitest";
+import { Searcher, Envelope, Repository } from '@meshql/common';
+import { SearcherCertification, TestTemplates } from '../../common/test/certification/searcher.cert';
+import { DTOFactory } from '@meshql/graphlette';
+import { NoOp, Auth } from '@meshql/auth';
+import { compile } from 'handlebars';
+import { Pool } from 'pg';
+import { GenericContainer, StartedTestContainer } from 'testcontainers';
+import { PostgresRepository } from '../src/postgresRepo';
+import { PostgresSearcher } from '../src/postgresSearcher';
+import { describe } from 'vitest';
 
 const dbs: Pool[] = [];
 let container: StartedTestContainer | null = null;
 
-const createSearcher = async (): Promise<{ repository: Repository, searcher: Searcher }> => {
+const createSearcher = async (): Promise<{ repository: Repository; searcher: Searcher }> => {
     if (!container) {
-        container = await new GenericContainer("postgres")
+        container = await new GenericContainer('postgres')
             .withExposedPorts(5432)
             .withEnvironment({
-                "POSTGRES_PASSWORD":"password",
-                "POSTGRES_DB":"test"
+                POSTGRES_PASSWORD: 'password',
+                POSTGRES_DB: 'test',
             })
             .start();
     }
 
     const pool = new Pool({
-        user: "postgres",
+        user: 'postgres',
         host: container.getHost(),
         port: container.getMappedPort(5432),
         database: `test`,
-        password: "password"
+        password: 'password',
     });
 
     dbs.push(pool);
@@ -39,7 +39,6 @@ const createSearcher = async (): Promise<{ repository: Repository, searcher: Sea
 
     const dtoFactory = new DTOFactory([]);
     const auth: Auth = new NoOp();
-
 
     return { repository: repo, searcher: new PostgresSearcher(pool, `test${dbs.length}`, dtoFactory, auth) };
 };
@@ -66,6 +65,6 @@ const templates: TestTemplates = {
     findByNameAndType: compile(findByNameAndType),
 };
 
-describe("Postgres Searcher", () => {
+describe('Postgres Searcher', () => {
     SearcherCertification(createSearcher, tearDown, templates);
 });

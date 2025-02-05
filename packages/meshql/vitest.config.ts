@@ -1,19 +1,19 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     test: {
         typecheck: {
             enabled: true,
-            checker: "tsc"
+            checker: 'tsc',
         },
         globals: true,
-        environment: "node",
+        environment: 'node',
         coverage: {
-            reportsDirectory: '../../coverage'
+            reportsDirectory: '../../coverage',
         },
     },
     esbuild: {
-        loader: "ts", // Use TypeScript loader
-        target: "es2022", // Align with `tsconfig.json`
-    }
+        loader: 'ts', // Use TypeScript loader
+        target: 'es2022', // Align with `tsconfig.json`
+    },
 });

@@ -1,8 +1,8 @@
-import { Searcher, Envelope } from "@meshql/common";
-import { Auth } from "@meshql/auth";
-import { DTOFactory } from "@meshql/graphlette";
-import Handlebars from "handlebars";
-import { Database } from "sqlite";
+import { Searcher, Envelope } from '@meshql/common';
+import { Auth } from '@meshql/auth';
+import { DTOFactory } from '@meshql/graphlette';
+import Handlebars from 'handlebars';
+import { Database } from 'sqlite';
 
 export class SQLiteSearcher implements Searcher {
     private db: Database;
@@ -35,7 +35,7 @@ export class SQLiteSearcher implements Searcher {
         JOIN latest t2
         ON t1.id = t2.id
         AND t1.created_at = t2.max_created_at
-        WHERE t1.deleted = 0`
+        WHERE t1.deleted = 0`,
     );
 
     constructor(db: Database, table: string, dtoFactory: DTOFactory, authorizer: Auth) {
@@ -49,9 +49,14 @@ export class SQLiteSearcher implements Searcher {
         return queryTemplate(parameters);
     }
 
-    async find(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>> {
+    async find(
+        queryTemplate: Handlebars.TemplateDelegate,
+        args: Record<string, any>,
+        creds: string[] = [],
+        timestamp: number = Date.now(),
+    ): Promise<Record<string, any>> {
         args._created_at = timestamp;
-        args._name = this.table
+        args._name = this.table;
         args.filters = this.processQueryTemplate(args, queryTemplate);
         let sql = this.processQueryTemplate(args, this.singletonTemplate);
 
@@ -62,7 +67,6 @@ export class SQLiteSearcher implements Searcher {
             result.authorized_tokens = JSON.parse(result.authorized_tokens);
 
             if (await this.authorizer.isAuthorized(creds, result)) {
-
                 result.payload.id = result.id;
                 return this.dtoFactory.fillOne(result.payload, timestamp);
             }
@@ -71,17 +75,22 @@ export class SQLiteSearcher implements Searcher {
         return {};
     }
 
-    async findAll(queryTemplate: Handlebars.TemplateDelegate, args: Record<string, any>, creds: string[] = [], timestamp: number = Date.now()): Promise<Record<string, any>[]> {
+    async findAll(
+        queryTemplate: Handlebars.TemplateDelegate,
+        args: Record<string, any>,
+        creds: string[] = [],
+        timestamp: number = Date.now(),
+    ): Promise<Record<string, any>[]> {
         args._created_at = timestamp;
-        args._name = this.table
+        args._name = this.table;
         args.filters = this.processQueryTemplate(args, queryTemplate);
         let sql = this.processQueryTemplate(args, this.vectorTemplate);
 
         const rows = await this.db.all(sql, []);
         const envelopes: Envelope[] = rows.map((i) => {
-            i.payload = JSON.parse(i.payload)
-            i.authorized_tokens = JSON.parse(i.authorized_tokens)
-            return i
+            i.payload = JSON.parse(i.payload);
+            i.authorized_tokens = JSON.parse(i.authorized_tokens);
+            return i;
         });
 
         const authorizedResults = envelopes.filter((row) => this.authorizer.isAuthorized(creds, row));

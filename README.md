@@ -13,24 +13,23 @@ MeshQL consists of three primary components:
 ### Core Features
 
 - **Multiple Storage Backends**:
-  - MongoDB: Document-based storage with native JSON support
-  - PostgreSQL: ACID-compliant relational database with JSON capabilities
-  - MySQL: High-performance relational database with JSON support
-  - SQLite: Lightweight embedded database for development/testing
-  
+    - MongoDB: Document-based storage with native JSON support
+    - PostgreSQL: ACID-compliant relational database with JSON capabilities
+    - MySQL: High-performance relational database with JSON support
+    - SQLite: Lightweight embedded database for development/testing
 - **Temporal Querying**: Query data at specific points in time using timestamps
-  - Millisecond precision in MongoDB and SQLite
-  - Configurable precision in PostgreSQL/MySQL
-  
+    - Millisecond precision in MongoDB and SQLite
+    - Configurable precision in PostgreSQL/MySQL
 - **Authentication & Authorization**:
-  - JWT-based authentication with subject extraction
-  - Fine-grained access control via authorized_tokens
-  - CASBIN support for role-based access control (RBAC)
+
+    - JWT-based authentication with subject extraction
+    - Fine-grained access control via authorized_tokens
+    - CASBIN support for role-based access control (RBAC)
 
 - **GraphQL Features**:
-  - Automatic relationship resolution
-  - Temporal queries via timestamp arguments
-  - Subgraph federation
+    - Automatic relationship resolution
+    - Temporal queries via timestamp arguments
+    - Subgraph federation
 
 ## Configuration
 
@@ -121,7 +120,7 @@ graphlettes = [
         id: ID
         coops: [Coop]
       }
-      
+
       type Query {
         getById(id: ID, at: Float): Farm        # 'at' enables temporal queries
         getByName(name: String): [Farm]
@@ -168,11 +167,13 @@ restlettes = [
 ## Development
 
 ### Prerequisites
+
 - Node.js 18+
 - Yarn
 - Docker (for running tests)
 
 ### Setup
+
 ```bash
 # Install dependencies
 yarn install
@@ -188,7 +189,9 @@ yarn test
 ```
 
 ### Testing
+
 MeshQL uses container-based testing for database integrations:
+
 - PostgreSQL tests via testcontainers
 - MySQL tests with containerized MySQL 8.0
 - MongoDB tests with mongodb-memory-server

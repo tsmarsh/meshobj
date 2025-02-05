@@ -1,2 +1,2 @@
-export {PostgresSearcher} from "./postgresSearcher"
-export {PostgresRepository} from "./postgresRepo.js"
+export { PostgresSearcher } from './postgresSearcher';
+export { PostgresRepository } from './postgresRepo.js';

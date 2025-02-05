@@ -1,29 +1,29 @@
-import {TemplateDelegate} from "handlebars";
+import { TemplateDelegate } from 'handlebars';
 
 export type Singleton = {
     query: string;
     name: string;
     id?: string;
-}
+};
 
 export type Vector = {
     query: string;
     name: string;
     id?: string;
-}
+};
 
 export type Resolver = {
     name: string;
     id: string;
     queryName: string;
     url: string;
-}
+};
 
 export type RootConfig = {
     singletons?: Singleton[];
     vectors?: Vector[];
-    resolvers?: Resolver[]
-}
+    resolvers?: Resolver[];
+};
 
 export type Id = string | number;
 
@@ -34,12 +34,10 @@ export type Envelope = {
     payload: Payload;
     created_at?: Date;
     deleted?: boolean;
-    authorized_tokens?: string[]
-}
+    authorized_tokens?: string[];
+};
 
-
-
-export interface Repository{
+export interface Repository {
     create: (envelope: Envelope, tokens?: string[]) => Promise<Envelope>;
     read: (id: Id, tokens?: string[], createdAt?: Date) => Promise<Envelope | undefined>;
     list: (tokens?: string[]) => Promise<Envelope[]>;
@@ -50,10 +48,20 @@ export interface Repository{
 }
 
 export interface Searcher {
-    find(queryTemplate: TemplateDelegate, args: Record<string, any>, creds?: string[], timestamp?: number): Promise<Record<string, any>>;
-    findAll(queryTemplate: TemplateDelegate, args: Record<string, any>, creds?: string[],timestamp?: number): Promise<Record<string, any>[]>;
+    find(
+        queryTemplate: TemplateDelegate,
+        args: Record<string, any>,
+        creds?: string[],
+        timestamp?: number,
+    ): Promise<Record<string, any>>;
+    findAll(
+        queryTemplate: TemplateDelegate,
+        args: Record<string, any>,
+        creds?: string[],
+        timestamp?: number,
+    ): Promise<Record<string, any>[]>;
 }
 
 export interface Validator {
-    (data: Record<string, any>): Promise<boolean>
+    (data: Record<string, any>): Promise<boolean>;
 }

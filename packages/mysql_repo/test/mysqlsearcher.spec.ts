@@ -1,25 +1,25 @@
-import { SearcherCertification } from "../../common/test/certification/searcher.cert";
-import { createPool, Pool } from "mysql2/promise";
-import { MySQLSearcher } from "../src/mysqlSearcher";
-import { MySQLRepository } from "../src/mysqlRepo";
-import { compile } from "handlebars";
-import { GenericContainer, StartedTestContainer } from "testcontainers";
-import { randomUUID } from "crypto";
-import { TestTemplates } from "../../common/test/certification/searcher.cert";
-import { DTOFactory } from "@meshql/graphlette";
-import {NoOp} from "@meshql/auth";
+import { SearcherCertification } from '../../common/test/certification/searcher.cert';
+import { createPool, Pool } from 'mysql2/promise';
+import { MySQLSearcher } from '../src/mysqlSearcher';
+import { MySQLRepository } from '../src/mysqlRepo';
+import { compile } from 'handlebars';
+import { GenericContainer, StartedTestContainer } from 'testcontainers';
+import { randomUUID } from 'crypto';
+import { TestTemplates } from '../../common/test/certification/searcher.cert';
+import { DTOFactory } from '@meshql/graphlette';
+import { NoOp } from '@meshql/auth';
 
-import { describe } from "vitest";
+import { describe } from 'vitest';
 
 const pools: Pool[] = [];
 let container: StartedTestContainer;
 
 const createSearcher = async () => {
     if (!container) {
-        container = await new GenericContainer("mysql:8.0")
+        container = await new GenericContainer('mysql:8.0')
             .withEnvironment({
-                MYSQL_ROOT_PASSWORD: "root",
-                MYSQL_DATABASE: "test"
+                MYSQL_ROOT_PASSWORD: 'root',
+                MYSQL_DATABASE: 'test',
             })
             .withExposedPorts(3306)
             .start();
@@ -28,16 +28,16 @@ const createSearcher = async () => {
     const pool = createPool({
         host: container.getHost(),
         port: container.getMappedPort(3306),
-        user: "root",
-        password: "root",
-        database: "test",
+        user: 'root',
+        password: 'root',
+        database: 'test',
         waitForConnections: true,
         connectionLimit: 10,
         maxIdle: 10,
         idleTimeout: 60000,
         queueLimit: 0,
         enableKeepAlive: true,
-        keepAliveInitialDelay: 0
+        keepAliveInitialDelay: 0,
     });
 
     pools.push(pool);
@@ -72,9 +72,9 @@ const templates: TestTemplates = {
     findById: compile(findById),
     findByName: compile(findByName),
     findAllByType: compile(findAllByType),
-    findByNameAndType: compile(findByNameAndType)
+    findByNameAndType: compile(findByNameAndType),
 };
 
-describe("MySQL Searcher", () => {
+describe('MySQL Searcher', () => {
     SearcherCertification(createSearcher, tearDown, templates);
-}); 
+});

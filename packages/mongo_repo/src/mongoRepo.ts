@@ -1,13 +1,13 @@
-import { v4 as uuid } from "uuid";
-import Log4js from "log4js";
-import { Collection, Document } from "mongodb";
-import { Envelope, Id, Repository } from "@meshql/common";
+import { v4 as uuid } from 'uuid';
+import Log4js from 'log4js';
+import { Collection, Document } from 'mongodb';
+import { Envelope, Id, Repository } from '@meshql/common';
 
-const logger = Log4js.getLogger("meshql/mongorepo");
+const logger = Log4js.getLogger('meshql/mongorepo');
 
 function secureRead(tokens: string[], match: any): any {
     if (tokens.length > 0) {
-        match.authorized_readers = { $in: tokens }
+        match.authorized_readers = { $in: tokens };
     }
     return match;
 }
@@ -22,14 +22,14 @@ export class MongoRepository implements Repository {
     create = async (doc: Envelope): Promise<Envelope> => {
         doc.created_at = new Date();
 
-        if (!Object.hasOwnProperty.call(doc, "id")) {
+        if (!Object.hasOwnProperty.call(doc, 'id')) {
             doc.id = uuid();
         }
 
         await this.db.insertOne(doc, {
-            writeConcern: { w: "majority" },
+            writeConcern: { w: 'majority' },
         });
-        return doc
+        return doc;
     };
 
     createMany = async (clean_docs: Envelope[]): Promise<Envelope[]> => {
@@ -56,16 +56,13 @@ export class MongoRepository implements Repository {
             id,
             created_at: { $lte: created_at },
             deleted: { $exists: false },
-        }
+        };
 
         if (tokens.length > 0) {
-            filter.authorized_readers = { $in: tokens }
+            filter.authorized_readers = { $in: tokens };
         }
         try {
-            results = await this.db
-                .find(filter)
-                .sort({ created_at: -1 })
-                .toArray();
+            results = await this.db.find(filter).sort({ created_at: -1 }).toArray();
         } catch (err) {
             logger.error(`Can't read: ${JSON.stringify(err)}`);
         }
@@ -76,7 +73,7 @@ export class MongoRepository implements Repository {
     readMany = async (ids: Id[], tokens: string[] = []): Promise<Envelope[]> => {
         const match: any = {
             id: { $in: ids },
-            deleted: { $exists: false }
+            deleted: { $exists: false },
         };
         secureRead(tokens, match);
         let results: Document[] = [];
@@ -92,12 +89,12 @@ export class MongoRepository implements Repository {
                     },
                     {
                         $group: {
-                            _id: "$id",
-                            doc: { $first: "$$ROOT" },
+                            _id: '$id',
+                            doc: { $first: '$$ROOT' },
                         },
                     },
                     {
-                        $replaceRoot: { newRoot: "$doc" },
+                        $replaceRoot: { newRoot: '$doc' },
                     },
                 ])
                 .toArray();
@@ -105,7 +102,9 @@ export class MongoRepository implements Repository {
             logger.error(`Error listing: ${JSON.stringify(err, null, 2)}`);
         }
 
-        return results.map((d) => { return { id: d.id, created_at: d.created_at, payload: d.payload } });
+        return results.map((d) => {
+            return { id: d.id, created_at: d.created_at, payload: d.payload };
+        });
     };
 
     remove = async (id: Id, tokens: string[] = []): Promise<boolean> => {
@@ -114,13 +113,11 @@ export class MongoRepository implements Repository {
     };
 
     removeMany = async (ids: Id[], tokens: string[] = []): Promise<Record<Id, boolean>> => {
-        await this.db.updateMany(secureRead(tokens,
-            { id: { $in: ids } }),
-            { $set: { deleted: true } });
+        await this.db.updateMany(secureRead(tokens, { id: { $in: ids } }), { $set: { deleted: true } });
         //hack: should compare match to modified then figure out what didn't get removed
-        let result: Record<Id, boolean> = {}
+        let result: Record<Id, boolean> = {};
         for (let id of ids) {
-            result[id] = true
+            result[id] = true;
         }
         return result;
     };
@@ -141,12 +138,12 @@ export class MongoRepository implements Repository {
                     },
                     {
                         $group: {
-                            _id: "$id",
-                            doc: { $first: "$$ROOT" },
+                            _id: '$id',
+                            doc: { $first: '$$ROOT' },
                         },
                     },
                     {
-                        $replaceRoot: { newRoot: "$doc" },
+                        $replaceRoot: { newRoot: '$doc' },
                     },
                 ])
                 .toArray();
@@ -154,6 +151,8 @@ export class MongoRepository implements Repository {
             logger.error(`Error listing: ${JSON.stringify(err)}`);
         }
 
-        return results.map((d) => { return { id: d.id, created_at: d.created_at, payload: d.payload } });
+        return results.map((d) => {
+            return { id: d.id, created_at: d.created_at, payload: d.payload };
+        });
     };
 }

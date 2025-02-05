@@ -1,10 +1,10 @@
-import { Database, open } from "sqlite";
-import sqlite3 from "sqlite3";
-import { SQLConfig } from "../configTypes";
-import { Repository } from "@meshql/common";
-import { SQLiteSearcher, SQLiteRepository } from "@meshql/sqlite_repo";
-import { Auth } from "@meshql/auth";
-import { DTOFactory } from "@meshql/graphlette";
+import { Database, open } from 'sqlite';
+import sqlite3 from 'sqlite3';
+import { SQLConfig } from '../configTypes';
+import { Repository } from '@meshql/common';
+import { SQLiteSearcher, SQLiteRepository } from '@meshql/sqlite_repo';
+import { Auth } from '@meshql/auth';
+import { DTOFactory } from '@meshql/graphlette';
 
 /**
  * Helper that opens SQLite and returns the Database reference.
@@ -12,7 +12,6 @@ import { DTOFactory } from "@meshql/graphlette";
 
 export async function buildSqliteDb(sqlConfig: SQLConfig): Promise<Database<sqlite3.Database, sqlite3.Statement>> {
     const db = await open({
-
         filename: sqlConfig.uri,
         driver: sqlite3.Database,
     });
@@ -35,4 +34,4 @@ export async function createSQLiteRepository(sqlConfig: SQLConfig): Promise<Repo
     const repo = new SQLiteRepository(db, sqlConfig.collection);
     await repo.initialize();
     return repo;
-} 
+}

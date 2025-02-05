@@ -1,10 +1,10 @@
-import {Auth} from "@meshql/auth";
-import {getLogger} from "log4js";
-const jwt = require("jsonwebtoken");
-import {Envelope} from "@meshql/common";
-import {Request} from "express";
+import { Auth } from '@meshql/auth';
+import { getLogger } from 'log4js';
+const jwt = require('jsonwebtoken');
+import { Envelope } from '@meshql/common';
+import { Request } from 'express';
 
-let logger = getLogger("meshql/jwtauth");
+let logger = getLogger('meshql/jwtauth');
 
 export class JWTSubAuthorizer implements Auth {
     async getAuthToken(context: Request): Promise<string[]> {
@@ -14,14 +14,14 @@ export class JWTSubAuthorizer implements Auth {
             return [];
         }
 
-        if (authHeader.startsWith("Bearer ")) {
+        if (authHeader.startsWith('Bearer ')) {
             const token = authHeader.substring(7, authHeader.length);
 
-            const dToken: {sub: string} = jwt.decode(token);
+            const dToken: { sub: string } = jwt.decode(token);
 
-            return [dToken["sub"]];
+            return [dToken['sub']];
         } else {
-            logger.error("Missing Bearer Token");
+            logger.error('Missing Bearer Token');
             return [];
         }
     }

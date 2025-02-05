@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 
 export function getRegisteredPaths(app: express.Application): Array<{ method: string; path: string }> {
     const routes: Array<{ method: string; path: string }> = [];
@@ -10,7 +10,7 @@ export function getRegisteredPaths(app: express.Application): Array<{ method: st
             Object.keys(methods).forEach((method) => {
                 routes.push({ method: method.toUpperCase(), path });
             });
-        } else if (middleware.name === "router") {
+        } else if (middleware.name === 'router') {
             // Routes registered on a router (e.g., router.get('/path'))
             middleware.handle.stack.forEach((handler: any) => {
                 const { route } = handler;

@@ -1,12 +1,12 @@
-import { Searcher } from "@meshql/common";
-import { Auth } from "@meshql/auth";
-import { DTOFactory } from "@meshql/graphlette";
-import Handlebars from "handlebars";
-import { getLogger } from "log4js";
-import { Pool } from "mysql2/promise";
-import { EnvelopeRow, rowToEnvelope } from "./mysqlRepo";
+import { Searcher } from '@meshql/common';
+import { Auth } from '@meshql/auth';
+import { DTOFactory } from '@meshql/graphlette';
+import Handlebars from 'handlebars';
+import { getLogger } from 'log4js';
+import { Pool } from 'mysql2/promise';
+import { EnvelopeRow, rowToEnvelope } from './mysqlRepo';
 
-const logger = getLogger("meshql/mysqlsearcher");
+const logger = getLogger('meshql/mysqlsearcher');
 
 export class MySQLSearcher implements Searcher {
     private pool: Pool;
@@ -59,7 +59,7 @@ export class MySQLSearcher implements Searcher {
         queryTemplate: Handlebars.TemplateDelegate,
         args: Record<string, any>,
         creds: string[] = [],
-        timestamp: number = Date.now()
+        timestamp: number = Date.now(),
     ): Promise<Record<string, any>> {
         args._name = this.table;
         args.filters = this.processQueryTemplate(args, queryTemplate);
@@ -90,7 +90,7 @@ export class MySQLSearcher implements Searcher {
         queryTemplate: Handlebars.TemplateDelegate,
         args: Record<string, any>,
         creds: string[] = [],
-        timestamp: number = Date.now()
+        timestamp: number = Date.now(),
     ): Promise<Record<string, any>[]> {
         args._name = this.table;
         args.filters = this.processQueryTemplate(args, queryTemplate);
@@ -101,10 +101,10 @@ export class MySQLSearcher implements Searcher {
             const [rows] = await this.pool.query<EnvelopeRow[]>(sql, [timestamp]);
 
             const authorizedResults = await Promise.all(
-                rows.filter(row => this.authorizer.isAuthorized(creds, rowToEnvelope(row)))
+                rows.filter((row) => this.authorizer.isAuthorized(creds, rowToEnvelope(row))),
             );
 
-            return authorizedResults.map(row => {
+            return authorizedResults.map((row) => {
                 const payload = row.payload;
                 payload.id = row.id;
                 return payload;
@@ -115,4 +115,4 @@ export class MySQLSearcher implements Searcher {
 
         return [];
     }
-} 
+}

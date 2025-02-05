@@ -1,9 +1,9 @@
-import { Auth } from "@meshql/auth";
-import Log4js from "log4js";
-import { Envelope, Repository, Validator } from "@meshql/common";
-import { Request, Response } from "express";
+import { Auth } from '@meshql/auth';
+import Log4js from 'log4js';
+import { Envelope, Repository, Validator } from '@meshql/common';
+import { Request, Response } from 'express';
 
-const logger = Log4js.getLogger("meshql/restlette");
+const logger = Log4js.getLogger('meshql/restlette');
 
 export class Crud {
     private _authorizer: Auth;
@@ -22,10 +22,10 @@ export class Crud {
 
     create = async (req: Request, res: Response) => {
         const authorized_tokens: string[] = await this.calculateTokens(req);
-        const payload :Record<string, any> = req.body;
+        const payload: Record<string, any> = req.body;
 
         if (!(await this._validator(payload))) {
-            res.status(400).send("Invalid document");
+            res.status(400).send('Invalid document');
             return;
         }
 
@@ -51,7 +51,7 @@ export class Crud {
         const result = await this._repo.read(id);
 
         if (result) {
-            res.setHeader("X-Canonical-Id", String(result.id));
+            res.setHeader('X-Canonical-Id', String(result.id));
             if (await this._authorizer.isAuthorized(authToken, result)) {
                 res.send(result.payload);
             } else {
@@ -68,7 +68,7 @@ export class Crud {
         const payload = req.body as any;
 
         if (!(await this._validator(payload))) {
-            res.status(400).send("Invalid document");
+            res.status(400).send('Invalid document');
             return;
         }
 
@@ -121,21 +121,23 @@ export class Crud {
     };
 
     bulk_create = async (req: Request, res: Response) => {
-        const docs:Record<string, any>[] = req.body as Record<string, any>[];
+        const docs: Record<string, any>[] = req.body as Record<string, any>[];
         const authorizedTokens = await this.calculateTokens(req);
 
         const envelopes: Envelope[] = (
             await Promise.all(
-                docs.map(async (d: Record<string, any>) => (await this._validator(d) ? { payload: d, authorized_tokens: authorizedTokens } : null))
+                docs.map(async (d: Record<string, any>) =>
+                    (await this._validator(d)) ? { payload: d, authorized_tokens: authorizedTokens } : null,
+                ),
             )
         ).filter(Boolean) as Envelope[];
 
         const created = await this._repo.createMany(envelopes);
-        res.send(created.map(({ id }):string => `${this._context}/${id}`));
+        res.send(created.map(({ id }): string => `${this._context}/${id}`));
     };
 
     bulk_read = async (req: Request, res: Response) => {
-        const ids = (req.query.ids as string).split(",");
+        const ids = (req.query.ids as string).split(',');
         const authToken = await this._authorizer.getAuthToken(req);
 
         const found = await this._repo.readMany(ids);

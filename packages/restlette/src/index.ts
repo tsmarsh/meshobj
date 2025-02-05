@@ -1,11 +1,11 @@
-import express, {RequestHandler, Router} from "express";
-import rateLimit from "express-rate-limit";
-import Log4js from "log4js";
-import swaggerUi, {JsonObject} from "swagger-ui-express";
-import {Crud} from "./crud.js";
-import {paths} from "./swagger";
+import express, { RequestHandler, Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import Log4js from 'log4js';
+import swaggerUi, { JsonObject } from 'swagger-ui-express';
+import { Crud } from './crud.js';
+import { paths } from './swagger';
 
-const logger = Log4js.getLogger("meshql/restlette");
+const logger = Log4js.getLogger('meshql/restlette');
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -13,9 +13,9 @@ const limiter = rateLimit({
 });
 
 const swaggerOptions = (apiPath: string, port: number, schema: Record<string, any>) => ({
-    openapi: "3.0.0",
+    openapi: '3.0.0',
     info: {
-        version: "0.1.0",
+        version: '0.1.0',
         title: `${apiPath} API`,
         description: `API for mutating ${apiPath}`,
     },
@@ -27,24 +27,24 @@ const swaggerOptions = (apiPath: string, port: number, schema: Record<string, an
     components: {
         securitySchemes: {
             BearerAuth: {
-                type: "http",
-                scheme: "bearer",
-                bearerFormat: "JWT",
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
             },
         },
         schemas: {
             State: schema,
             OperationStatus: {
-                type: "object",
+                type: 'object',
                 properties: {
                     id: {
-                        type: "string",
+                        type: 'string',
                     },
                     status: {
-                        type: "string",
+                        type: 'string',
                     },
                     error: {
-                        type: "string",
+                        type: 'string',
                     },
                 },
             },
@@ -58,7 +58,7 @@ export function init(
     crud: Crud,
     apiPath: string,
     port: number,
-    jsonSchema: Record<string, any>
+    jsonSchema: Record<string, any>,
 ): express.Application {
     logger.info(`API Docs are available at: http://localhost:${port}${apiPath}/api-docs`);
 
@@ -67,7 +67,7 @@ export function init(
 
     app.use(limiter);
     app.use(apiPath, router);
-    app.get(`${apiPath}/api-docs/swagger.json`, (req:express.Request, res:express.Response) => res.json(swaggerDoc));
+    app.get(`${apiPath}/api-docs/swagger.json`, (req: express.Request, res: express.Response) => res.json(swaggerDoc));
 
     let handler: RequestHandler = swaggerUi.setup(swaggerDoc);
 
@@ -79,16 +79,16 @@ export function init(
 function createRestletteRouter(apiPath: string, crud: Crud): Router {
     const router = Router();
 
-    router.post("/bulk", crud.bulk_create);
-    router.get("/bulk", crud.bulk_read);
-    router.post("/", crud.create);
-    router.get("/", crud.list);
-    router.get("/:id", crud.read);
-    router.put("/:id", crud.update);
-    router.delete("/:id", crud.remove);
+    router.post('/bulk', crud.bulk_create);
+    router.get('/bulk', crud.bulk_read);
+    router.post('/', crud.create);
+    router.get('/', crud.list);
+    router.get('/:id', crud.read);
+    router.put('/:id', crud.update);
+    router.delete('/:id', crud.remove);
 
     return router;
 }
 
-export {JSONSchemaValidator} from "./validation"
-export {Crud} from "./crud"
+export { JSONSchemaValidator } from './validation';
+export { Crud } from './crud';

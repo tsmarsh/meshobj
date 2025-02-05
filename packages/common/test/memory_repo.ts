@@ -1,15 +1,15 @@
-import { Envelope, Id, Repository } from "../src";
-import { v4 as uuidv4 } from "uuid";
+import { Envelope, Id, Repository } from '../src';
+import { v4 as uuidv4 } from 'uuid';
 
 export class InMemory implements Repository {
     db: Record<Id, Envelope[]> = {};
 
     async create(payload: Envelope, tokens: string[] = []): Promise<Envelope> {
         let id = payload.id || uuidv4();
-        payload["id"] = id;
-        payload["created_at"] = new Date();
-        payload["authorized_tokens"] = tokens;
-        payload["deleted"] = false;
+        payload['id'] = id;
+        payload['created_at'] = new Date();
+        payload['authorized_tokens'] = tokens;
+        payload['deleted'] = false;
 
         if (this.db[id]) {
             this.db[id].push(payload);
@@ -21,7 +21,7 @@ export class InMemory implements Repository {
     }
 
     async createMany(payloads: Envelope[], tokens: string[] = []): Promise<Envelope[]> {
-        return Promise.all(payloads.map(p => this.create(p, tokens)));
+        return Promise.all(payloads.map((p) => this.create(p, tokens)));
     }
 
     async list(tokens: string[] = []): Promise<Envelope[]> {
@@ -30,7 +30,7 @@ export class InMemory implements Repository {
 
         for (const envList of Object.values(this.db)) {
             // Filter out deleted envelopes
-            const nonDeletedEnvelopes = envList.filter(e => !e.deleted);
+            const nonDeletedEnvelopes = envList.filter((e) => !e.deleted);
             if (nonDeletedEnvelopes.length > 0) {
                 // Sort by created_at descending to get the latest version
                 nonDeletedEnvelopes.sort((a, b) => b.created_at!.getTime() - a.created_at!.getTime());
@@ -52,19 +52,19 @@ export class InMemory implements Repository {
 
         // Find the latest envelope that is not deleted and created before or at the specified timestamp
         return envelopes
-            .filter(e => e.created_at!.getTime() <= created_at.getTime() && e.deleted === false)
+            .filter((e) => e.created_at!.getTime() <= created_at.getTime() && e.deleted === false)
             .sort((a, b) => b.created_at!.getTime() - a.created_at!.getTime())[0]; // Sort by created_at descending and return the first
     }
 
     async readMany(ids: Id[], tokens: string[] = []): Promise<Envelope[]> {
-        let many = await Promise.all(ids.map(id => this.read(id, tokens)));
-        return many.filter(e => e !== undefined);
+        let many = await Promise.all(ids.map((id) => this.read(id, tokens)));
+        return many.filter((e) => e !== undefined);
     }
 
     async remove(id: Id, tokens: string[] = []): Promise<boolean> {
         if (!this.db[id]) return false;
 
-        this.db[id] = this.db[id].map(e => {
+        this.db[id] = this.db[id].map((e) => {
             e.deleted = true;
             return e;
         });

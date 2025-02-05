@@ -1,18 +1,15 @@
-import { createPool, PoolOptions, Pool as MySQLPool } from "mysql2/promise";
-import { Repository } from "@meshql/common";
-import { MySQLRepository } from "@meshql/mysql_repo"; // Adjust import if your MySQL repo is named differently
-import { DTOFactory } from "@meshql/graphlette";
-import { Auth } from "@meshql/auth";
-import { MySQLSearcher } from "@meshql/mysql_repo";
-import {MySQLConfig} from "../configTypes";
+import { createPool, PoolOptions, Pool as MySQLPool } from 'mysql2/promise';
+import { Repository } from '@meshql/common';
+import { MySQLRepository } from '@meshql/mysql_repo'; // Adjust import if your MySQL repo is named differently
+import { DTOFactory } from '@meshql/graphlette';
+import { Auth } from '@meshql/auth';
+import { MySQLSearcher } from '@meshql/mysql_repo';
+import { MySQLConfig } from '../configTypes';
 
 /**
  * Creates and returns a MySQL Pool connection.
  */
-export function buildMySQLPool(
-    config: MySQLConfig,
-    pools: Record<string, MySQLPool>
-): MySQLPool {
+export function buildMySQLPool(config: MySQLConfig, pools: Record<string, MySQLPool>): MySQLPool {
     // Use relevant PoolOptions for MySQL
     const poolOptions: PoolOptions = {
         host: config.host,
@@ -26,7 +23,7 @@ export function buildMySQLPool(
         idleTimeout: 60000,
         queueLimit: 0,
         enableKeepAlive: true,
-        keepAliveInitialDelay: 0
+        keepAliveInitialDelay: 0,
     };
 
     // Construct a unique key based on connection parameters
@@ -43,7 +40,7 @@ export function buildMySQLPool(
  */
 export async function createMySQLRepository(
     mysqlConfig: MySQLConfig,
-    pools: Record<string, MySQLPool>
+    pools: Record<string, MySQLPool>,
 ): Promise<Repository> {
     const pool = buildMySQLPool(mysqlConfig, pools);
     // MySQLRepository mirrors PostgresRepository functionality
@@ -56,7 +53,7 @@ export function createMySQLSearcher(
     mysqlConfig: MySQLConfig,
     dtoFactory: DTOFactory,
     auth: Auth,
-    pools: Record<string, MySQLPool>
+    pools: Record<string, MySQLPool>,
 ): MySQLSearcher {
     const pool = buildMySQLPool(mysqlConfig, pools);
     return new MySQLSearcher(pool, mysqlConfig.table, dtoFactory, auth);

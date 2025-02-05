@@ -1,11 +1,11 @@
-import { Searcher } from "@meshql/common";
-import { Auth } from "@meshql/auth";
-import { DTOFactory } from "@meshql/graphlette";
-import Handlebars from "handlebars";
-import { getLogger } from "log4js";
-import { Pool } from "pg";
+import { Searcher } from '@meshql/common';
+import { Auth } from '@meshql/auth';
+import { DTOFactory } from '@meshql/graphlette';
+import Handlebars from 'handlebars';
+import { getLogger } from 'log4js';
+import { Pool } from 'pg';
 
-const logger = getLogger("meshql/postgressearcher");
+const logger = getLogger('meshql/postgressearcher');
 
 export class PostgresSearcher implements Searcher {
     private pool: Pool;
@@ -53,14 +53,13 @@ export class PostgresSearcher implements Searcher {
         queryTemplate: Handlebars.TemplateDelegate,
         args: Record<string, any>,
         creds: string[] = [],
-        timestamp: number = Date.now()
+        timestamp: number = Date.now(),
     ): Promise<Record<string, any>> {
         args._createdAt = new Date(timestamp).toISOString();
         args._name = this.table;
         args.filters = this.processQueryTemplate(args, queryTemplate);
 
         const sql = this.processQueryTemplate(args, this.singletonQuery);
-
 
         try {
             const result = await this.pool.query(sql);
@@ -87,7 +86,7 @@ export class PostgresSearcher implements Searcher {
         queryTemplate: Handlebars.TemplateDelegate,
         args: Record<string, any>,
         creds: string[] = [],
-        timestamp: number = Date.now()
+        timestamp: number = Date.now(),
     ): Promise<Record<string, any>[]> {
         args._createdAt = new Date(timestamp).toISOString();
         args._name = this.table;

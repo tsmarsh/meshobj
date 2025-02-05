@@ -1,15 +1,14 @@
-import { Pool, PoolConfig } from "pg";
-import { PostgresConfig } from "../configTypes";
-import { PostgresSearcher, PostgresRepository } from "@meshql/postgres_repo";
-import { DTOFactory } from "@meshql/graphlette";
-import { Auth } from "@meshql/auth";
-import { Repository } from "@meshql/common";
+import { Pool, PoolConfig } from 'pg';
+import { PostgresConfig } from '../configTypes';
+import { PostgresSearcher, PostgresRepository } from '@meshql/postgres_repo';
+import { DTOFactory } from '@meshql/graphlette';
+import { Auth } from '@meshql/auth';
+import { Repository } from '@meshql/common';
 
 /**
  * Creates and returns a Postgres Pool connection.
  */
 export function buildPostgresPool(config: PostgresConfig, pools: Record<string, Pool>): Pool {
-
     let pgConf: PoolConfig = {
         host: config.host,
         port: config.port,
@@ -19,7 +18,7 @@ export function buildPostgresPool(config: PostgresConfig, pools: Record<string, 
     };
     let key = `${pgConf.host}:${pgConf.port}:${pgConf.database}:${pgConf.user}:${pgConf.password}`;
 
-    if(!pools[key]){
+    if (!pools[key]) {
         pools[key] = new Pool(pgConf);
     }
     return pools[key];
@@ -28,7 +27,12 @@ export function buildPostgresPool(config: PostgresConfig, pools: Record<string, 
 /**
  * Creates a PostgresSearcher with the given config, DTOFactory, and auth.
  */
-export function createPostgresSearcher(pgConfig: PostgresConfig, dtoFactory: DTOFactory, auth: Auth, pools: Record<string, Pool>): PostgresSearcher {
+export function createPostgresSearcher(
+    pgConfig: PostgresConfig,
+    dtoFactory: DTOFactory,
+    auth: Auth,
+    pools: Record<string, Pool>,
+): PostgresSearcher {
     const pool = buildPostgresPool(pgConfig, pools);
     return new PostgresSearcher(pool, pgConfig.table, dtoFactory, auth);
 }
@@ -36,7 +40,10 @@ export function createPostgresSearcher(pgConfig: PostgresConfig, dtoFactory: DTO
 /**
  * Creates a PostgresRepository with the given config.
  */
-export async function createPostgresRepository(pgConfig: PostgresConfig, pools: Record<string, Pool>): Promise<Repository> {
+export async function createPostgresRepository(
+    pgConfig: PostgresConfig,
+    pools: Record<string, Pool>,
+): Promise<Repository> {
     const pool = buildPostgresPool(pgConfig, pools);
     const repo = new PostgresRepository(pool, pgConfig.table);
     await repo.initialize();

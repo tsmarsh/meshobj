@@ -1,7 +1,7 @@
-import {RootConfig} from "@meshql/common";
+import { RootConfig } from '@meshql/common';
 
 export type PostgresConfig = {
-    type: "postgres";
+    type: 'postgres';
     host: string;
     port: number;
     db: string;
@@ -10,7 +10,12 @@ export type PostgresConfig = {
     table: string;
 };
 
-export type StorageConfig = {type: "mongo" | "sql" | "postgres" | "mysql"} & (PostgresConfig| MongoConfig | MySQLConfig | SQLConfig);
+export type StorageConfig = { type: 'mongo' | 'sql' | 'postgres' | 'mysql' } & (
+    | PostgresConfig
+    | MongoConfig
+    | MySQLConfig
+    | SQLConfig
+);
 
 export type MongoConfig = {
     uri: string;
@@ -19,7 +24,7 @@ export type MongoConfig = {
     options: {
         directConnection: boolean;
     };
-}
+};
 
 export interface MySQLConfig {
     host: string;
@@ -33,25 +38,25 @@ export interface MySQLConfig {
 export type SQLConfig = {
     uri: string;
     collection: string;
-}
+};
 
 export type Graphlette = {
     path: string;
     storage: StorageConfig;
     schema: string;
-    rootConfig: RootConfig
-}
+    rootConfig: RootConfig;
+};
 
 export type Restlette = {
     tokens?: string[];
     path: string;
     storage: StorageConfig;
     schema: Record<string, any>;
-}
+};
 
 export type Config = {
-    casbinParams?: string[]
+    casbinParams?: string[];
     graphlettes: Graphlette[];
     port: number;
     restlettes: Restlette[];
-}
+};
