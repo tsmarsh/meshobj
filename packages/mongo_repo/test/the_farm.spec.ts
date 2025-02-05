@@ -1,8 +1,8 @@
-import {MongoMemoryServer} from "mongodb-memory-server";
-import {MongoClient} from "mongodb";
-import {ServerCertificiation} from "../../meshql/test/the_farm.cert"
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoClient } from "mongodb";
+import { ServerCertificiation } from "../../meshql/test/the_farm.cert"
 import Log4js from "log4js";
-import {describe} from "vitest";
+import { describe } from "vitest";
 
 let mongod: MongoMemoryServer;
 let uri: string;
@@ -16,14 +16,14 @@ Log4js.configure({
         },
     },
     categories: {
-        default: { appenders: ["out"], level: "trace" },
+        default: { appenders: ["out"], level: "error" },
     },
 });
 
 let setup = async () => {
-    try{
+    try {
         mongod = await MongoMemoryServer.create();
-    } catch (err){
+    } catch (err) {
         console.error(JSON.stringify(err));
     }
 

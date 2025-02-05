@@ -4,7 +4,7 @@ import { ServerCertificiation } from "../../meshql/test/the_farm.cert";
 import { describe } from "vitest";
 
 let container: StartedTestContainer | null = null;
-let serverPort: string =  "4242";
+let serverPort: string = "4242";
 
 Log4js.configure({
   appenders: {
@@ -13,7 +13,7 @@ Log4js.configure({
     },
   },
   categories: {
-    default: { appenders: ["out"], level: "trace" },
+    default: { appenders: ["out"], level: "error" },
   },
 });
 
@@ -57,5 +57,5 @@ const cleanup = async () => {
 const configPath = `${__dirname}/config/config.conf`;
 
 describe("The Farm", () => {
-    ServerCertificiation(setup, cleanup, configPath);
+  ServerCertificiation(setup, cleanup, configPath);
 });
