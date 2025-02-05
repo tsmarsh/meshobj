@@ -1,7 +1,7 @@
 {
     "name": "@meshql/auth",
     "version": "0.1.0",
-    "type": "commonjs",
+    "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
@@ -18,8 +18,7 @@
         "@types/express": "^4.17.17",
         "@types/node": "^22.10.6",
         "ts-node": "^10.9.2",
-        "typescript": "^5.7.2",
-        "vitest": "^2.1.8"
+        "typescript": "^5.7.2"
     },
     "scripts": {
         "build": "tsc",

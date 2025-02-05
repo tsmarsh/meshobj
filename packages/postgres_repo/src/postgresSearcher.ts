@@ -1,6 +1,6 @@
 import { Searcher } from '@meshql/common';
 import { Auth } from '@meshql/auth';
-import { DTOFactory } from '@meshql/graphlette';
+import { DTOFactory } from '@meshql/meshql';
 import Handlebars from 'handlebars';
 import { getLogger } from 'log4js';
 import { Pool } from 'pg';

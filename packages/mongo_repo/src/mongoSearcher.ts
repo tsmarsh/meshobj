@@ -1,7 +1,7 @@
 import { Envelope, Searcher } from '@meshql/common';
 import { Auth } from '@meshql/auth';
 import { Collection, Document } from 'mongodb';
-import { DTOFactory } from '@meshql/graphlette';
+import { DTOFactory } from '../../meshql/src/graphlette/graphlette';
 import HandleBars from 'handlebars';
 import Handlebars from 'handlebars';
 import { getLogger } from 'log4js';

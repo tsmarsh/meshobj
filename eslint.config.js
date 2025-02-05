@@ -3,63 +3,63 @@ import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 import globals from 'globals';
 
-export default [
+export default {
     // Base config for all files
     {
-        ignores: [
-            '**/dist/**',
-            '**/node_modules/**',
-            '**/*.js', // Ignore compiled output
-            '**/coverage/**',
-            'vitest.workspace.ts',
-            '**/vitest.config.ts',
-            '**/test/**',
-        ],
+    ignores: [
+        '**/dist/**',
+        '**/node_modules/**',
+        '**/*.js', // Ignore compiled output
+        '**/coverage/**',
+        'vitest.workspace.ts',
+        '**/vitest.config.ts',
+        '**/test/**',
+    ],
     },
-    {
-        files: ['**/*.ts'],
+{
+    files: ['**/*.ts'],
         languageOptions: {
-            parser: tsparser,
+        parser: tsparser,
             parserOptions: {
-                ecmaVersion: 'latest',
+            ecmaVersion: 'latest',
                 sourceType: 'module',
-                project: ['./tsconfig.json', './packages/*/tsconfig.json'],
-                tsconfigRootDir: import.meta.dirname,
+                    project: ['./tsconfig.json', './packages/*/tsconfig.json'],
+                        tsconfigRootDir: import.meta.dirname,
             },
-            globals: {
+        globals: {
                 ...globals.node,
                 ...globals.es2021,
             },
+    },
+    plugins: {
+        '@typescript-eslint': tseslint,
         },
-        plugins: {
-            '@typescript-eslint': tseslint,
-        },
-        rules: {
+    rules: {
             ...eslint.configs.recommended.rules,
             ...tseslint.configs['recommended'].rules,
             '@typescript-eslint/no-explicit-any': 'off',
-            '@typescript-eslint/no-var-requires': 'off',
+                '@typescript-eslint/no-var-requires': 'off',
             // Add your custom rules here
             // "@typescript-eslint/no-explicit-any": "warn"
         },
-    },
-    // Test files specific configuration
-    {
-        files: ['**/*.test.ts', '**/*.spec.ts'],
+},
+// Test files specific configuration
+{
+    files: ['**/*.test.ts', '**/*.spec.ts'],
         languageOptions: {
-            globals: {
+        globals: {
                 ...globals.jest,
                 describe: 'readonly',
-                it: 'readonly',
-                expect: 'readonly',
-                beforeEach: 'readonly',
-                afterEach: 'readonly',
-                beforeAll: 'readonly',
-                afterAll: 'readonly',
+                    it: 'readonly',
+                        expect: 'readonly',
+                            beforeEach: 'readonly',
+                                afterEach: 'readonly',
+                                    beforeAll: 'readonly',
+                                        afterAll: 'readonly',
             },
-        },
-        rules: {
-            // Add any test-specific rules here
-        },
     },
-];
+    rules: {
+        // Add any test-specific rules here
+    },
+},
+};

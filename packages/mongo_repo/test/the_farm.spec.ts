@@ -7,7 +7,7 @@ import { describe } from 'vitest';
 let mongod: MongoMemoryServer;
 let uri: string;
 let client: MongoClient;
-let port: 3044;
+let port = 3044;
 
 Log4js.configure({
     appenders: {

@@ -1,6 +1,6 @@
 import express, { Application } from 'express';
-import { DTOFactory, root, init as graph_init } from '@meshql/graphlette';
-import { init as rest_init } from '@meshql/restlette';
+import { DTOFactory, root, init as graph_init } from './graphlette/graphlette';
+import { init as rest_init } from './restlette/restlette';
 import {
     Config,
     Graphlette,
@@ -14,8 +14,8 @@ import {
 import { Repository, Searcher, Validator } from '@meshql/common';
 import { Pool } from 'pg';
 import { MongoClient } from 'mongodb';
-import { Crud } from '@meshql/restlette';
-import { JSONSchemaValidator } from '@meshql/restlette';
+import { Crud } from './restlette/restlette';
+import { JSONSchemaValidator } from './restlette/restlette';
 import { JWTSubAuthorizer } from '@meshql/jwt_auth';
 import { Auth } from '@meshql/auth';
 import { CasbinAuth } from '@meshql/casbin_auth';

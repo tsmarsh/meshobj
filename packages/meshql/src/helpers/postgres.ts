@@ -1,7 +1,7 @@
 import { Pool, PoolConfig } from 'pg';
 import { PostgresConfig } from '../configTypes';
 import { PostgresSearcher, PostgresRepository } from '@meshql/postgres_repo';
-import { DTOFactory } from '@meshql/graphlette';
+import { DTOFactory } from '../graphlette/graphlette';
 import { Auth } from '@meshql/auth';
 import { Repository } from '@meshql/common';
 

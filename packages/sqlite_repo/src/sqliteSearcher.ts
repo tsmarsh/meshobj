@@ -1,6 +1,6 @@
 import { Searcher, Envelope } from '@meshql/common';
 import { Auth } from '@meshql/auth';
-import { DTOFactory } from '@meshql/graphlette';
+import { DTOFactory } from '@meshql/meshql';
 import Handlebars from 'handlebars';
 import { Database } from 'sqlite';
 

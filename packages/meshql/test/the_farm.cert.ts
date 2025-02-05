@@ -1,12 +1,12 @@
 import { describe, it, expect, afterAll, beforeAll } from 'vitest';
-import { callSubgraph } from '@meshql/graphlette';
-import Log4js from 'log4js';
-import express, { Application } from 'express';
+import { callSubgraph } from '../src/graphlette/graphlette';
+import { Application } from 'express';
 import { Server } from 'http';
 import { init, cleanServer } from '../src/server';
 import { Document, OpenAPIClient, OpenAPIClientAxios } from 'openapi-client-axios';
 import { Restlette } from '../src/configTypes';
 import * as jwt from 'jsonwebtoken';
+import parser from '@pushcorn/hocon-parser';
 
 globalThis.__MONGO_URI__ = ''; // Placeholder for MongoDB URI
 globalThis.__TOKEN__ = ''; // Placeholder for JWT token
@@ -34,7 +34,7 @@ export function ServerCertificiation(setup, cleanup, configPath) {
         const sub = 'test-user';
         globalThis.__TOKEN__ = jwt.sign({ sub }, 'totallyASecret', { expiresIn: '1h' });
 
-        const parser = require('@pushcorn/hocon-parser');
+
         globalThis.__CONFIG__ = await parser.parse({ url: configPath });
 
         // Initialize and start the Express app

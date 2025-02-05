@@ -3,7 +3,7 @@ import { MongoConfig } from '../configTypes';
 import { Envelope } from '@meshql/common';
 import { MongoSearcher, MongoRepository } from '@meshql/mongo_repo';
 import { Auth } from '@meshql/auth';
-import { DTOFactory } from '@meshql/graphlette';
+import { DTOFactory } from '../graphlette/graphlette';
 
 /**
  * Builds and returns a MongoDB Collection for the specified MongoConfig.

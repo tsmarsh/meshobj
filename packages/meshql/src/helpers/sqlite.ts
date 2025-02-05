@@ -4,7 +4,7 @@ import { SQLConfig } from '../configTypes';
 import { Repository } from '@meshql/common';
 import { SQLiteSearcher, SQLiteRepository } from '@meshql/sqlite_repo';
 import { Auth } from '@meshql/auth';
-import { DTOFactory } from '@meshql/graphlette';
+import { DTOFactory } from '../graphlette/graphlette';
 
 /**
  * Helper that opens SQLite and returns the Database reference.

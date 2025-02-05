@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 import Log4js from 'log4js';
 import swaggerUi, { JsonObject } from 'swagger-ui-express';
 import { Crud } from './crud.js';
-import { paths } from './swagger';
+import { paths } from './swagger.js';
 
 const logger = Log4js.getLogger('meshql/restlette');
 
@@ -90,5 +90,5 @@ function createRestletteRouter(apiPath: string, crud: Crud): Router {
     return router;
 }
 
-export { JSONSchemaValidator } from './validation';
-export { Crud } from './crud';
+export { JSONSchemaValidator } from './validation.js';
+export { Crud } from './crud.js';

@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "CommonJS", // Use CommonJS modules
+        "module": "ES2022", // Use CommonJS modules
         "target": "ES2022", // Latest Node.js target
         "moduleResolution": "node", // Node.js-compatible resolution
         "declaration": true, // Generate type declarations
@@ -13,6 +13,13 @@
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true // Skip type checks for `node_modules`
     },
-    "exclude": ["node_modules", "**/*.test.ts", "**/*.spec.ts", "dist"],
-    "include": ["src/**/*"]
+    "exclude": [
+        "node_modules",
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "dist"
+    ],
+    "include": [
+        "src/**/*"
+    ]
 }
