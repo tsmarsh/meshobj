@@ -10,7 +10,7 @@
     "description": "Simple authorizer for casbin",
     "author": "Tom Marsh",
     "license": "MIT",
-    "private": true,
+    "private": false,
     "devDependencies": {
         "@types/typescript": "^2.0.0",
         "c8": "^10.1.3",
