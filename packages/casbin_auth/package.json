@@ -22,8 +22,8 @@
         "test": "vitest --run --coverage"
     },
     "dependencies": {
-        "@meshql/auth": "workspace:*",
-        "@meshql/common": "workspace:*",
+        "@meshql/auth": "0.1.0",
+        "@meshql/common": "0.1.0",
         "casbin": "^5.36.0"
     }
 }
