@@ -15,6 +15,7 @@
             "createRelease": "github"
         },
         "publish": {
+            "access": "public",
             "ignoreChanges": [
                 "examples/**",
                 "**/*.md",
