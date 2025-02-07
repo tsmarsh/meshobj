@@ -4,13 +4,15 @@
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
+    "publishConfig": {
+        "access": "public"
+    },
     "exports": {
         ".": "./dist/index.js"
     },
     "description": "Simple authorizer for casbin",
     "author": "Tom Marsh",
     "license": "MIT",
-    "private": false,
     "devDependencies": {
         "@types/typescript": "^2.0.0",
         "c8": "^10.1.3",
