@@ -6954,6 +6954,7 @@ __metadata:
     lerna: "npm:^8.1.9"
     pnpm: "npm:^9.15.3"
     prettier: "npm:^3.2.0"
+    rimraf: "npm:^5.0.5"
     typescript: "npm:^5.7.3"
     vitest: "npm:^2.1.9"
   languageName: unknown
