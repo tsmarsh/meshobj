@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import Log4js from 'log4js';
 import { Collection, Document } from 'mongodb';
-import { Envelope, Id, Repository } from '@meshql/common';
+import { Envelope, Id, Repository } from '@meshobj/common';
 
 const logger = Log4js.getLogger('meshql/mongorepo');
 

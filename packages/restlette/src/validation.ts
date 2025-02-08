@@ -1,4 +1,4 @@
-import { Validator } from '@meshql/common';
+import { Validator } from '@meshobj/common';
 import Ajv, { Ajv as AjvType } from 'ajv';
 import addFormats from 'ajv-formats';
 

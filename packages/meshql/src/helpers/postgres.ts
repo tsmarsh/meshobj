@@ -1,9 +1,9 @@
 import { Pool, PoolConfig } from 'pg';
 import { PostgresConfig } from '../configTypes';
-import { PostgresSearcher, PostgresRepository } from '@meshql/postgres_repo';
-import { DTOFactory } from '@meshql/graphlette';
-import { Auth } from '@meshql/auth';
-import { Repository } from '@meshql/common';
+import { PostgresSearcher, PostgresRepository } from '@meshobj/postgres_repo';
+import { DTOFactory } from '@meshobj/graphlette';
+import { Auth } from '@meshobj/auth';
+import { Repository } from '@meshobj/common';
 
 /**
  * Creates and returns a Postgres Pool connection.

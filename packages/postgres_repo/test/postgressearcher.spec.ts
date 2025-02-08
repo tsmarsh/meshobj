@@ -1,7 +1,7 @@
-import { Searcher, Envelope, Repository } from '@meshql/common';
+import { Searcher, Envelope, Repository } from '@meshobj/common';
 import { SearcherCertification, TestTemplates } from '../../common/test/certification/searcher.cert';
-import { DTOFactory } from '@meshql/graphlette';
-import { NoOp, Auth } from '@meshql/auth';
+import { DTOFactory } from '@meshobj/graphlette';
+import { NoOp, Auth } from '@meshobj/auth';
 import { compile } from 'handlebars';
 import { Pool } from 'pg';
 import { GenericContainer, StartedTestContainer } from 'testcontainers';

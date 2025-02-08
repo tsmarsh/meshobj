@@ -1,10 +1,10 @@
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { SQLConfig } from '../configTypes';
-import { Repository } from '@meshql/common';
-import { SQLiteSearcher, SQLiteRepository } from '@meshql/sqlite_repo';
-import { Auth } from '@meshql/auth';
-import { DTOFactory } from '@meshql/graphlette';
+import { Repository } from '@meshobj/common';
+import { SQLiteSearcher, SQLiteRepository } from '@meshobj/sqlite_repo';
+import { Auth } from '@meshobj/auth';
+import { DTOFactory } from '@meshobj/graphlette';
 
 /**
  * Helper that opens SQLite and returns the Database reference.

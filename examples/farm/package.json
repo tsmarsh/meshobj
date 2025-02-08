@@ -8,7 +8,7 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@meshql/meshql": "workspace:*"
+        "@meshobj/meshql": "workspace:*"
     },
     "devDependencies": {
         "typescript": "^5.0.0"

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import Log4js from 'log4js';
 import { init } from '../src'; // Assuming this initializes an Express app
-import { Auth, NoOp } from '@meshql/auth';
+import { Auth, NoOp } from '@meshobj/auth';
 import { InMemory } from '../../common/test/memory_repo';
-import { Envelope, Repository, Validator } from '@meshql/common';
+import { Envelope, Repository, Validator } from '@meshobj/common';
 import { Crud } from '../src/crud';
 import { JSONSchemaValidator } from '../src/validation';
 import express, { Application } from 'express';

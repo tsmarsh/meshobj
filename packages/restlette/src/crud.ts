@@ -1,6 +1,6 @@
-import { Auth } from '@meshql/auth';
+import { Auth } from '@meshobj/auth';
 import Log4js from 'log4js';
-import { Envelope, Repository, Validator } from '@meshql/common';
+import { Envelope, Repository, Validator } from '@meshobj/common';
 import { Request, Response } from 'express';
 
 const logger = Log4js.getLogger('meshql/restlette');

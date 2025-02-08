@@ -1,6 +1,6 @@
 import { Enforcer, newEnforcer } from 'casbin';
-import { Auth } from '@meshql/auth';
-import { Envelope } from '@meshql/common';
+import { Auth } from '@meshobj/auth';
+import { Envelope } from '@meshobj/common';
 
 export class CasbinAuth implements Auth {
     enforcer: Enforcer;

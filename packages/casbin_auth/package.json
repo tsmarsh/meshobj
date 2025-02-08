@@ -1,5 +1,5 @@
 {
-    "name": "@meshql/casbin_auth",
+    "name": "@meshobj/casbin_auth",
     "version": "0.1.0",
     "type": "commonjs",
     "main": "./dist/index.js",
@@ -24,8 +24,8 @@
         "test": "vitest --run --coverage"
     },
     "dependencies": {
-        "@meshql/auth": "0.1.0",
-        "@meshql/common": "0.1.0",
+        "@meshobj/auth": "0.1.0",
+        "@meshobj/common": "0.1.0",
         "casbin": "^5.36.0"
     }
 }

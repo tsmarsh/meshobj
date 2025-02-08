@@ -1,11 +1,11 @@
-import { Searcher, Envelope, Repository } from '@meshql/common';
+import { Searcher, Envelope, Repository } from '@meshobj/common';
 import { SearcherCertification, TestTemplates } from '../../common/test/certification/searcher.cert';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoRepository } from '../src/mongoRepo';
 import { Collection, MongoClient } from 'mongodb';
 import { MongoSearcher } from '../src/mongoSearcher';
-import { DTOFactory } from '@meshql/graphlette';
-import { NoOp, Auth } from '@meshql/auth';
+import { DTOFactory } from '@meshobj/graphlette';
+import { NoOp, Auth } from '@meshobj/auth';
 import { compile } from 'handlebars';
 
 let mongod: MongoMemoryServer;

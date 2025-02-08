@@ -1,5 +1,5 @@
 import { describe, it, expect, afterAll, beforeAll } from 'vitest';
-import { callSubgraph } from '@meshql/graphlette';
+import { callSubgraph } from '@meshobj/graphlette';
 import Log4js from 'log4js';
 import express, { Application } from 'express';
 import { Server } from 'http';

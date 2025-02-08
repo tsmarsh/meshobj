@@ -1,7 +1,7 @@
 import { DTOFactory } from './dto.js';
 import HandleBars from 'handlebars';
-import { Searcher, RootConfig } from '@meshql/common';
-import { Auth } from '@meshql/auth';
+import { Searcher, RootConfig } from '@meshobj/common';
+import { Auth } from '@meshobj/auth';
 
 import Log4js from 'log4js';
 

@@ -1,6 +1,6 @@
-import { Searcher } from '@meshql/common';
-import { Auth } from '@meshql/auth';
-import { DTOFactory } from '@meshql/graphlette';
+import { Searcher } from '@meshobj/common';
+import { Auth } from '@meshobj/auth';
+import { DTOFactory } from '@meshobj/graphlette';
 import Handlebars from 'handlebars';
 import { getLogger } from 'log4js';
 import { Pool } from 'mysql2/promise';

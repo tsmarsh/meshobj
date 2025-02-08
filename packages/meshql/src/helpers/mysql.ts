@@ -1,9 +1,9 @@
 import { createPool, PoolOptions, Pool as MySQLPool } from 'mysql2/promise';
-import { Repository } from '@meshql/common';
-import { MySQLRepository } from '@meshql/mysql_repo'; // Adjust import if your MySQL repo is named differently
-import { DTOFactory } from '@meshql/graphlette';
-import { Auth } from '@meshql/auth';
-import { MySQLSearcher } from '@meshql/mysql_repo';
+import { Repository } from '@meshobj/common';
+import { MySQLRepository } from '@meshobj/mysql_repo'; // Adjust import if your MySQL repo is named differently
+import { DTOFactory } from '@meshobj/graphlette';
+import { Auth } from '@meshobj/auth';
+import { MySQLSearcher } from '@meshobj/mysql_repo';
 import { MySQLConfig } from '../configTypes';
 
 /**

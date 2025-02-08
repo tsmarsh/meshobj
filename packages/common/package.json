@@ -1,5 +1,5 @@
 {
-    "name": "@meshql/common",
+    "name": "@meshobj/common",
     "version": "0.1.0",
     "type": "commonjs",
     "main": "./dist/index.js",

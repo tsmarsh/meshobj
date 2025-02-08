@@ -1,6 +1,6 @@
 import express, { Application } from 'express';
-import { DTOFactory, root, init as graph_init } from '@meshql/graphlette';
-import { init as rest_init } from '@meshql/restlette';
+import { DTOFactory, root, init as graph_init } from '@meshobj/graphlette';
+import { init as rest_init } from '@meshobj/restlette';
 import {
     Config,
     Graphlette,
@@ -11,14 +11,14 @@ import {
     PostgresConfig,
     MySQLConfig,
 } from './configTypes';
-import { Repository, Searcher, Validator } from '@meshql/common';
+import { Repository, Searcher, Validator } from '@meshobj/common';
 import { Pool } from 'pg';
 import { MongoClient } from 'mongodb';
-import { Crud } from '@meshql/restlette';
-import { JSONSchemaValidator } from '@meshql/restlette';
-import { JWTSubAuthorizer } from '@meshql/jwt_auth';
-import { Auth } from '@meshql/auth';
-import { CasbinAuth } from '@meshql/casbin_auth';
+import { Crud } from '@meshobj/restlette';
+import { JSONSchemaValidator } from '@meshobj/restlette';
+import { JWTSubAuthorizer } from '@meshobj/jwt_auth';
+import { Auth } from '@meshobj/auth';
+import { CasbinAuth } from '@meshobj/casbin_auth';
 import cors from 'cors';
 
 // Import our new helper factories

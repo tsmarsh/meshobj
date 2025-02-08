@@ -6,8 +6,8 @@ import { compile } from 'handlebars';
 import { GenericContainer, StartedTestContainer } from 'testcontainers';
 import { randomUUID } from 'crypto';
 import { TestTemplates } from '../../common/test/certification/searcher.cert';
-import { DTOFactory } from '@meshql/graphlette';
-import { NoOp } from '@meshql/auth';
+import { DTOFactory } from '@meshobj/graphlette';
+import { NoOp } from '@meshobj/auth';
 
 import { describe } from 'vitest';
 

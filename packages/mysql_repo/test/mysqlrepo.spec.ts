@@ -1,4 +1,4 @@
-import { Repository } from '@meshql/common';
+import { Repository } from '@meshobj/common';
 import { RepositoryCertification } from '../../common/test/certification/repository.cert';
 import { MySQLRepository } from '../src/mysqlRepo';
 import { createPool, Pool } from 'mysql2/promise';

@@ -1,6 +1,6 @@
 import { Pool, types } from 'pg';
 import { v4 as uuid } from 'uuid';
-import { Envelope, Id, Repository } from '@meshql/common';
+import { Envelope, Id, Repository } from '@meshobj/common';
 
 export class PostgresRepository implements Repository {
     private pool: Pool;

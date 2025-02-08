@@ -1,6 +1,6 @@
 import { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 import { v4 as uuid } from 'uuid';
-import { Envelope, Id, Payload, Repository } from '@meshql/common';
+import { Envelope, Id, Payload, Repository } from '@meshobj/common';
 import Log4js from 'log4js';
 
 const logger = Log4js.getLogger('meshql/mysql_repo');

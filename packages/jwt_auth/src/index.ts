@@ -1,7 +1,7 @@
-import { Auth } from '@meshql/auth';
+import { Auth } from '@meshobj/auth';
 import { getLogger } from 'log4js';
 const jwt = require('jsonwebtoken');
-import { Envelope } from '@meshql/common';
+import { Envelope } from '@meshobj/common';
 import { Request } from 'express';
 
 let logger = getLogger('meshql/jwtauth');

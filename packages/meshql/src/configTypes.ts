@@ -1,4 +1,4 @@
-import { RootConfig } from '@meshql/common';
+import { RootConfig } from '@meshobj/common';
 
 export type PostgresConfig = {
     type: 'postgres';

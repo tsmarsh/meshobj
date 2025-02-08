@@ -2,7 +2,7 @@ import { processContext, callSubgraph } from './subgraph.js';
 import { IncomingMessage } from 'http';
 import Log4js from 'log4js';
 import { GraphQLArgs } from 'graphql/graphql';
-import { Resolver } from '@meshql/common';
+import { Resolver } from '@meshobj/common';
 
 let logger = Log4js.getLogger('gridql/DTOFactory');
 

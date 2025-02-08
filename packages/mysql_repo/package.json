@@ -1,5 +1,5 @@
 {
-    "name": "@meshql/mysql_repo",
+    "name": "@meshobj/mysql_repo",
     "version": "0.1.0",
     "type": "commonjs",
     "main": "./dist/index.js",
@@ -22,9 +22,9 @@
         "vitest": "^2.1.8"
     },
     "dependencies": {
-        "@meshql/auth": "0.1.0",
-        "@meshql/common": "0.1.0",
-        "@meshql/graphlette": "0.1.0",
+        "@meshobj/auth": "0.1.0",
+        "@meshobj/common": "0.1.0",
+        "@meshobj/graphlette": "0.1.0",
         "handlebars": "^4.7.8",
         "log4js": "^6.9.1",
         "mysql2": "^3.12.0",

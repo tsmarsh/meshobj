@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, afterAll, expect } from 'vitest';
 import { Envelope, Searcher } from '../../src';
 import { TemplateDelegate } from 'handlebars';
-import { Repository } from '@meshql/common';
+import { Repository } from '@meshobj/common';
 
 export type TestTemplates = {
     findById: TemplateDelegate;
