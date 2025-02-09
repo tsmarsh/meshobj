@@ -110,11 +110,11 @@ export class PostgresRepository implements Repository {
             WHERE id = $1
               AND deleted IS FALSE
               AND created_at <= $2
-              ${tokens.length > 0 ? 'AND authorized_tokens && $2' : ''}
+              ${tokens.length > 0 ? 'AND authorized_tokens && $3' : ''}
             ORDER BY created_at DESC
             LIMIT 1;
         `;
-        const values = [id, createdAt];
+        const values = tokens.length > 0 ? [id, createdAt, tokens] : [id, createdAt];
         const result = await this.pool.query(query, values);
         const row = result.rows[0];
 

@@ -11,7 +11,7 @@
         "clean:all": "rimraf \"packages/*/dist\" && rimraf \"examples/*/dist\" && rimraf \"node_modules\" && rimraf \"packages/*/node_modules\" && rimraf \"examples/*/node_modules\"",
         "build": "lerna run build",
         "qb": "lerna run build --since main",
-        "test": "yarn vitest --run --coverage --reporter=junit --outputFile=test-report.junit.xml",
+        "test": "yarn vitest --run --coverage --reporter=basic --reporter=junit --outputFile=test-report.junit.xml",
         "qt": "lerna run test --since main",
         "coverage": "yarn run c8 report --report-dir=.nyc_output --reporter=text --reporter=html --reporter=lcov",
         "lint": "eslint .",
