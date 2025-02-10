@@ -1,12 +1,20 @@
-import { DockerComposeEnvironment } from 'testcontainers';
+import { DockerComposeEnvironment, StartedDockerComposeEnvironment } from 'testcontainers';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import path from 'path';
 import { callSubgraph } from '@meshobj/graphlette';
+import { Document, OpenAPIClient, OpenAPIClientAxios } from 'openapi-client-axios';
 
-describe('Farm Service Integration Tests', () => {
-    let environment: DockerComposeEnvironment;
-    let farmServiceUrl: string;
-    
+let farm_id = '';
+let coop1_id = '';
+let coop2_id = '';
+
+let hen_api: any;
+let coop_api: any;
+let farm_api: any;
+
+let environment: StartedDockerComposeEnvironment;
+
+describe('Farm Service Smoke Test', () => {    
     beforeAll(async () => {
         // Start the docker-compose environment
         environment = await new DockerComposeEnvironment(
@@ -14,14 +22,14 @@ describe('Farm Service Integration Tests', () => {
             'docker-compose.yml'
         ).up();
 
-        // Get the mapped port for the farm-service
-        const farmService = environment.getContainer('farm-service');
-        const farmServicePort = farmService.getMappedPort(3033);
-        farmServiceUrl = `http://localhost:${farmServicePort}`;
 
-        // Wait a bit for services to be fully ready
         await new Promise(resolve => setTimeout(resolve, 2000));
-    }, 30000); // Increase timeout for container startup
+
+        const swagger_docs: Document[] = await getSwaggerDocs();
+        await buildApi(swagger_docs, '');
+        await buildModels();
+
+    }, 60000); // Increase timeout for container startup
 
     afterAll(async () => {
         if (environment) {
@@ -29,103 +37,97 @@ describe('Farm Service Integration Tests', () => {
         }
     });
 
-    it('should create and query a farm', async () => {
-        // Create a farm using GraphQL mutation
-        const createFarmQuery = `
-            mutation {
-                create(input: { name: "Test Farm" }) {
-                    id
-                    name
-                }
-            }
-        `;
-
-        const createResult = await callSubgraph(
-            new URL(`${farmServiceUrl}/farm/graph`),
-            createFarmQuery,
-            'create'
-        );
-
-        expect(createResult.name).toBe('Test Farm');
-        expect(createResult.id).toBeDefined();
-
-        const farmId = createResult.id;
-
-        // Query the created farm
-        const getFarmQuery = `{
-            getById(id: "${farmId}") {
-                name
+    it('should build a server with multiple nodes', async () => {
+        const query = `{
+            getById(id: "${farm_id}") {
+                name 
                 coops {
                     name
+                    hens {
+                        eggs
+                        name
+                    }
                 }
             }
         }`;
 
-        const queryResult = await callSubgraph(
-            new URL(`${farmServiceUrl}/farm/graph`),
-            getFarmQuery,
-            'getById'
+        const json = await callSubgraph(
+            new URL(`http://localhost:3033/farm/graph`),
+            query,
+            'getById',
+            null
         );
 
-        expect(queryResult.name).toBe('Test Farm');
-        expect(Array.isArray(queryResult.coops)).toBe(true);
+        expect(json.name).toBe('Emerdale');
+        expect(json.coops.length).toBe(3);
     });
 
-    it('should create a coop and associate it with a farm', async () => {
-        // First create a farm
-        const createFarmQuery = `
-            mutation {
-                create(input: { name: "Farm with Coop" }) {
-                    id
-                    name
-                }
-            }
-        `;
-
-        const farmResult = await callSubgraph(
-            new URL(`${farmServiceUrl}/farm/graph`),
-            createFarmQuery,
-            'create'
-        );
-
-        const farmId = farmResult.id;
-
-        // Create a coop associated with the farm
-        const createCoopQuery = `
-            mutation {
-                create(input: { name: "Test Coop", farm_id: "${farmId}" }) {
-                    id
-                    name
-                }
-            }
-        `;
-
-        const coopResult = await callSubgraph(
-            new URL(`${farmServiceUrl}/coop/graph`),
-            createCoopQuery,
-            'create'
-        );
-
-        expect(coopResult.name).toBe('Test Coop');
-        expect(coopResult.id).toBeDefined();
-
-        // Query the farm to verify the coop is associated
-        const getFarmQuery = `{
-            getById(id: "${farmId}") {
-                name
-                coops {
-                    name
-                }
-            }
-        }`;
-
-        const queryResult = await callSubgraph(
-            new URL(`${farmServiceUrl}/farm/graph`),
-            getFarmQuery,
-            'getById'
-        );
-
-        expect(queryResult.coops).toHaveLength(1);
-        expect(queryResult.coops[0].name).toBe('Test Coop');
-    });
 }); 
+
+async function getSwaggerDocs() {
+    return await Promise.all(
+        ["/hen", "/coop", "/farm"].map(async (restlette) => {
+            let url = `http://localhost:3033${restlette}/api/api-docs/swagger.json`;
+
+            const response = await fetch(url);
+            
+            let doc = await response.json();
+            return doc;
+        }),
+    );
+}
+
+async function buildApi(swagger_docs: Document[], token: string) {
+    const authHeaders = { Authorization: `Bearer ${token}` };
+
+    const apis: OpenAPIClient[] = await Promise.all(
+        swagger_docs.map(async (doc: Document): Promise<OpenAPIClient> => {
+            if (!doc.paths || Object.keys(doc.paths).length === 0) {
+                throw new Error(`Swagger document for ${doc.info.title} has no paths defined`);
+            }
+
+            const api = new OpenAPIClientAxios({
+                definition: doc,
+                axiosConfigDefaults: { headers: authHeaders },
+            });
+
+            return api.init();
+        }),
+    );
+
+    for (const api of apis) {
+        const firstPath = Object.keys(api.paths)[0];
+        if (firstPath.includes('hen')) {
+            hen_api = api;
+        } else if (firstPath.includes('coop')) {
+            coop_api = api;
+        } else if (firstPath.includes('farm')) {
+            farm_api = api;
+        }
+    }
+}
+
+async function buildModels() {
+    const farm = await farm_api.create(null, { name: 'Emerdale' });
+
+    farm_id = farm.request.path.slice(-36);
+
+    const coop1 = await coop_api.create(null, { name: 'red', farm_id });
+    coop1_id = coop1.request.path.slice(-36);
+
+    const coop2 = await coop_api.create(null, { name: 'yellow', farm_id });
+    coop2_id = coop2.request.path.slice(-36);
+
+    await coop_api.create(null, { name: 'pink', farm_id });
+
+    await coop_api.update({ id: coop1_id }, { name: 'purple', farm_id});
+
+    const hens = [
+        { name: 'chuck', eggs: 2, coop_id: coop1_id },
+        { name: 'duck', eggs: 0, coop_id: coop1_id },
+        { name: 'euck', eggs: 1, coop_id: coop2_id },
+        { name: 'fuck', eggs: 2, coop_id: coop2_id },
+    ];
+
+    await Promise.all(hens.map((hen) => hen_api.create(null, hen)));
+}
