@@ -22,15 +22,23 @@ import { CasbinAuth } from '@meshobj/casbin_auth';
 import cors from 'cors';
 
 // Import our new helper factories
-import { createMongoSearcher, createMongoRepository } from './helpers/mongo';
-import { createSQLiteSearcher, createSQLiteRepository } from './helpers/sqlite';
-import { createPostgresSearcher, createPostgresRepository } from './helpers/postgres';
-import { createMySQLRepository, createMySQLSearcher } from './helpers/mysql';
-import { Pool as MySQLPool } from 'mysql2/promise';
+import { MongoPlugin } from './helpers/mongo';
+import { SQLitePlugin } from './helpers/sqlite';
+import { PostgresPlugin } from './helpers/postgres';
+import { MySQLPlugin } from './helpers/mysql';
 
+import { Pool as MySQLPool } from 'mysql2/promise';
+import { Plugin } from './plugin';
 let pools: Record<string, Pool> = {};
 let clients: Record<string, MongoClient> = {};
 let mysqlPools: Record<string, MySQLPool> = {};
+
+let plugins: Record<string, Plugin> = {
+    mongo: new MongoPlugin(),
+    sql: new SQLitePlugin(),
+    postgres: new PostgresPlugin(),
+    mysql: new MySQLPlugin(),
+};
 
 async function processGraphlette(graphlette: Graphlette, auth: Auth, app: Application) {
     const { schema, storage, path, rootConfig } = graphlette;
@@ -38,35 +46,14 @@ async function processGraphlette(graphlette: Graphlette, auth: Auth, app: Applic
     const dtoFactory = new DTOFactory(rootConfig.resolvers);
     let searcher: Searcher;
 
-    switch (storage.type) {
-        case 'mongo':
-            searcher = await createMongoSearcher(storage as MongoConfig, dtoFactory, auth, clients);
-            break;
-        case 'sql':
-            searcher = await createSQLiteSearcher(storage as SQLConfig, dtoFactory, auth);
-            break;
-        case 'postgres':
-            searcher = createPostgresSearcher(storage as PostgresConfig, dtoFactory, auth, pools);
-            break;
-        case 'mysql':
-            searcher = createMySQLSearcher(storage as MySQLConfig, dtoFactory, auth, mysqlPools);
-    }
+    searcher = await plugins[storage.type].createSearcher(storage, dtoFactory, auth);
 
     const rt = root(searcher, dtoFactory, auth, rootConfig);
     graph_init(app, schema, path, rt);
 }
 
 async function buildRepository(storage: StorageConfig): Promise<Repository> {
-    switch (storage.type) {
-        case 'mongo':
-            return createMongoRepository(storage as MongoConfig, clients);
-        case 'sql':
-            return createSQLiteRepository(storage as SQLConfig);
-        case 'postgres':
-            return createPostgresRepository(storage as PostgresConfig, pools);
-        case 'mysql':
-            return createMySQLRepository(storage as MySQLConfig, mysqlPools);
-    }
+    return plugins[storage.type].createRepository(storage);
 }
 
 async function processRestlette(restlette: Restlette, auth: Auth, app: Application, port: number) {

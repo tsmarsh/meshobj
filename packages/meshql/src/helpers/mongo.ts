@@ -1,10 +1,10 @@
 import { MongoClient, Collection } from 'mongodb';
-import { MongoConfig } from '../configTypes';
+import { MongoConfig, StorageConfig } from '../configTypes';
 import { Envelope } from '@meshobj/common';
 import { MongoSearcher, MongoRepository } from '@meshobj/mongo_repo';
 import { Auth } from '@meshobj/auth';
 import { DTOFactory } from '@meshobj/graphlette';
-
+import { Plugin } from '../plugin';
 /**
  * Builds and returns a MongoDB Collection for the specified MongoConfig.
  */
@@ -22,6 +22,26 @@ export async function buildMongoCollection(
     return mongoDb.collection<Envelope>(mongoConfig.collection);
 }
 
+export class MongoPlugin implements Plugin {
+    private clients: Record<string, MongoClient>;
+    
+    constructor() {
+        this.clients = {};
+    }
+    async createRepository(config: StorageConfig) {
+        return createMongoRepository(config as MongoConfig, this.clients);
+    }
+
+    async createSearcher(config: StorageConfig, dtoFactory: DTOFactory, auth: Auth) {
+        return createMongoSearcher(config as MongoConfig, dtoFactory, auth, this.clients);
+    }
+
+    async cleanup() {
+        for (const client of Object.values(this.clients)) {
+            await client.close();
+        }
+    }
+}
 /**
  * Creates a MongoSearcher with the given config, DTO factory, and auth.
  */

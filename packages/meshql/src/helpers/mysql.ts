@@ -4,8 +4,8 @@ import { MySQLRepository } from '@meshobj/mysql_repo'; // Adjust import if your 
 import { DTOFactory } from '@meshobj/graphlette';
 import { Auth } from '@meshobj/auth';
 import { MySQLSearcher } from '@meshobj/mysql_repo';
-import { MySQLConfig } from '../configTypes';
-
+import { MySQLConfig, StorageConfig } from '../configTypes';
+import { Plugin } from '../plugin';
 /**
  * Creates and returns a MySQL Pool connection.
  */
@@ -35,6 +35,27 @@ export function buildMySQLPool(config: MySQLConfig, pools: Record<string, MySQLP
     return pools[key];
 }
 
+export class MySQLPlugin implements Plugin {
+    private pools: Record<string, MySQLPool>;
+
+    constructor() {
+        this.pools = {};
+    }
+
+    async createRepository(config: StorageConfig) {
+        return createMySQLRepository(config as MySQLConfig, this.pools);
+    }
+
+    async createSearcher(config: StorageConfig, dtoFactory: DTOFactory, auth: Auth) {
+        return createMySQLSearcher(config as MySQLConfig, dtoFactory, auth, this.pools);
+    }
+
+    async cleanup() {
+        for (const pool of Object.values(this.pools)) {
+            await pool.end();
+        }
+    }
+}
 /**
  * Creates a MySQL-based repository with the given config.
  */

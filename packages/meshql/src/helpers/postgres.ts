@@ -1,10 +1,10 @@
 import { Pool, PoolConfig } from 'pg';
-import { PostgresConfig } from '../configTypes';
+import { PostgresConfig, StorageConfig } from '../configTypes';
 import { PostgresSearcher, PostgresRepository } from '@meshobj/postgres_repo';
 import { DTOFactory } from '@meshobj/graphlette';
 import { Auth } from '@meshobj/auth';
 import { Repository } from '@meshobj/common';
-
+import { Plugin } from '../plugin';
 /**
  * Creates and returns a Postgres Pool connection.
  */
@@ -24,6 +24,27 @@ export function buildPostgresPool(config: PostgresConfig, pools: Record<string, 
     return pools[key];
 }
 
+export class PostgresPlugin implements Plugin {
+    private pools: Record<string, Pool>;
+
+    constructor() {
+        this.pools = {};
+    }
+
+    async createRepository(config: StorageConfig) {
+        return createPostgresRepository(config as PostgresConfig, this.pools);
+    }
+
+    async createSearcher(config: StorageConfig, dtoFactory: DTOFactory, auth: Auth) {
+        return createPostgresSearcher(config as PostgresConfig, dtoFactory, auth, this.pools);
+    }
+
+    async cleanup() {
+        for (const pool of Object.values(this.pools)) {
+            await pool.end();
+        }
+    }
+}
 /**
  * Creates a PostgresSearcher with the given config, DTOFactory, and auth.
  */
