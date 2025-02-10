@@ -4,12 +4,8 @@ import { init as rest_init } from '@meshobj/restlette';
 import {
     Config,
     Graphlette,
-    MongoConfig,
     Restlette,
-    SQLConfig,
     StorageConfig,
-    PostgresConfig,
-    MySQLConfig,
 } from './configTypes';
 import { Repository, Searcher, Validator } from '@meshobj/common';
 import { Pool } from 'pg';
@@ -22,10 +18,10 @@ import { CasbinAuth } from '@meshobj/casbin_auth';
 import cors from 'cors';
 
 // Import our new helper factories
-import { MongoPlugin } from './helpers/mongo';
-import { SQLitePlugin } from './helpers/sqlite';
-import { PostgresPlugin } from './helpers/postgres';
-import { MySQLPlugin } from './helpers/mysql';
+import { MongoPlugin } from '@meshobj/mongo_repo';
+import { SQLitePlugin } from '@meshobj/sqlite_repo';
+import { PostgresPlugin } from '@meshobj/postgres_repo';
+import { MySQLPlugin } from '@meshobj/mysql_repo';
 
 import { Pool as MySQLPool } from 'mysql2/promise';
 import { Plugin } from './plugin';
