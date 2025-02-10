@@ -7,7 +7,7 @@ import Handlebars from 'handlebars';
 import { getLogger } from 'log4js';
 import { Schema } from './types';
 
-let logger = getLogger('meshql/mongosearcher');
+let logger = getLogger('meshobj/mongosearcher');
 
 export class MongoSearcher implements Searcher {
     private authorizer: Auth;

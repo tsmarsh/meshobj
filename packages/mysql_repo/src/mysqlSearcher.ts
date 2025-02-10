@@ -6,7 +6,7 @@ import { getLogger } from 'log4js';
 import { Pool } from 'mysql2/promise';
 import { EnvelopeRow, rowToEnvelope } from './mysqlRepo';
 
-const logger = getLogger('meshql/mysqlsearcher');
+const logger = getLogger('meshobj/mysqlsearcher');
 
 export class MySQLSearcher implements Searcher {
     private pool: Pool;

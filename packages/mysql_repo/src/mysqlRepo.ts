@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { Envelope, Id, Payload, Repository } from '@meshobj/common';
 import Log4js from 'log4js';
 
-const logger = Log4js.getLogger('meshql/mysql_repo');
+const logger = Log4js.getLogger('meshobj/mysql_repo');
 
 export interface EnvelopeRow extends RowDataPacket {
     id: string;

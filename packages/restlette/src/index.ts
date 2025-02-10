@@ -5,7 +5,7 @@ import swaggerUi, { JsonObject } from 'swagger-ui-express';
 import { Crud } from './crud.js';
 import { paths } from './swagger';
 
-const logger = Log4js.getLogger('meshql/restlette');
+const logger = Log4js.getLogger('meshobj/restlette');
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes

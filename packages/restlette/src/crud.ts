@@ -3,7 +3,7 @@ import Log4js from 'log4js';
 import { Envelope, Repository, Validator } from '@meshobj/common';
 import { Request, Response } from 'express';
 
-const logger = Log4js.getLogger('meshql/restlette');
+const logger = Log4js.getLogger('meshobj/restlette');
 
 export class Crud {
     private _authorizer: Auth;

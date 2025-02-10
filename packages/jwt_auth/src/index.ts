@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 import { Envelope } from '@meshobj/common';
 import { Request } from 'express';
 
-let logger = getLogger('meshql/jwtauth');
+let logger = getLogger('meshobj/jwtauth');
 
 export class JWTSubAuthorizer implements Auth {
     async getAuthToken(context: Request): Promise<string[]> {

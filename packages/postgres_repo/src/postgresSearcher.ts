@@ -5,7 +5,7 @@ import Handlebars from 'handlebars';
 import { getLogger } from 'log4js';
 import { Pool } from 'pg';
 
-const logger = getLogger('meshql/postgressearcher');
+const logger = getLogger('meshobj/postgressearcher');
 
 export class PostgresSearcher implements Searcher {
     private pool: Pool;
