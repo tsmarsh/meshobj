@@ -5,12 +5,17 @@
     "main": "dist/index.js",
     "scripts": {
         "start": "node dist/index.js",
-        "build": "tsc"
+        "build": "tsc",
+        "test": "vitest --run"
     },
     "dependencies": {
         "@meshobj/meshql": "workspace:*"
     },
     "devDependencies": {
-        "typescript": "^5.0.0"
+        "@meshobj/graphlette": "workspace:^",
+        "@types/node": "^20.0.0",
+        "testcontainers": "^10.18.0",
+        "typescript": "^5.0.0",
+        "vitest": "^3.0.5"
     }
 }
