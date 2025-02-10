@@ -10,8 +10,6 @@
         "**/*.test.ts",
         "**/*.spec.ts"
       ],
-      "push": false,
-      "gitTagVersion": false,
       "createRelease": "github"
     },
     "publish": {
