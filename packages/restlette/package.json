@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/restlette",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -28,8 +28,8 @@
         "vitest": "^2.1.8"
     },
     "dependencies": {
-        "@meshobj/auth": "0.1.0",
-        "@meshobj/common": "0.1.0",
+        "@meshobj/auth": "^0.1.1",
+        "@meshobj/common": "^0.1.1",
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
         "express": "^4.17.17",
@@ -37,5 +37,6 @@
         "fastify": "^5.2.1",
         "log4js": "^6.9.1",
         "swagger-ui-express": "^4.1.7"
-    }
+    },
+    "gitHead": "acaa03b4119013b50c8d8a8afeac47c7820855b7"
 }

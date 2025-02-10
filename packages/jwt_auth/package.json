@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/jwt_auth",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -26,10 +26,11 @@
         "vitest": "^3.0.1"
     },
     "dependencies": {
-        "@meshobj/auth": "0.1.0",
-        "@meshobj/common": "0.1.0",
+        "@meshobj/auth": "^0.1.1",
+        "@meshobj/common": "^0.1.1",
         "express": "^4.21.2",
         "jsonwebtoken": "^9.0.2",
         "log4js": "^6.9.1"
-    }
+    },
+    "gitHead": "acaa03b4119013b50c8d8a8afeac47c7820855b7"
 }

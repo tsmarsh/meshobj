@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/auth",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "type": "commonjs",
     "publishConfig": {
         "access": "public"
@@ -14,7 +14,7 @@
     "author": "Tom Marsh",
     "license": "MIT",
     "dependencies": {
-        "@meshobj/common": "0.1.0",
+        "@meshobj/common": "^0.1.1",
         "express": "^4.17.17"
     },
     "devDependencies": {
@@ -27,5 +27,6 @@
     "scripts": {
         "build": "tsc",
         "test": "vitest --run --passWithNoTests"
-    }
+    },
+    "gitHead": "acaa03b4119013b50c8d8a8afeac47c7820855b7"
 }

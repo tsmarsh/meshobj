@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/mongo_repo",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -23,9 +23,9 @@
         "vitest": "^2.1.8"
     },
     "dependencies": {
-        "@meshobj/auth": "0.1.0",
-        "@meshobj/common": "0.1.0",
-        "@meshobj/graphlette": "0.1.0",
+        "@meshobj/auth": "^0.1.1",
+        "@meshobj/common": "^0.1.1",
+        "@meshobj/graphlette": "^0.1.1",
         "log4js": "^6.9.1",
         "mongodb": "^6.12.0",
         "uuid": "^11.0.3"
@@ -33,5 +33,6 @@
     "scripts": {
         "build": "tsc",
         "test": "vitest --run --coverage"
-    }
+    },
+    "gitHead": "acaa03b4119013b50c8d8a8afeac47c7820855b7"
 }

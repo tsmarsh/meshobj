@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/common",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -26,5 +26,6 @@
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
         "handlebars": "^4.7.8"
-    }
+    },
+    "gitHead": "acaa03b4119013b50c8d8a8afeac47c7820855b7"
 }
