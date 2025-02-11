@@ -1,34 +1,32 @@
-import { Searcher, Envelope, Repository } from '@meshobj/common';
+import { Searcher, Repository } from '@meshobj/common';
 import { SearcherCertification, TestTemplates } from '../../common/test/certification/searcher.cert';
 import { DTOFactory } from '@meshobj/graphlette';
 import { NoOp, Auth } from '@meshobj/auth';
 import { compile } from 'handlebars';
 import { Pool } from 'pg';
-import { GenericContainer, StartedTestContainer } from 'testcontainers';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import { PostgresRepository } from '../src/postgresRepo';
 import { PostgresSearcher } from '../src/postgresSearcher';
 import { describe } from 'vitest';
 
 const dbs: Pool[] = [];
-let container: StartedTestContainer | null = null;
+let container: StartedPostgreSqlContainer | null = null;
 
 const createSearcher = async (): Promise<{ repository: Repository; searcher: Searcher }> => {
     if (!container) {
-        container = await new GenericContainer('postgres')
-            .withExposedPorts(5432)
-            .withEnvironment({
-                POSTGRES_PASSWORD: 'password',
-                POSTGRES_DB: 'test',
-            })
+        container = await new PostgreSqlContainer()
+            .withUsername('bob')
+            .withPassword('max')
+            .withDatabase('searcher')
             .start();
     }
 
     const pool = new Pool({
-        user: 'postgres',
+        user: 'bob',
         host: container.getHost(),
         port: container.getMappedPort(5432),
-        database: `test`,
-        password: 'password',
+        database: `searcher`,
+        password: 'max',
     });
 
     dbs.push(pool);

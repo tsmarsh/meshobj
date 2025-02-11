@@ -1,11 +1,11 @@
-import { GenericContainer, StartedTestContainer } from 'testcontainers';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import Log4js from 'log4js';
 import { ServerCertificiation } from '../../meshql/test/the_farm.cert';
 import { describe } from 'vitest';
 import { PostgresPlugin } from '../src';
 import { config } from './config';
 
-let container: StartedTestContainer | null = null;
+let container: StartedPostgreSqlContainer | null = null;
 let serverPort: string = '4242';
 
 Log4js.configure({
@@ -21,12 +21,10 @@ Log4js.configure({
 
 const setup = async () => {
     try {
-        container = await new GenericContainer('postgres')
-            .withExposedPorts(5432)
-            .withEnvironment({
-                POSTGRES_PASSWORD: 'password',
-                POSTGRES_DB: 'test',
-            })
+        container = await new PostgreSqlContainer()
+            .withUsername('postgres')
+            .withPassword('password')
+            .withDatabase('test')
             .start();
 
         const host = container.getHost();
