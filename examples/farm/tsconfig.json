@@ -6,7 +6,7 @@
             "path": "../../packages/common"
         },
         {
-            "path": "../../packages/meshql"
+            "path": "../../packages/server"
         },
         {
             "path": "../../packages/mongo_repo"

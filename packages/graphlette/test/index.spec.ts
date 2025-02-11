@@ -9,7 +9,7 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
-describe.skip('MeshQL Server Integration', () => {
+describe.skip('server Server Integration', () => {
     let mongod: MongoMemoryServer;
     let mongoUri: string;
     let serverProcess: any;

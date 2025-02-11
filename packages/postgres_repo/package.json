@@ -26,6 +26,7 @@
         "@meshobj/auth": "^0.1.1",
         "@meshobj/common": "^0.1.1",
         "@meshobj/graphlette": "^0.1.1",
+        "@meshobj/server": "^0.1.1",
         "@testcontainers/postgresql": "^10.18.0",
         "handlebars": "^4.7.8",
         "log4js": "^6.9.1",

@@ -1,5 +1,5 @@
 {
-    "name": "@meshobj/meshql",
+    "name": "@meshobj/server",
     "type": "commonjs",
     "version": "0.1.1",
     "bin": "./dist/cli.js",

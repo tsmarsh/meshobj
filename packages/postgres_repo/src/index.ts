@@ -2,14 +2,14 @@ export { PostgresSearcher } from './postgresSearcher';
 export { PostgresRepository } from './postgresRepo.js';
 
 import { Pool, PoolConfig } from 'pg';
-import { StorageConfig } from '@meshobj/meshql';
+import { StorageConfig } from '@meshobj/server';
 import { PostgresSearcher } from './postgresSearcher';
 import { PostgresRepository } from './postgresRepo.js';
 
 import { DTOFactory } from '@meshobj/graphlette';
 import { Auth } from '@meshobj/auth';
 import { Repository } from '@meshobj/common';
-import { Plugin } from '@meshobj/meshql';
+import { Plugin } from '@meshobj/server';
 /**
  * Creates and returns a Postgres Pool connection.
  */

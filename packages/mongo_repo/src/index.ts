@@ -4,11 +4,11 @@ export { MongoRepository } from './mongoRepo.js';
 import { MongoSearcher } from './mongoSearcher.js';
 import { MongoRepository } from './mongoRepo.js';
 import { MongoClient, Collection } from 'mongodb';
-import { StorageConfig } from '@meshobj/meshql';
+import { StorageConfig } from '@meshobj/server';
 import { Envelope } from '@meshobj/common';
 import { Auth } from '@meshobj/auth';
 import { DTOFactory } from '@meshobj/graphlette';
-import { Plugin } from '@meshobj/meshql';
+import { Plugin } from '@meshobj/server';
 /**
  * Builds and returns a MongoDB Collection for the specified MongoConfig.
  */

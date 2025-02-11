@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs';
-import { init } from './server';
-import { Config } from './configTypes';
+import { init, Config } from '@meshobj/server';
+import { SQLitePlugin } from '@meshobj/sqlite_repo';
+import { MongoPlugin } from '@meshobj/mongo_repo';
+import { MySQLPlugin } from '@meshobj/mysql_repo';
+import { PostgresPlugin } from '@meshobj/postgres_repo';
 const parser = require('@pushcorn/hocon-parser');
 import Log4js from 'log4js';
 
@@ -43,7 +46,13 @@ export default async function startServer(configPath?: string) {
             config.port = argv.port;
         }
 
-        const app = await init(config, {}); //TODO: Add plugins
+        const app = await init(config, {
+            "sql": new SQLitePlugin(),
+            "mongo": new MongoPlugin(),
+            "mysql": new MySQLPlugin(),
+            "postgres": new PostgresPlugin()
+        }); 
+        
         await app.listen(config.port);
         log.info(`Server running on port ${config.port}`);
 

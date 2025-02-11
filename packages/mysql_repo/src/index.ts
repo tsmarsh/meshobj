@@ -7,8 +7,8 @@ import { MySQLRepository } from './mysqlRepo';
 import { DTOFactory } from '@meshobj/graphlette';
 import { Auth } from '@meshobj/auth';
 import { MySQLSearcher } from './mysqlSearcher';
-import { StorageConfig } from '@meshobj/meshql';
-import { Plugin } from '@meshobj/meshql';
+import { StorageConfig } from '@meshobj/server';
+import { Plugin } from '@meshobj/server';
 /**
  * Creates and returns a MySQL Pool connection.
  */

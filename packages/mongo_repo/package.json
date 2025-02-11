@@ -26,6 +26,7 @@
         "@meshobj/auth": "^0.1.1",
         "@meshobj/common": "^0.1.1",
         "@meshobj/graphlette": "^0.1.1",
+        "@meshobj/server": "^0.1.1",
         "log4js": "^6.9.1",
         "mongodb": "^6.12.0",
         "uuid": "^11.0.3"

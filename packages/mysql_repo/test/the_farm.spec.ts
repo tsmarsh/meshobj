@@ -1,6 +1,6 @@
 import { MySqlContainer, StartedMySqlContainer } from '@testcontainers/mysql';
 import Log4js from 'log4js';
-import { ServerCertificiation } from '../../meshql/test/the_farm.cert';
+import { ServerCertificiation } from '../../server/test/the_farm.cert';
 import { describe } from 'vitest';
 import { MySQLPlugin } from '../src';
 import { config } from './config';

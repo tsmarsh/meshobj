@@ -16,7 +16,7 @@ coverage:
         paths: ["packages/jwt_auth/**"]
         target: 80%
       meshql:
-        paths: ["packages/meshql/**"]
+        paths: ["packages/server/**"]
         target: 80%
       mongo_repo:
         paths: ["packages/mongo_repo/**"]
@@ -65,9 +65,9 @@ component_management:
     - component_id: jwt_auth
       name: JWT Auth
       paths: ["packages/jwt_auth/**"]
-    - component_id: meshql
+    - component_id: server
       name: MeshQL
-      paths: ["packages/meshql/**"]
+      paths: ["packages/server/**"]
     - component_id: mongo_repo
       name: MongoDB Repository
       paths: ["packages/mongo_repo/**"]

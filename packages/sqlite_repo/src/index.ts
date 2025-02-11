@@ -3,13 +3,13 @@ export { SQLiteSearcher } from './sqliteSearcher.js';
 
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
-import { StorageConfig } from '@meshobj/meshql';
+import { StorageConfig } from '@meshobj/server';
 import { Repository } from '@meshobj/common';
 import { SQLiteSearcher } from './sqliteSearcher.js';
 import { SQLiteRepository } from './sqliteRepo.js';
 import { Auth } from '@meshobj/auth';
 import { DTOFactory } from '@meshobj/graphlette';
-import { Plugin } from '@meshobj/meshql';
+import { Plugin } from '@meshobj/server';
 
 /**
  * Helper that opens SQLite and returns the Database reference.

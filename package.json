@@ -18,7 +18,7 @@
         "lint:fix": "eslint . --fix",
         "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
         "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-        "start": "node ./packages/meshql/dist/cli.js --config config/config.conf",
+        "start": "node packages/server/dist/cli.js --config config/config.conf",
         "publish": "lerna publish --no-private"
     },
     "dependencies": {

@@ -9,7 +9,7 @@
         "test": "vitest --run"
     },
     "dependencies": {
-        "@meshobj/meshql": "workspace:*"
+        "@meshobj/cli": "workspace:*"
     },
     "devDependencies": {
         "@meshobj/graphlette": "workspace:^",

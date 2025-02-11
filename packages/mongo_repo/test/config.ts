@@ -1,11 +1,11 @@
-import { Config } from '@meshobj/meshql';
+import { Config } from '@meshobj/server';
 import { MongoConfig } from '../src';
 import fs from 'fs';
 const PORT = 3044;
 const ENV = 'test';
 const PREFIX = 'farm';
 const PLATFORM_URL = `http://localhost:${PORT}`
-const config_dir = `${__dirname}/../../meshql/test/config/`
+const config_dir = `${__dirname}/../../server/test/config/`
 
 const database = () => ({
   type: "mongo",

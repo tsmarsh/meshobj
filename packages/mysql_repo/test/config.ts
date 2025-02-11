@@ -1,11 +1,11 @@
-import { Config } from "@meshobj/meshql";
+import { Config } from "@meshobj/server";
 import fs from "fs";
 import { MySQLConfig } from "../src";
 
 let port = 5043;
 
 let platformUrl = "http://localhost:" + port;
-let config_dir = `${__dirname}/../../meshql/test/config/`;
+let config_dir = `${__dirname}/../../server/test/config/`;
 
 let database = () => ({
     type: "mysql",

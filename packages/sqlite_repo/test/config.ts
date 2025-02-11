@@ -1,4 +1,4 @@
-import { Config } from "@meshobj/meshql";
+import { Config } from "@meshobj/server";
 import { SQLConfig } from "../src";
 import fs from "fs";
 
@@ -8,7 +8,7 @@ const PLATFORM_URL = `http://localhost:${PORT}`;
 const PREFIX = "farm";
 const ENV = "test";
 
-const config_dir = `${__dirname}/../../meshql/test/config/`
+const config_dir = `${__dirname}/../../server/test/config/`
 
 const database = {
   type: "sql",
