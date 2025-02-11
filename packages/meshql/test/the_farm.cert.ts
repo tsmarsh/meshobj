@@ -8,31 +8,43 @@ import { Restlette } from '../src/configTypes';
 import * as jwt from 'jsonwebtoken';
 import { Plugin } from '../src/plugin';
 import { Config } from '../src/configTypes';
-globalThis.__MONGO_URI__ = ''; // Placeholder for MongoDB URI
-globalThis.__TOKEN__ = ''; // Placeholder for JWT token
+
+
+let __TOKEN__ = ''; // Placeholder for JWT token
+let config: Config;
 
 let app: Application;
 let server: Server;
 
-globalThis.farm_id = '';
-globalThis.coop1_id = '';
-globalThis.coop2_id = '';
-globalThis.hen_ids = {};
-globalThis.first_stamp = 0;
+let farm_id = '';
+let coop1_id = '';
+let coop2_id = '';
+let hen_ids = {};
+let first_stamp = 0;
 
 let hen_api: any;
 let coop_api: any;
 let farm_api: any;
 
-export function ServerCertificiation(setup, plugins: Record<string, Plugin>, config:Config) {
+export function ServerCertificiation(setup, plugins: Record<string, Plugin>, configurize: () => Promise<Config>) {
     beforeAll(async () => {
         await setup();
 
-        const sub = 'test-user';
-        globalThis.__TOKEN__ = jwt.sign({ sub }, 'totallyASecret', { expiresIn: '1h' });
+        config = await configurize();
 
-        // Initialize and start the Express app
-        app = await init(config, plugins);
+
+
+        const sub = 'test-user';
+        __TOKEN__ = jwt.sign({ sub }, 'totallyASecret', { expiresIn: '1h' });
+
+        try {
+            app = await init(config, plugins);
+        } catch (e) {
+            console.error(e);
+            console.log(JSON.stringify(config, null, 2));
+            throw e;
+        }
+
         let port = config.port;
 
         server = await app.listen(port, () => {
@@ -40,11 +52,17 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
         });
 
         // Build API clients
-        const swagger_docs: Document[] = await getSwaggerDocs();
+        try {
+            const swagger_docs: Document[] = await getSwaggerDocs(config);
 
-        await buildApi(swagger_docs, globalThis.__TOKEN__);
+            await buildApi(swagger_docs, __TOKEN__);
 
-        await buildModels();
+            await buildModels();
+        } catch (e) {
+            console.error(e);
+            console.log(JSON.stringify(config, null, 2));
+            throw e;
+        }
     });
 
     afterAll(async () => {
@@ -59,7 +77,7 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
     describe('The Farm', () => {
         it('should build a server with multiple nodes', async () => {
             const query = `{
-                getById(id: "${globalThis.farm_id}") {
+                getById(id: "${farm_id}") {
                     name 
                     coops {
                         name
@@ -72,13 +90,13 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
             }`;
 
             const json = await callSubgraph(
-                new URL(`http://localhost:${globalThis.__CONFIG__.port}/farm/graph`),
+                new URL(`http://localhost:${config.port}/farm/graph`),
                 query,
                 'getById',
-                `Bearer ${globalThis.__TOKEN__}`,
+                `Bearer ${__TOKEN__}`,
             );
 
-            expect(json.name).toBe('Emerdale');
+            expect(json.name, `This is a catch all, your config is probably wrong: ${JSON.stringify(config)}`).toBe('Emerdale');
             expect(json.coops.length).toBe(3);
         });
 
@@ -91,19 +109,19 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
             }`;
 
             const json = await callSubgraph(
-                new URL(`http://localhost:${globalThis.__CONFIG__.port}/hen/graph`),
+                new URL(`http://localhost:${config.port}/hen/graph`),
                 query,
                 'getByName',
-                `Bearer ${globalThis.__TOKEN__}`,
+                `Bearer ${__TOKEN__}`,
             );
 
-            expect(json[0].id).toBe(globalThis.hen_ids['duck']);
+            expect(json[0].id, `Most of the time this has failed its because you have old data in storage`).toBe(hen_ids['duck']);
             expect(json[0].name).toBe('duck');
         });
 
         it('should query in both directions', async () => {
             const query = `{
-                getByCoop(id: "${globalThis.coop1_id}") {
+                getByCoop(id: "${coop1_id}") {
                     name
                     eggs
                     coop {
@@ -116,10 +134,10 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
             }`;
 
             const json = await callSubgraph(
-                new URL(`http://localhost:${globalThis.__CONFIG__.port}/hen/graph`),
+                new URL(`http://localhost:${config.port}/hen/graph`),
                 query,
                 'getByCoop',
-                `Bearer ${globalThis.__TOKEN__}`,
+                `Bearer ${__TOKEN__}`,
             );
 
             expect(json.length).toBe(2);
@@ -129,35 +147,35 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
 
         it('should get latest by default', async () => {
             const query = `{
-                getById(id: "${globalThis.coop1_id}") {
+                getById(id: "${coop1_id}") {
                     id
                     name
                 }
             }`;
 
             const json = await callSubgraph(
-                new URL(`http://localhost:${globalThis.__CONFIG__.port}/coop/graph`),
+                new URL(`http://localhost:${config.port}/coop/graph`),
                 query,
                 'getById',
-                `Bearer ${globalThis.__TOKEN__}`,
+                `Bearer ${__TOKEN__}`,
             );
 
-            expect(json.id).toBe(globalThis.coop1_id);
+            expect(json.id, `Idempotency isn't working. Check the plugins for examples of how to implement it`).toBe(coop1_id);
             expect(json.name).toBe('purple');
         });
 
         it('should get closest to the timestamp when specified', async () => {
             const query = `{
-                getById(id: "${globalThis.coop1_id}", at: ${globalThis.first_stamp}) {
+                getById(id: "${coop1_id}", at: ${first_stamp}) {
                     name
                 }
             }`;
 
             const json = await callSubgraph(
-                new URL(`http://localhost:${globalThis.__CONFIG__.port}/coop/graph`),
+                new URL(`http://localhost:${config.port}/coop/graph`),
                 query,
                 'getById',
-                `Bearer ${globalThis.__TOKEN__}`,
+                `Bearer ${__TOKEN__}`,
             );
 
             expect(json.name).toBe('red');
@@ -165,7 +183,7 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
 
         it('should obey the timestamps', async () => {
             const query = `{
-                getById(id: "${globalThis.farm_id}", at: ${globalThis.first_stamp}) {
+                getById(id: "${farm_id}", at: ${first_stamp}) {
                     coops {
                     name
                     }
@@ -173,10 +191,10 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
             }`;
 
             const json = await callSubgraph(
-                new URL(`http://localhost:${globalThis.__CONFIG__.port}/farm/graph`),
+                new URL(`http://localhost:${config.port}/farm/graph`),
                 query,
                 'getById',
-                `Bearer ${globalThis.__TOKEN__}`,
+                `Bearer ${__TOKEN__}`,
             );
 
             const names = json.coops.map((c: any) => c.name);
@@ -185,7 +203,7 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
 
         it('should pass timestamps to next layer', async () => {
             const query = `{
-                getById(id: "${globalThis.farm_id}", at: ${Date.now()}) {
+                getById(id: "${farm_id}", at: ${Date.now()}) {
                     coops {
                     name
                     }
@@ -193,10 +211,10 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
             }`;
 
             const json = await callSubgraph(
-                new URL(`http://localhost:${globalThis.__CONFIG__.port}/farm/graph`),
+                new URL(`http://localhost:${config.port}/farm/graph`),
                 query,
                 'getById',
-                `Bearer ${globalThis.__TOKEN__}`,
+                `Bearer ${__TOKEN__}`,
             );
 
             const names = json.coops.map((c: any) => c.name);
@@ -205,10 +223,10 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
     });
 }
 
-async function getSwaggerDocs() {
+async function getSwaggerDocs(config: Config) {
     return await Promise.all(
-        globalThis.__CONFIG__.restlettes.map(async (restlette: Restlette) => {
-            let url = `http://localhost:${globalThis.__CONFIG__.port}${restlette.path}/api-docs/swagger.json`;
+        config.restlettes.map(async (restlette: Restlette) => {
+            let url = `http://localhost:${config.port}${restlette.path}/api-docs/swagger.json`;
 
             const response = await fetch(url);
             let doc = await response.json();
@@ -249,32 +267,32 @@ async function buildApi(swagger_docs: Document[], token: string) {
 async function buildModels() {
     const farm = await farm_api.create(null, { name: 'Emerdale' });
 
-    globalThis.farm_id = farm.request.path.slice(-36);
+    farm_id = farm.request.path.slice(-36);
 
-    const coop1 = await coop_api.create(null, { name: 'red', farm_id: globalThis.farm_id });
-    globalThis.coop1_id = coop1.request.path.slice(-36);
+    const coop1 = await coop_api.create(null, { name: 'red', farm_id: farm_id });
+    coop1_id = coop1.request.path.slice(-36);
 
-    const coop2 = await coop_api.create(null, { name: 'yellow', farm_id: globalThis.farm_id });
-    globalThis.coop2_id = coop2.request.path.slice(-36);
+    const coop2 = await coop_api.create(null, { name: 'yellow', farm_id: farm_id });
+    coop2_id = coop2.request.path.slice(-36);
 
-    await coop_api.create(null, { name: 'pink', farm_id: globalThis.farm_id });
+    await coop_api.create(null, { name: 'pink', farm_id: farm_id });
 
-    globalThis.first_stamp = Date.now();
+    first_stamp = Date.now();
 
-    await coop_api.update({ id: globalThis.coop1_id }, { name: 'purple', farm_id: globalThis.farm_id });
+    await coop_api.update({ id: coop1_id }, { name: 'purple', farm_id: farm_id });
 
     const hens = [
-        { name: 'chuck', eggs: 2, coop_id: globalThis.coop1_id },
-        { name: 'duck', eggs: 0, coop_id: globalThis.coop1_id },
-        { name: 'euck', eggs: 1, coop_id: globalThis.coop2_id },
-        { name: 'fuck', eggs: 2, coop_id: globalThis.coop2_id },
+        { name: 'chuck', eggs: 2, coop_id: coop1_id },
+        { name: 'duck', eggs: 0, coop_id: coop1_id },
+        { name: 'euck', eggs: 1, coop_id: coop2_id },
+        { name: 'fuck', eggs: 2, coop_id: coop2_id },
     ];
 
     const savedHens = await Promise.all(hens.map((hen) => hen_api.create(null, hen)));
 
     savedHens.forEach((hen: any) => {
-        globalThis.hen_ids[hen.data.name] = hen.headers['x-canonical-id'];
+        hen_ids[hen.data.name] = hen.headers['x-canonical-id'];
     });
 
-    console.log('Hens:', JSON.stringify(globalThis.hen_ids));
+    console.log('Hens:', JSON.stringify(hen_ids));
 }

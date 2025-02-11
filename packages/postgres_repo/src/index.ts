@@ -3,7 +3,9 @@ export { PostgresRepository } from './postgresRepo.js';
 
 import { Pool, PoolConfig } from 'pg';
 import { StorageConfig } from '@meshobj/meshql';
-import { PostgresSearcher, PostgresRepository } from '@meshobj/postgres_repo';
+import { PostgresSearcher } from './postgresSearcher';
+import { PostgresRepository } from './postgresRepo.js';
+
 import { DTOFactory } from '@meshobj/graphlette';
 import { Auth } from '@meshobj/auth';
 import { Repository } from '@meshobj/common';
