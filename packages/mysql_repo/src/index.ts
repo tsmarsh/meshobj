@@ -3,10 +3,10 @@ export { MySQLSearcher } from './mysqlSearcher';
 
 import { createPool, PoolOptions, Pool as MySQLPool } from 'mysql2/promise';
 import { Repository } from '@meshobj/common';
-import { MySQLRepository } from '@meshobj/mysql_repo'; // Adjust import if your MySQL repo is named differently
+import { MySQLRepository } from './mysqlRepo';
 import { DTOFactory } from '@meshobj/graphlette';
 import { Auth } from '@meshobj/auth';
-import { MySQLSearcher } from '@meshobj/mysql_repo';
+import { MySQLSearcher } from './mysqlSearcher';
 import { StorageConfig } from '@meshobj/meshql';
 import { Plugin } from '@meshobj/meshql';
 /**
@@ -14,7 +14,7 @@ import { Plugin } from '@meshobj/meshql';
  */
 
 export interface MySQLConfig extends StorageConfig {
-    type: 'mysql';
+    type: string;
     host: string;
     port: number;
     db: string;
