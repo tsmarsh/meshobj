@@ -5,7 +5,8 @@ import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { StorageConfig } from '@meshobj/meshql';
 import { Repository } from '@meshobj/common';
-import { SQLiteSearcher, SQLiteRepository } from '@meshobj/sqlite_repo';
+import { SQLiteSearcher } from './sqliteSearcher.js';
+import { SQLiteRepository } from './sqliteRepo.js';
 import { Auth } from '@meshobj/auth';
 import { DTOFactory } from '@meshobj/graphlette';
 import { Plugin } from '@meshobj/meshql';
@@ -31,7 +32,7 @@ export class SQLitePlugin implements Plugin {
     async createRepository(config: StorageConfig) {
         return createSQLiteRepository(config as SQLConfig);
     }
-    
+
     async createSearcher(config: StorageConfig, dtoFactory: DTOFactory, auth: Auth) {
         return createSQLiteSearcher(config as SQLConfig, dtoFactory, auth);
     }
@@ -39,7 +40,7 @@ export class SQLitePlugin implements Plugin {
     async cleanup() {
         // SQLite does not require explicit cleanup
     }
-}   
+}
 
 /**
  * Creates a SQLiteSearcher with the given config, DTO factory, and auth.

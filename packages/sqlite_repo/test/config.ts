@@ -10,23 +10,23 @@ const ENV = "test";
 const config_dir = "../meshql/test/config/"
 
 const database = {
-    type: "sql",
-    uri: "./thefarm.db"
+  type: "sql",
+  uri: "./thefarm.db"
 }
 
 const henDB = {
-    ...database,
-    collection: `${PREFIX}_${ENV}hen`
-}   
+  ...database,
+  collection: `${PREFIX}_${ENV}hen`
+}
 
 const coopDB = {
-    ...database,
-    collection: `${PREFIX}_${ENV}coop`
+  ...database,
+  collection: `${PREFIX}_${ENV}coop`
 }
 
 const farmDB = {
-    ...database,
-    collection: `${PREFIX}_${ENV}farm`
+  ...database,
+  collection: `${PREFIX}_${ENV}farm`
 }
 
 const farmSchema = fs.readFileSync(`${config_dir}graph/farm.graphql`, 'utf8');
@@ -37,9 +37,10 @@ const farmJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/farm.schema
 const coopJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/coop.schema.json`, 'utf8'));
 const henJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/hen.schema.json`, 'utf8'));
 
-export const config: Config = {
+export const config = () => {
+  return {
     port: PORT,
-  
+
     graphlettes: [
       {
         path: "/farm/graph",
@@ -53,7 +54,7 @@ export const config: Config = {
             }
           ],
           vectors: [],
-            resolvers: [
+          resolvers: [
             {
               name: "coops",
               queryName: "getByFarm",
@@ -89,7 +90,7 @@ export const config: Config = {
               name: "farm",
               id: "farm_id",
               queryName: "getById",
-                url: `${PLATFORM_URL}/farm/graph`
+              url: `${PLATFORM_URL}/farm/graph`
             },
             {
               name: "hens",
@@ -131,7 +132,7 @@ export const config: Config = {
         }
       }
     ],
-  
+
     restlettes: [
       {
         path: "/farm/api",
@@ -148,5 +149,6 @@ export const config: Config = {
         storage: henDB,
         schema: henJSONSchema
       }
-    ]
-  }
+    ],
+  };
+};
