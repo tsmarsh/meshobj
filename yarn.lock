@@ -969,6 +969,7 @@ __metadata:
     "@meshobj/auth": "npm:^0.1.1"
     "@meshobj/common": "npm:^0.1.1"
     "@meshobj/graphlette": "npm:^0.1.1"
+    "@testcontainers/postgresql": "npm:^10.18.0"
     "@types/node": "npm:^22.10.6"
     "@types/pg": "npm:^8"
     c8: "npm:^10.1.3"
@@ -1784,6 +1785,15 @@ __metadata:
   dependencies:
     testcontainers: "npm:^10.18.0"
   checksum: 10c0/ea170c83613d4423d40eb226e922097237426620425f8b04e57f840f26c072809e907846862d3d3b2f62b9a6b4eca01879751887ae2531df0d3ff2f31e5002a0
+  languageName: node
+  linkType: hard
+
+"@testcontainers/postgresql@npm:^10.18.0":
+  version: 10.18.0
+  resolution: "@testcontainers/postgresql@npm:10.18.0"
+  dependencies:
+    testcontainers: "npm:^10.18.0"
+  checksum: 10c0/4a51de5423a6af0c8c7ef8d8500f767d4ceba4e4674e703c72a54cf1173c3faf249074323080cf8ba2fd80d9276ae57c3e00b3f562c6fb6ab723ae206d3c8f0c
   languageName: node
   linkType: hard
 
