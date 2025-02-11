@@ -15,10 +15,9 @@ import { Plugin } from '@meshobj/meshql';
  * Helper that opens SQLite and returns the Database reference.
  */
 export interface SQLConfig extends StorageConfig {
-    type: 'sql';
     uri: string;
     collection: string;
-};
+}
 
 export async function buildSqliteDb(sqlConfig: SQLConfig): Promise<Database<sqlite3.Database, sqlite3.Statement>> {
     const db = await open({

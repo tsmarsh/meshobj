@@ -6,7 +6,7 @@ const port = 4242;
 
 const url = `http://localhost:${port}`;
 
-const config_dir = "../meshql/test/config/"
+let config_dir = `${__dirname}/../../meshql/test/config/`;
 
 const prefix = 'farm';
 const env = 'test';

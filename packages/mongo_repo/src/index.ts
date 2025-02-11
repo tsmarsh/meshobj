@@ -20,7 +20,7 @@ export interface MongoConfig extends StorageConfig {
     options: {
         directConnection: boolean;
     };
-};
+}
 
 export async function buildMongoCollection(
     mongoConfig: MongoConfig,

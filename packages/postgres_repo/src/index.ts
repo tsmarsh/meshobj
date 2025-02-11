@@ -20,7 +20,7 @@ export interface PostgresConfig extends StorageConfig {
     user: string;
     password: string;
     table: string;
-};
+}
 
 export function buildPostgresPool(config: PostgresConfig, pools: Record<string, Pool>): Pool {
     let pgConf: PoolConfig = {

@@ -1,6 +1,6 @@
 import { RootConfig } from '@meshobj/common';
 
-export interface StorageConfig { type: string };
+export interface StorageConfig { type: string }
 
 export type Graphlette = {
     path: string;

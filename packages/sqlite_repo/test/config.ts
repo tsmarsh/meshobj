@@ -1,4 +1,5 @@
 import { Config } from "@meshobj/meshql";
+import { SQLConfig } from "../src";
 import fs from "fs";
 
 const PORT = 5255;
@@ -7,27 +8,27 @@ const PLATFORM_URL = `http://localhost:${PORT}`;
 const PREFIX = "farm";
 const ENV = "test";
 
-const config_dir = "../meshql/test/config/"
+const config_dir = `${__dirname}/../../meshql/test/config/`
 
 const database = {
   type: "sql",
   uri: "./thefarm.db"
 }
 
-const henDB = {
+const henDB = (): SQLConfig => ({
   ...database,
   collection: `${PREFIX}_${ENV}hen`
-}
+})
 
-const coopDB = {
+const coopDB = (): SQLConfig => ({
   ...database,
   collection: `${PREFIX}_${ENV}coop`
-}
+})
 
-const farmDB = {
+const farmDB = (): SQLConfig => ({
   ...database,
   collection: `${PREFIX}_${ENV}farm`
-}
+})
 
 const farmSchema = fs.readFileSync(`${config_dir}graph/farm.graphql`, 'utf8');
 const coopSchema = fs.readFileSync(`${config_dir}graph/coop.graphql`, 'utf8');
@@ -37,14 +38,14 @@ const farmJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/farm.schema
 const coopJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/coop.schema.json`, 'utf8'));
 const henJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/hen.schema.json`, 'utf8'));
 
-export const config = () => {
+export const config = (): Config => {
   return {
     port: PORT,
 
     graphlettes: [
       {
         path: "/farm/graph",
-        storage: farmDB,
+        storage: farmDB(),
         schema: farmSchema,
         rootConfig: {
           singletons: [
@@ -65,7 +66,7 @@ export const config = () => {
       },
       {
         path: "/coop/graph",
-        storage: coopDB,
+        storage: coopDB(),
         schema: coopSchema,
         rootConfig: {
           singletons: [
@@ -102,7 +103,7 @@ export const config = () => {
       },
       {
         path: "/hen/graph",
-        storage: henDB,
+        storage: henDB(),
         schema: henSchema,
         rootConfig: {
           singletons: [
@@ -136,17 +137,17 @@ export const config = () => {
     restlettes: [
       {
         path: "/farm/api",
-        storage: farmDB,
+        storage: farmDB(),
         schema: farmJSONSchema
       },
       {
         path: "/coop/api",
-        storage: coopDB,
+        storage: coopDB(),
         schema: coopJSONSchema
       },
       {
         path: "/hen/api",
-        storage: henDB,
+        storage: henDB(),
         schema: henJSONSchema
       }
     ],
