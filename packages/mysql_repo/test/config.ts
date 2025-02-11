@@ -5,7 +5,7 @@ import { MySQLConfig } from "../src";
 let port = 5043;
 
 let platformUrl = "http://localhost:" + port;
-let config_dir = "../meshql/test/config/";
+let config_dir = `${__dirname}/../../meshql/test/config/`;
 
 let database = () => ({
     type: "mysql",
@@ -16,17 +16,17 @@ let database = () => ({
     password: "test"
 });
 
-let henDB = () => ({
+let henDB = (): MySQLConfig => ({
     ...database(),
     table: "hen"
 })
 
-let coopDB = () => ({
+let coopDB = (): MySQLConfig => ({
     ...database(),
     table: "coop"
 })
 
-let farmDB = () => ({
+let farmDB = (): MySQLConfig => ({
     ...database(),
     table: "farm"
 })
@@ -39,115 +39,114 @@ let farmSchema = JSON.parse(fs.readFileSync(config_dir + "json/farm.schema.json"
 let coopSchema = JSON.parse(fs.readFileSync(config_dir + "json/coop.schema.json", "utf8"));
 let henSchema = JSON.parse(fs.readFileSync(config_dir + "json/hen.schema.json", "utf8"));
 
-export const config = async () => (
-    {
-        port,
-        graphlettes: [
-            {
-                path: "/farm/graph",
-                storage: farmDB(),
-                schema: farmGraph,
-                rootConfig: {
-                    singletons: [
-                        {
-                            name: "getById",
-                            query: "id = '{{id}}'"
-                        }
-                    ],
-                    vectors: [],
-                    resolvers: [
-                        {
-                            name: "coops",
-                            queryName: "getByFarm",
-                            url: platformUrl + "/coop/graph"
-                        }
-                    ]
-                }
-            },
-            {
-                path: "/coop/graph",
-                storage: coopDB(),
-                schema: coopGraph,
-                rootConfig: {
-                    singletons: [
-                        {
-                            name: "getByName",
-                            id: "name",
-                            query: "JSON_EXTRACT(payload, '$.name') = '{{id}}'"
-                        },
-                        {
-                            name: "getById",
-                            query: "id = '{{id}}'"
-                        }
-                    ],
-                    vectors: [
-                        {
-                            name: "getByFarm",
-                            query: "JSON_EXTRACT(payload, '$.farm_id') = '{{id}}'"
-                        }
-                    ],
-                    resolvers: [
-                        {
-                            name: "farm",
-                            id: "farm_id",
-                            queryName: "getById",
-                            url: platformUrl + "/farm/graph"
-                        },
-                        {
-                            name: "hens",
-                            queryName: "getByCoop",
-                            url: platformUrl + "/hen/graph"
-                        }
-                    ]
-                }
-            },
-            {
-                path: "/hen/graph",
-                storage: henDB(),
-                schema: henGraph,
-                rootConfig: {
-                    singletons: [
-                        {
-                            name: "getById",
-                            query: "id = '{{id}}'"
-                        }
-                    ],
-                    vectors: [
-                        {
-                            name: "getByName",
-                            query: "JSON_EXTRACT(payload, '$.name') = '{{name}}'"
-                        },
-                        {
-                            name: "getByCoop",
-                            query: "JSON_EXTRACT(payload, '$.coop_id') = '{{id}}'"
-                        }
-                    ],
-                    resolvers: [
-                        {
-                            name: "coop",
-                            id: "coop_id",
-                            queryName: "getById",
-                            url: platformUrl + "/coop/graph"
-                        }
-                    ]
-                }
+export const config = async (): Promise<Config> => ({
+    port,
+    graphlettes: [
+        {
+            path: "/farm/graph",
+            storage: farmDB(),
+            schema: farmGraph,
+            rootConfig: {
+                singletons: [
+                    {
+                        name: "getById",
+                        query: "id = '{{id}}'"
+                    }
+                ],
+                vectors: [],
+                resolvers: [
+                    {
+                        name: "coops",
+                        queryName: "getByFarm",
+                        url: platformUrl + "/coop/graph"
+                    }
+                ]
             }
-        ],
-        restlettes: [
-            {
-                path: "/farm/api",
-                storage: farmDB(),
-                schema: farmSchema
-            },
-            {
-                path: "/coop/api",
-                storage: coopDB(),
-                schema: coopSchema
-            },
-            {
-                path: "/hen/api",
-                storage: henDB(),
-                schema: henSchema
+        },
+        {
+            path: "/coop/graph",
+            storage: coopDB(),
+            schema: coopGraph,
+            rootConfig: {
+                singletons: [
+                    {
+                        name: "getByName",
+                        id: "name",
+                        query: "JSON_EXTRACT(payload, '$.name') = '{{id}}'"
+                    },
+                    {
+                        name: "getById",
+                        query: "id = '{{id}}'"
+                    }
+                ],
+                vectors: [
+                    {
+                        name: "getByFarm",
+                        query: "JSON_EXTRACT(payload, '$.farm_id') = '{{id}}'"
+                    }
+                ],
+                resolvers: [
+                    {
+                        name: "farm",
+                        id: "farm_id",
+                        queryName: "getById",
+                        url: platformUrl + "/farm/graph"
+                    },
+                    {
+                        name: "hens",
+                        queryName: "getByCoop",
+                        url: platformUrl + "/hen/graph"
+                    }
+                ]
             }
-        ]
-    });
+        },
+        {
+            path: "/hen/graph",
+            storage: henDB(),
+            schema: henGraph,
+            rootConfig: {
+                singletons: [
+                    {
+                        name: "getById",
+                        query: "id = '{{id}}'"
+                    }
+                ],
+                vectors: [
+                    {
+                        name: "getByName",
+                        query: "JSON_EXTRACT(payload, '$.name') = '{{name}}'"
+                    },
+                    {
+                        name: "getByCoop",
+                        query: "JSON_EXTRACT(payload, '$.coop_id') = '{{id}}'"
+                    }
+                ],
+                resolvers: [
+                    {
+                        name: "coop",
+                        id: "coop_id",
+                        queryName: "getById",
+                        url: platformUrl + "/coop/graph"
+                    }
+                ]
+            }
+        }
+    ],
+    restlettes: [
+        {
+            path: "/farm/api",
+            storage: farmDB(),
+            schema: farmSchema
+        },
+        {
+            path: "/coop/api",
+            storage: coopDB(),
+            schema: coopSchema
+        },
+        {
+            path: "/hen/api",
+            storage: henDB(),
+            schema: henSchema
+        }
+    ]
+});
