@@ -1,16 +1,15 @@
 import { describe, it, expect, afterAll, beforeAll } from 'vitest';
 import { callSubgraph } from '@meshobj/graphlette';
-import Log4js from 'log4js';
-import express, { Application } from 'express';
+import { Application } from 'express';
 import { Server } from 'http';
-import { init, cleanServer } from '../src/server';
+import { init } from '../src/server';
 import { Document, OpenAPIClient, OpenAPIClientAxios } from 'openapi-client-axios';
 import { Restlette } from '../src/configTypes';
 import * as jwt from 'jsonwebtoken';
-
+import { Plugin } from '../src/plugin';
+import { Config } from '../src/configTypes';
 globalThis.__MONGO_URI__ = ''; // Placeholder for MongoDB URI
 globalThis.__TOKEN__ = ''; // Placeholder for JWT token
-globalThis.__CONFIG__ = {};
 
 let app: Application;
 let server: Server;
@@ -25,21 +24,16 @@ let hen_api: any;
 let coop_api: any;
 let farm_api: any;
 
-export function ServerCertificiation(setup, cleanup, configPath) {
+export function ServerCertificiation(setup, plugins: Record<string, Plugin>, config:Config) {
     beforeAll(async () => {
         await setup();
-
-        let env = process.env;
 
         const sub = 'test-user';
         globalThis.__TOKEN__ = jwt.sign({ sub }, 'totallyASecret', { expiresIn: '1h' });
 
-        const parser = require('@pushcorn/hocon-parser');
-        globalThis.__CONFIG__ = await parser.parse({ url: configPath });
-
         // Initialize and start the Express app
-        app = await init(globalThis.__CONFIG__);
-        let port = globalThis.__CONFIG__.port;
+        app = await init(config, plugins);
+        let port = config.port;
 
         server = await app.listen(port, () => {
             console.log(`Server running on http://localhost:${port}`);
@@ -54,11 +48,12 @@ export function ServerCertificiation(setup, cleanup, configPath) {
     });
 
     afterAll(async () => {
-        await cleanServer();
+        for (const plugin of Object.values(plugins)) {
+            await plugin.cleanup();
+        }
         if (server) {
             server.close();
         }
-        await cleanup();
     });
 
     describe('The Farm', () => {

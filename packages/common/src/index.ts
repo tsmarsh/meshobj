@@ -14,7 +14,7 @@ export type Vector = {
 
 export type Resolver = {
     name: string;
-    id: string;
+    id?: string;
     queryName: string;
     url: string;
 };

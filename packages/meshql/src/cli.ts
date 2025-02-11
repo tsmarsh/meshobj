@@ -43,7 +43,7 @@ export default async function startServer(configPath?: string) {
             config.port = argv.port;
         }
 
-        const app = await init(config);
+        const app = await init(config, {}); //TODO: Add plugins
         await app.listen(config.port);
         log.info(`Server running on port ${config.port}`);
 

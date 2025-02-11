@@ -1,10 +1,11 @@
 export { MongoSearcher } from './mongoSearcher.js';
 export { MongoRepository } from './mongoRepo.js';
 
+import { MongoSearcher } from './mongoSearcher.js';
+import { MongoRepository } from './mongoRepo.js';
 import { MongoClient, Collection } from 'mongodb';
 import { StorageConfig } from '@meshobj/meshql';
 import { Envelope } from '@meshobj/common';
-import { MongoSearcher, MongoRepository } from '@meshobj/mongo_repo';
 import { Auth } from '@meshobj/auth';
 import { DTOFactory } from '@meshobj/graphlette';
 import { Plugin } from '@meshobj/meshql';
@@ -13,7 +14,6 @@ import { Plugin } from '@meshobj/meshql';
  */
 
 export interface MongoConfig extends StorageConfig {
-    type: 'mongo';
     uri: string;
     collection: string;
     db: string;

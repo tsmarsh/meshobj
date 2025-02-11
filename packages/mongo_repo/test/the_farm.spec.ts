@@ -3,11 +3,11 @@ import { MongoClient } from 'mongodb';
 import { ServerCertificiation } from '../../meshql/test/the_farm.cert';
 import Log4js from 'log4js';
 import { describe } from 'vitest';
-
+import { MongoPlugin } from '../src';
+import { config } from './config';
 let mongod: MongoMemoryServer;
 let uri: string;
 let client: MongoClient;
-let port: 3044;
 
 Log4js.configure({
     appenders: {
@@ -29,14 +29,7 @@ let setup = async () => {
 
     uri = mongod.getUri();
 
-    // Set environment variables
-    process.env.MONGO_URI = uri;
-    process.env.PORT = '3044';
-    process.env.ENV = 'test';
-    process.env.PREFIX = 'farm';
-    process.env.PLATFORM_URL = `http://localhost:${port}`;
-    globalThis.__MONGO_URI__ = uri;
-    client = new MongoClient(globalThis.__MONGO_URI__);
+    client = new MongoClient(uri);
     await client.connect();
 };
 
@@ -45,8 +38,6 @@ let cleanup = async () => {
     if (mongod) await mongod.stop();
 };
 
-let configPath = `${__dirname}/config/config.conf`;
-
 describe('Mongo Farm', () => {
-    ServerCertificiation(setup, cleanup, configPath);
+    ServerCertificiation(setup, {"mongo": new MongoPlugin()}, config);
 });

@@ -8,53 +8,41 @@ import {
     StorageConfig,
 } from './configTypes';
 import { Repository, Searcher, Validator } from '@meshobj/common';
-import { Pool } from 'pg';
-import { MongoClient } from 'mongodb';
 import { Crud } from '@meshobj/restlette';
 import { JSONSchemaValidator } from '@meshobj/restlette';
 import { JWTSubAuthorizer } from '@meshobj/jwt_auth';
 import { Auth } from '@meshobj/auth';
 import { CasbinAuth } from '@meshobj/casbin_auth';
 import cors from 'cors';
-
-// Import our new helper factories
-import { MongoPlugin } from '@meshobj/mongo_repo';
-import { SQLitePlugin } from '@meshobj/sqlite_repo';
-import { PostgresPlugin } from '@meshobj/postgres_repo';
-import { MySQLPlugin } from '@meshobj/mysql_repo';
-
-import { Pool as MySQLPool } from 'mysql2/promise';
 import { Plugin } from './plugin';
-let pools: Record<string, Pool> = {};
-let clients: Record<string, MongoClient> = {};
-let mysqlPools: Record<string, MySQLPool> = {};
 
-let plugins: Record<string, Plugin> = {
-    mongo: new MongoPlugin(),
-    sql: new SQLitePlugin(),
-    postgres: new PostgresPlugin(),
-    mysql: new MySQLPlugin(),
-};
-
-async function processGraphlette(graphlette: Graphlette, auth: Auth, app: Application) {
+async function processGraphlette(graphlette: Graphlette, auth: Auth, app: Application, plugins: Record<string, Plugin>) {
     const { schema, storage, path, rootConfig } = graphlette;
 
     const dtoFactory = new DTOFactory(rootConfig.resolvers);
     let searcher: Searcher;
 
-    searcher = await plugins[storage.type].createSearcher(storage, dtoFactory, auth);
+    if (plugins[storage.type]) {    
+        searcher = await plugins[storage.type].createSearcher(storage, dtoFactory, auth);
+    } else {
+        throw new Error(`Plugin for ${storage.type} not found`);
+    }
 
     const rt = root(searcher, dtoFactory, auth, rootConfig);
     graph_init(app, schema, path, rt);
 }
 
-async function buildRepository(storage: StorageConfig): Promise<Repository> {
-    return plugins[storage.type].createRepository(storage);
+async function buildRepository(storage: StorageConfig, plugins: Record<string, Plugin>): Promise<Repository> {
+    if (plugins[storage.type]) {    
+        return plugins[storage.type].createRepository(storage);
+    } else {
+        throw new Error(`Plugin for ${storage.type} not found`);
+    }
 }
 
-async function processRestlette(restlette: Restlette, auth: Auth, app: Application, port: number) {
+async function processRestlette(restlette: Restlette, auth: Auth, app: Application, port: number, plugins: Record<string, Plugin>) {
     const validator: Validator = JSONSchemaValidator(restlette.schema);
-    const repo: Repository = await buildRepository(restlette.storage);
+    const repo: Repository = await buildRepository(restlette.storage, plugins);
     const crud = new Crud(auth, repo, validator, restlette.path, restlette.tokens);
     rest_init(app, crud, restlette.path, port, restlette.schema);
 }
@@ -68,7 +56,7 @@ async function processAuth(config: Config): Promise<Auth> {
     }
 }
 
-export async function init(config: Config): Promise<Application> {
+export async function init(config: Config, plugins: Record<string, Plugin>): Promise<Application> {
     const auth: Auth = await processAuth(config);
 
     const app: Application = express();
@@ -85,33 +73,20 @@ export async function init(config: Config): Promise<Application> {
 
     // Process graphlettes
     for (const graphlette of config.graphlettes) {
-        await processGraphlette(graphlette, auth, app);
+        await processGraphlette(graphlette, auth, app, plugins);
     }
 
     // Process restlettes
     for (const restlette of config.restlettes) {
-        await processRestlette(restlette, auth, app, config.port);
+        await processRestlette(restlette, auth, app, config.port, plugins);
     }
 
     return app;
 }
 
-export async function cleanServer() {
+export async function cleanServer(plugins: Record<string, Plugin>) {
     console.log('Cleaning server');
-    let count = 1;
-    for (const client in clients) {
-        console.log(`Closing client ${count}`);
-        await clients[client].close();
-        count++;
-    }
-    for (const pool in pools) {
-        console.log(`Closing pg ${count}`);
-        await pools[pool].end();
-        count++;
-    }
-    for (const pool in mysqlPools) {
-        console.log(`Closing mysql ${count}`);
-        await mysqlPools[pool].end();
-        count++;
+    for (const plugin of Object.values(plugins)) {
+        await plugin.cleanup();
     }
 }

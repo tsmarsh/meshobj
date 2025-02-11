@@ -1,6 +1,8 @@
 import { ServerCertificiation } from '../../meshql/test/the_farm.cert';
 import Log4js from 'log4js';
-import { describe, it, expect } from 'vitest';
+import { describe } from 'vitest';
+import { SQLitePlugin } from '../src/';
+import { config } from './config';
 
 Log4js.configure({
     appenders: {
@@ -13,15 +15,7 @@ Log4js.configure({
     },
 });
 
-let serverPort: string = '5255';
-
-let setup = async () => {
-    // Set environment variables for sqlite_repo/test/config/config.conf
-    process.env.ENV = 'test';
-    process.env.PORT = serverPort;
-    process.env.PREFIX = 'farm';
-    process.env.PLATFORM_URL = `http://localhost:${serverPort}`;
-};
+let setup = async () => {};
 
 let cleanup = async () => {
     const fs = require('fs');
@@ -32,9 +26,6 @@ let cleanup = async () => {
     }
 };
 
-let configPath = `${__dirname}/config/config.conf`;
-
-// Pass in the updated setup, cleanup, and configPath
 describe('The Farm', () => {
-    ServerCertificiation(setup, cleanup, configPath);
+    ServerCertificiation(setup, {"sql": new SQLitePlugin()}, config);
 });
