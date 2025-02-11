@@ -12,7 +12,6 @@ import { Plugin } from '@meshobj/meshql';
  * Creates and returns a Postgres Pool connection.
  */
 export interface PostgresConfig extends StorageConfig {
-    type: 'postgres';
     host: string;
     port: number;
     db: string;

@@ -2,6 +2,8 @@ import { GenericContainer, StartedTestContainer } from 'testcontainers';
 import Log4js from 'log4js';
 import { ServerCertificiation } from '../../meshql/test/the_farm.cert';
 import { describe } from 'vitest';
+import { PostgresPlugin } from '../src';
+import { config } from './config';
 
 let container: StartedTestContainer | null = null;
 let serverPort: string = '4242';
@@ -56,5 +58,5 @@ const cleanup = async () => {
 const configPath = `${__dirname}/config/config.conf`;
 
 describe('The Farm', () => {
-    ServerCertificiation(setup, cleanup, configPath);
+    ServerCertificiation(setup, { "postgres": new PostgresPlugin() }, config);
 });
