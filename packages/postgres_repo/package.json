@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/postgres_repo",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -23,10 +23,10 @@
         "vitest": "^2.1.8"
     },
     "dependencies": {
-        "@meshobj/auth": "^0.1.1",
-        "@meshobj/common": "^0.1.1",
-        "@meshobj/graphlette": "^0.1.1",
-        "@meshobj/server": "^0.1.1",
+        "@meshobj/auth": "^0.1.2",
+        "@meshobj/common": "^0.1.2",
+        "@meshobj/graphlette": "^0.1.2",
+        "@meshobj/server": "^0.1.2",
         "@testcontainers/postgresql": "^10.18.0",
         "handlebars": "^4.7.8",
         "log4js": "^6.9.1",

@@ -1,7 +1,7 @@
 {
     "name": "@meshobj/server",
     "type": "commonjs",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "bin": "./dist/cli.js",
     "types": "./dist/index.d.ts",
     "publishConfig": {
@@ -14,12 +14,12 @@
     "author": "Tom Marsh",
     "license": "MIT",
     "dependencies": {
-        "@meshobj/auth": "^0.1.1",
-        "@meshobj/casbin_auth": "^0.1.1",
-        "@meshobj/common": "^0.1.1",
-        "@meshobj/graphlette": "^0.1.1",
-        "@meshobj/jwt_auth": "^0.1.1",
-        "@meshobj/restlette": "^0.1.1",
+        "@meshobj/auth": "^0.1.2",
+        "@meshobj/casbin_auth": "^0.1.2",
+        "@meshobj/common": "^0.1.2",
+        "@meshobj/graphlette": "^0.1.2",
+        "@meshobj/jwt_auth": "^0.1.2",
+        "@meshobj/restlette": "^0.1.2",
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
         "cors": "^2.8.5",

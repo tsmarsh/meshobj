@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/auth",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "type": "commonjs",
     "publishConfig": {
         "access": "public"
@@ -14,7 +14,7 @@
     "author": "Tom Marsh",
     "license": "MIT",
     "dependencies": {
-        "@meshobj/common": "^0.1.1",
+        "@meshobj/common": "^0.1.2",
         "express": "^4.17.17"
     },
     "devDependencies": {

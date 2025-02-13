@@ -1,26 +1,16 @@
 {
-  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "0.1.1",
-  "npmClient": "yarn",
-  "command": {
-    "version": {
-      "ignoreChanges": [
-        "examples/**",
-        "**/*.md",
-        "**/*.test.ts",
-        "**/*.spec.ts"
-      ],
-      "conventionalCommits": true,
-      "createRelease": "github"
-    },
-    "publish": {
-      "access": "public",
-      "ignoreChanges": [
-        "examples/**",
-        "**/*.md",
-        "**/*.test.ts",
-        "**/*.spec.ts"
-      ]
+    "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+    "version": "0.1.2",
+    "npmClient": "yarn",
+    "command": {
+        "version": {
+            "ignoreChanges": ["examples/**", "**/*.md", "**/*.test.ts", "**/*.spec.ts"],
+            "conventionalCommits": true,
+            "createRelease": "github"
+        },
+        "publish": {
+            "access": "public",
+            "ignoreChanges": ["examples/**", "**/*.md", "**/*.test.ts", "**/*.spec.ts"]
+        }
     }
-  }
 }
