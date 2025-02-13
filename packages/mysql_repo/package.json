@@ -36,5 +36,5 @@
         "build": "tsc",
         "test": "vitest --run --coverage"
     },
-    "gitHead": "acaa03b4119013b50c8d8a8afeac47c7820855b7"
+    "gitHead": "debf57721c4af2c418f58d5f942981335d6da436"
 }
