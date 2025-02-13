@@ -10,6 +10,7 @@
         "**/*.test.ts",
         "**/*.spec.ts"
       ],
+      "conventionalCommits": true,
       "createRelease": "github"
     },
     "publish": {
