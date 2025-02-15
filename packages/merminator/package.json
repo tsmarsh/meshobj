@@ -1,0 +1,26 @@
+{
+  "name": "@meshobj/merminator",
+  "version": "0.1.2",
+  "description": "Converts mermaid class diagrams to json and graph schema",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "@meshobj/graphlette": "^0.1.2",
+    "@meshobj/restlette": "^0.1.2",
+    "@meshobj/server": "^0.1.2",
+    "@types/node": "^22.10.6",
+    "chevrotain": "^11.0.3",
+    "commander": "^12.0.0",
+    "pluralize": "^8.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "@types/pluralize": "^0.0.33"
+  }
+}
