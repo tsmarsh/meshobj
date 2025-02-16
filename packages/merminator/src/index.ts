@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { program } from "commander";
-import { merminate } from "./processor"; // Ensure processor.ts compiles to processor.js
+import { merminate } from "./processor.js"; // Ensure processor.ts compiles to processor.js
 import Log4js from "log4js";
 
 // Define an interface for CLI options

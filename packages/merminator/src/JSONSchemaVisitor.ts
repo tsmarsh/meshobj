@@ -1,4 +1,4 @@
-import { BaseCstVisitor } from "./parser";
+import { BaseCstVisitor } from "./parser.js";
 import { CstElement, CstNode, IToken } from "chevrotain";
 
 // Define JSON Schema types

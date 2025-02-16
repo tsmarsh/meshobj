@@ -17,7 +17,7 @@ import {
     OpenBlock,
     RequiredType,
     Type,
-} from "./lexer"; // Ensure TypeScript understands the import
+} from "./lexer.js"; // Ensure TypeScript understands the import
 
 import Log4js from "log4js";
 

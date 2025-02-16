@@ -1,9 +1,9 @@
-import { JSONSchemaVisitor } from "./JSONSchemaVisitor";
+import { JSONSchemaVisitor } from "./JSONSchemaVisitor.js";
 import fs from "fs";
-import { GraphSchemaVisitor } from "./GraphSchemaVisitor";
-import { ConfiguratorConfigVisitor, Types } from "./ConfiguratorConfigVisitor";
-import { processConfig } from "./configProcessor";
-import { parser } from "./parser";
+import { GraphSchemaVisitor } from "./GraphSchemaVisitor.js";
+import { ConfiguratorConfigVisitor, Types } from "./ConfiguratorConfigVisitor.js";
+import { processConfig } from "./configProcessor.js";
+import { parser } from "./parser.js";
 import { CstNode } from "chevrotain";
 
 export function processJsonSchema(ctx: CstNode, destinationPath: string) {

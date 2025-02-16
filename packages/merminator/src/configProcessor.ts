@@ -1,7 +1,7 @@
 import { Config, Restlette, Graphlette } from "@meshobj/server";
 import { MongoConfig } from "@meshobj/mongo_repo";
 import fs from "fs";
-import { Types } from "./ConfiguratorConfigVisitor";
+import { Types } from "./ConfiguratorConfigVisitor.js";
 
 const mongo = (name: string): MongoConfig => {
   return {

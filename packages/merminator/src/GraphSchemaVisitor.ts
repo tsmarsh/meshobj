@@ -1,4 +1,4 @@
-import { BaseCstVisitor } from "./parser";
+import { BaseCstVisitor } from "./parser.js";
 import pluralize from "pluralize";
 import { CstNode, IToken, CstElement } from "chevrotain";
 
