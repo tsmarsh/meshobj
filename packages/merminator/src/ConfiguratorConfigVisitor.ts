@@ -41,8 +41,10 @@ export class ConfiguratorConfigVisitor extends BaseCstVisitor {
 
   statementClause(ctx: CstNode): Types {
     const types: Types = {};
-    ctx.children.classClause?.forEach((klass: CstElement) => this.classClause(klass as CstNode, types));
-    ctx.children.compositionClause?.forEach((comp: CstElement) => this.compositionClause(comp as CstNode, types));
+    if (ctx.children) {
+      ctx.children.classClause?.forEach((klass: CstElement) => this.classClause(klass as CstNode, types));
+      ctx.children.compositionClause?.forEach((comp: CstElement) => this.compositionClause(comp as CstNode, types));
+    }
     return types;
   }
 

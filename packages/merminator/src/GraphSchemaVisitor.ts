@@ -21,12 +21,14 @@ export class GraphSchemaVisitor extends BaseCstVisitor {
 
   statementClause(ctx: CstNode): GraphFiles {
     const types: GraphTypes = {};
-    ctx.children.classClause?.forEach((klass: CstElement) =>
-      this.classClause(klass as CstNode, types)
-    );
-    ctx.children.compositionClause?.forEach((comp: CstElement) =>
-      this.compositionClause(comp as CstNode, types)
-    );
+    if (ctx.children) {
+      ctx.children.classClause?.forEach((klass: CstElement) =>
+        this.classClause(klass as CstNode, types)
+      );
+      ctx.children.compositionClause?.forEach((comp: CstElement) =>
+        this.compositionClause(comp as CstNode, types)
+      );
+    }
     const files: GraphFiles = {};
 
     for (const current_type in types) {

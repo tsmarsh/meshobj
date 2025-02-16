@@ -22,7 +22,9 @@ export class JSONSchemaVisitor extends BaseCstVisitor {
   }
 
   statementClause(ctx: CstNode) {
-    ctx.children.classClause?.forEach((klass: CstElement) => this.classClause(klass as CstNode));
+    if (ctx.children) {
+      ctx.children.classClause?.forEach((klass: CstElement) => this.classClause(klass as CstNode));
+    }
     return this.schemas;
   }
 
