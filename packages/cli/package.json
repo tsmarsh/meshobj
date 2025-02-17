@@ -4,6 +4,7 @@
     "version": "0.2.0",
     "bin": "./dist/cli.js",
     "types": "./dist/index.d.ts",
+    "private": false,
     "publishConfig": {
         "access": "public"
     },
