@@ -10,8 +10,10 @@ export function processJsonSchema(ctx: CstNode, destinationPath: string) {
   const jsonSchemaVisitor = new JSONSchemaVisitor();
   let jsonschemas = jsonSchemaVisitor.visit(ctx);
   for (let schema in jsonschemas) {
+    let fname = `${destinationPath}/config/json/${schema.toLowerCase()}.schema.json`
+    console.log(fname)
     fs.writeFileSync(
-      `${destinationPath}/config/json/${schema.toLowerCase()}.schema.json`,
+      fname,
       JSON.stringify(jsonschemas[schema], null, 2),
     );
   }
@@ -21,8 +23,10 @@ export function processGraphQLSchema(ctx: CstNode, destinationPath: string) {
   const graphSchemaVisitor = new GraphSchemaVisitor();
   let graphSchema = graphSchemaVisitor.visit(ctx);
   for (let schema in graphSchema) {
+    let fname = `${destinationPath}/config/graph/${schema.toLowerCase()}.graphql`
+    console.log(fname)
     fs.writeFileSync(
-      `${destinationPath}/config/graph/${schema.toLowerCase()}.graphql`,
+      fname,
       graphSchema[schema].join("\n\n"),
     );
   }
@@ -31,9 +35,11 @@ export function processGraphQLSchema(ctx: CstNode, destinationPath: string) {
 export function processClusterConfig(ctx: CstNode, host: string, destinationPath: string) {
   const configuratorConfigVisitor = new ConfiguratorConfigVisitor(host);
   let config: Types = configuratorConfigVisitor.visit(ctx)
-  let configString = processConfig(config)
+  let configString = processConfig(config, destinationPath)
+  let fname = `${destinationPath}/config/config.conf`
+  console.log(fname)
   fs.writeFileSync(
-    `${destinationPath}/config/config.conf`,
+    fname,
     configString,
   );
 }
@@ -49,3 +55,7 @@ export const merminate = (filePath: string, destinationPath: string, url: string
   processGraphQLSchema(ctx, destinationPath);
   processClusterConfig(ctx, url, destinationPath);
 };
+
+if (import.meta.url.endsWith(process.argv[1])) {
+  merminate("../test/test.mermaid", "..", "http://localhost:3033");
+}

@@ -56,3 +56,7 @@ Example call:
 
 // Parse CLI arguments
 program.parse();
+
+if (import.meta.url.endsWith(process.argv[1])) {
+  merminate("./test/test.mermaid", "./dist", "http://localhost:3033");
+}

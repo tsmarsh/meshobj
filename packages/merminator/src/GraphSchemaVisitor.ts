@@ -1,6 +1,6 @@
-import { BaseCstVisitor } from "./parser.js";
-import pluralize from "pluralize";
-import { CstNode, IToken, CstElement } from "chevrotain";
+import { BaseCstVisitor } from './parser.js';
+import { CstElement, CstNode, IToken } from 'chevrotain';
+import pluralize  from 'pluralize';
 
 interface GraphTypes {
   [key: string]: {
@@ -19,16 +19,15 @@ export class GraphSchemaVisitor extends BaseCstVisitor {
     this.validateVisitor();
   }
 
-  statementClause(ctx: CstNode): GraphFiles {
+  statementClause(ctx: any): GraphFiles {
     const types: GraphTypes = {};
-    if (ctx.children) {
-      ctx.children.classClause?.forEach((klass: CstElement) =>
+    ctx.classClause?.forEach((klass: CstElement) =>
         this.classClause(klass as CstNode, types)
       );
-      ctx.children.compositionClause?.forEach((comp: CstElement) =>
+    ctx.compositionClause?.forEach((comp: CstElement) =>
         this.compositionClause(comp as CstNode, types)
       );
-    }
+
     const files: GraphFiles = {};
 
     for (const current_type in types) {

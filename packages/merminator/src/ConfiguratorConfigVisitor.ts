@@ -39,12 +39,10 @@ export class ConfiguratorConfigVisitor extends BaseCstVisitor {
     return `{"payload.${type.charAt(0).toLowerCase() + type.slice(1)}_id": "{{id}}"}`;
   }
 
-  statementClause(ctx: CstNode): Types {
+  statementClause(ctx: any): Types {
     const types: Types = {};
-    if (ctx.children) {
-      ctx.children.classClause?.forEach((klass: CstElement) => this.classClause(klass as CstNode, types));
-      ctx.children.compositionClause?.forEach((comp: CstElement) => this.compositionClause(comp as CstNode, types));
-    }
+    ctx.classClause?.forEach((klass: CstElement) => this.classClause(klass as CstNode, types));
+    ctx.compositionClause?.forEach((comp: CstElement) => this.compositionClause(comp as CstNode, types));
     return types;
   }
 

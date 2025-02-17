@@ -1,5 +1,5 @@
-import { BaseCstVisitor } from "./parser.js";
-import { CstElement, CstNode, IToken } from "chevrotain";
+import { BaseCstVisitor } from './parser.js';
+import { CstElement, CstNode, IToken } from 'chevrotain';
 
 // Define JSON Schema types
 interface JSONSchema {
@@ -21,10 +21,10 @@ export class JSONSchemaVisitor extends BaseCstVisitor {
     this.schemas = {};
   }
 
-  statementClause(ctx: CstNode) {
-    if (ctx.children) {
-      ctx.children.classClause?.forEach((klass: CstElement) => this.classClause(klass as CstNode));
-    }
+  statementClause(ctx: any) {
+
+    ctx.classClause?.forEach((klass: CstElement) => this.classClause(klass as CstNode));
+
     return this.schemas;
   }
 
@@ -79,10 +79,12 @@ export class JSONSchemaVisitor extends BaseCstVisitor {
 
   typeClause(ctx?: CstNode, schema?: JSONSchema, name?: string): JSONSchema {
     if (!ctx) throw new Error("Missing typeClause context");
-    const token = ctx.children.Type[0] as IToken;
+
     if ("Type" in ctx.children) {
+      const token = ctx.children.Type[0] as IToken;
       return this.isSpecial(token.image);
     } else if ("RequiredType" in ctx.children) {
+      const token = ctx.children.RequiredType[0] as IToken;
       const image = token.image;
       const important = image.slice(0, -1);
       schema?.required?.push(name!);

@@ -15,12 +15,12 @@ const mongo = (name: string): MongoConfig => {
   };
 };
 
-const gen = (nodes: Types): Config => {
+const gen = (nodes: Types, destinationPath: string): Config => {
   const graphlettes: Graphlette[] = Object.entries(nodes).map(([name, dto]) => {
     return {
       path: `/${name}/graph`,
       storage: mongo(name),
-      schema: fs.readFileSync(`config/graph/${name}.graphql`, 'utf8'),
+      schema: fs.readFileSync(`${destinationPath}/config/graph/${name}.graphql`, 'utf8'),
       rootConfig: {
         singletons: [],
         vectors: [],
@@ -33,7 +33,7 @@ const gen = (nodes: Types): Config => {
     return {
       path: `/${name}/api`,
       storage: mongo(name),
-      schema: JSON.parse(fs.readFileSync(`config/json/${name}.schema.json`, 'utf8')),
+      schema: JSON.parse(fs.readFileSync(`${destinationPath}/config/json/${name}.schema.json`, 'utf8')),
     };
   });
   return {
@@ -43,8 +43,8 @@ const gen = (nodes: Types): Config => {
   };
 };
 
-export const processConfig = (nodes: Types): string => {
-  const config: Config = gen(nodes);
+export const processConfig = (nodes: Types, destinationPath: string): string => {
+  const config: Config = gen(nodes, destinationPath);
 
   const data = JSON.stringify(config, null, 2);
 
