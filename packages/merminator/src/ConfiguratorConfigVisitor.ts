@@ -98,7 +98,7 @@ export class ConfiguratorConfigVisitor extends BaseCstVisitor {
     }
 
     rootConfig.singletons?.push(this.getById);
-    const { fields, ...rest } = rootConfig;
+    const { ...rest } = rootConfig;
     types[type] = rest;
     return types;
   }

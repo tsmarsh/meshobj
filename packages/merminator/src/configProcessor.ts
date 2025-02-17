@@ -16,7 +16,7 @@ const mongo = (name: string): MongoConfig => {
 };
 
 const gen = (nodes: Types, destinationPath: string): Config => {
-  const graphlettes: Graphlette[] = Object.entries(nodes).map(([name, dto]) => {
+  const graphlettes: Graphlette[] = Object.keys(nodes).map((name  ) => {
     return {
       path: `/${name}/graph`,
       storage: mongo(name),
