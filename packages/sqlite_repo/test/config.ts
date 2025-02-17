@@ -38,7 +38,7 @@ const farmJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/farm.schema
 const coopJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/coop.schema.json`, 'utf8'));
 const henJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/hen.schema.json`, 'utf8'));
 
-export const config = (): Config => {
+export const config = async (): Promise<Config> => {
   return {
     port: PORT,
 

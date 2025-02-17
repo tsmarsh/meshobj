@@ -55,7 +55,3 @@ export const merminate = (filePath: string, destinationPath: string, url: string
   processGraphQLSchema(ctx, destinationPath);
   processClusterConfig(ctx, url, destinationPath);
 };
-
-if (import.meta.url.endsWith(process.argv[1])) {
-  merminate("../test/test.mermaid", "..", "http://localhost:3033");
-}
