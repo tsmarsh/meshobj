@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/casbin_auth",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -24,8 +24,8 @@
         "test": "vitest --run --coverage"
     },
     "dependencies": {
-        "@meshobj/auth": "^0.1.2",
-        "@meshobj/common": "^0.1.2",
+        "@meshobj/auth": "^0.2.0",
+        "@meshobj/common": "^0.2.0",
         "casbin": "^5.36.0"
     },
     "gitHead": "debf57721c4af2c418f58d5f942981335d6da436"

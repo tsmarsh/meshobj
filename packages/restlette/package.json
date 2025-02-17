@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/restlette",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -28,8 +28,8 @@
         "vitest": "^2.1.8"
     },
     "dependencies": {
-        "@meshobj/auth": "^0.1.2",
-        "@meshobj/common": "^0.1.2",
+        "@meshobj/auth": "^0.2.0",
+        "@meshobj/common": "^0.2.0",
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
         "express": "^4.17.17",

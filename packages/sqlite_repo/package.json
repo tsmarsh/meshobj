@@ -1,6 +1,6 @@
 {
     "name": "@meshobj/sqlite_repo",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "type": "commonjs",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -11,10 +11,10 @@
     "author": "Tom Marsh",
     "license": "MIT",
     "dependencies": {
-        "@meshobj/auth": "^0.1.2",
-        "@meshobj/common": "^0.1.2",
-        "@meshobj/graphlette": "^0.1.2",
-        "@meshobj/server": "^0.1.2",
+        "@meshobj/auth": "^0.2.0",
+        "@meshobj/common": "^0.2.0",
+        "@meshobj/graphlette": "^0.2.0",
+        "@meshobj/server": "^0.2.0",
         "@types/typescript": "^2.0.0",
         "handlebars": "^4.7.8",
         "log4js": "^6.9.1",
