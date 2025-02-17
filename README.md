@@ -2,15 +2,84 @@
 
 MeshQL is a service mesh that auto-generates REST and GraphQL endpoints based on a structured domain model. It supports multiple storage backends and integrates with event-driven architectures.
 
-## Architecture Overview
+## Component Overview
 
-MeshQL consists of three primary components:
+```mermaid
+graph TD;
+    subgraph Client
+        Web
+        Mobile
+        Service
+    end
 
-1. **Restlettes**: Auto-generated REST endpoints for CRUD operations
-2. **Graphlettes**: Auto-generated GraphQL endpoints with relationship resolution
-3. **Worklettes**: Asynchronous event-driven processors (implemented by the app, not the libary)
+    subgraph PAAS
+    subgraph Farm
+    RestletteA[RestletteA: Farm API]
+    GraphletteA[GraphletteA: Farm Graph]
+    end
+    subgraph Coop
+    RestletteB[RestletteB: Coop API]
+    GraphletteB[GraphletteB: Coop Graph]
+    end
+    subgraph Hen
+    RestletteC[RestletteC: Hen API]
+    GraphletteC[GraphletteC: Hen Graph]
+    end
+    end
 
-### Core Features
+    subgraph Datastore
+    Postgres[PostgreSQL]
+    Mongo[MongoDB]
+    SQLite[SQLite]
+    MySQL[MySQL]
+    end
+
+    RestletteA & RestletteB & RestletteC -->|Reads/Writes| Datastore
+    Client -->|Requests| Farm & Coop & Hen
+```
+
+## Core Packages
+
+MeshQL is composed of several key packages, each serving a specific purpose:
+
+### Main Packages
+
+- [@meshobj/cli](packages/cli/README.md) - Command-line interface for running and configuring MeshQL servers
+- [@meshobj/server](packages/server/README.md) - Core server implementation with GraphQL and REST support
+- [@meshobj/merminator](packages/merminator/README.md) - Configuration generator from Mermaid diagrams
+
+### Database Plugins
+
+- [@meshobj/mongo_repo](packages/mongo_repo/README.md) - MongoDB integration
+- [@meshobj/postgres_repo](packages/postgres_repo/README.md) - PostgreSQL integration
+- [@meshobj/mysql_repo](packages/mysql_repo/README.md) - MySQL integration
+- [@meshobj/sqlite_repo](packages/sqlite_repo/README.md) - SQLite integration
+
+### API Components
+
+- [@meshobj/graphlette](packages/graphlette/README.md) - GraphQL endpoint generator and resolver
+- [@meshobj/restlette](packages/restlette/README.md) - REST API endpoint generator
+
+### Authentication & Authorization
+
+- [@meshobj/jwt_auth](packages/jwt_auth/README.md) - JWT-based authentication
+- [@meshobj/casbin_auth](packages/casbin_auth/README.md) - CASBIN-based authorization
+
+## Basic Operation Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant RestletteA
+    participant Datastore
+
+    Client->>+RestletteA: JSON CRUD Request
+    RestletteA->>+Datastore: SQL Query
+    Datastore-->>-RestletteA: Query Response
+    RestletteA-->>-Client: JSON Response
+```
+
+## Core Features
 
 - **Multiple Storage Backends**:
     - MongoDB: Document-based storage with native JSON support
@@ -18,14 +87,10 @@ MeshQL consists of three primary components:
     - MySQL: High-performance relational database with JSON support
     - SQLite: Lightweight embedded database for development/testing
 - **Temporal Querying**: Query data at specific points in time using timestamps
-    - Millisecond precision in MongoDB and SQLite
-    - Configurable precision in PostgreSQL/MySQL
 - **Authentication & Authorization**:
-
     - JWT-based authentication with subject extraction
     - Fine-grained access control via authorized_tokens
     - CASBIN support for role-based access control (RBAC)
-
 - **GraphQL Features**:
     - Automatic relationship resolution
     - Temporal queries via timestamp arguments
@@ -35,7 +100,7 @@ MeshQL consists of three primary components:
 
 ### 1. Domain Model
 
-Define your domain using Mermaid ER diagrams:
+Define your domain using Mermaid class diagrams:
 
 ```mermaid
 erDiagram
@@ -64,105 +129,18 @@ erDiagram
 Configure your preferred storage backend:
 
 ```hocon
-// PostgreSQL Example
 storage = {
-  type = "postgres"
-  host = "localhost"
-  port = 5432
-  db = "farm_db"
-  user = "postgres"
-  password = "secret"
-  table = "farms"
-}
-
-// MySQL Example
-storage = {
-  type = "mysql"
-  host = "localhost"
-  port = 3306
-  db = "farm_db"
-  user = "root"
-  password = "secret"
-  table = "farms"
-}
-
-// MongoDB Example
-storage = {
-  type = "mongo"
-  uri = "mongodb://localhost:27017"
-  db = "farm_db"
-  collection = "farms"
-  options = {
-    directConnection = true
-  }
-}
-
-// SQLite Example (for development)
-storage = {
-  type = "sql"
-  uri = "./dev.db"
-  collection = "farms"
+  type = "postgres"  // or "mysql", "mongo", "sql"
+  uri = "connection_string"
+  collection = "collection_name"
 }
 ```
+
+For detailed configuration options, see the respective database plugin READMEs.
 
 ### 3. API Configuration
 
-Define your GraphQL schema and resolvers:
-
-```hocon
-graphlettes = [
-  {
-    path = "/farm/graph"
-    storage = ${farmDB}
-    schema = """
-      type Farm {
-        name: String!
-        id: ID
-        coops: [Coop]
-      }
-
-      type Query {
-        getById(id: ID, at: Float): Farm        # 'at' enables temporal queries
-        getByName(name: String): [Farm]
-      }
-    """
-    rootConfig {
-      singletons = [
-        {
-          name = "getById"
-          query = "id = '{{id}}'"
-        }
-      ]
-      resolvers = [
-        {
-          name = "coops"
-          queryName = "getByFarm"
-          url = "http://localhost:3030/coop/graph"
-        }
-      ]
-    }
-  }
-]
-```
-
-Configure REST endpoints:
-
-```hocon
-restlettes = [
-  {
-    path = "/farm/api"
-    storage = ${farmDB}
-    schema = {
-      type = "object"
-      properties = {
-        name = { type = "string" }
-        id = { type = "string" }
-      }
-      required = ["name"]
-    }
-  }
-]
-```
+For detailed API configuration examples, see the [@meshobj/server documentation](packages/server/README.md).
 
 ## Development
 
@@ -202,3 +180,11 @@ MeshQL uses container-based testing for database integrations:
 Auto-generated OpenAPI documentation is available at `/docs` when running the server.
 
 For detailed GraphQL documentation, visit the GraphQL playground at `/graphql`.
+
+## License
+
+MIT
+
+## Author
+
+Tom Marsh
