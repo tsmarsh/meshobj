@@ -18,10 +18,7 @@ Log4js.configure({
 });
 
 const setup = async () => {
-    container = await new MySqlContainer()
-        .withUsername("test")
-        .withUserPassword("test")
-        .withDatabase("test").start();
+    container = await new MySqlContainer().withUsername('test').withUserPassword('test').withDatabase('test').start();
 
     process.env.MYSQL_HOST = container.getHost();
     process.env.MYSQL_PORT = container.getMappedPort(3306).toString();
@@ -34,5 +31,5 @@ const cleanup = async () => {
 };
 
 describe('The Farm', () => {
-    ServerCertificiation(setup, { "mysql": new MySQLPlugin() }, config);
+    ServerCertificiation(setup, { mysql: new MySQLPlugin() }, config);
 });

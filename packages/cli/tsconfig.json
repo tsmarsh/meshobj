@@ -4,6 +4,12 @@
         "outDir": "./dist",
         "rootDir": "./src"
     },
-    "include": ["src/**/*", "../mongo_repo/src/mongo.ts", "../mysql_repo/src/mysql.ts", "../postgres_repo/src/postgres.ts", "../sqlite_repo/src/sqlite.ts"],
+    "include": [
+        "src/**/*",
+        "../mongo_repo/src/mongo.ts",
+        "../mysql_repo/src/mysql.ts",
+        "../postgres_repo/src/postgres.ts",
+        "../sqlite_repo/src/sqlite.ts"
+    ],
     "exclude": ["node_modules", "**/*.test.ts", "**/*.spec.ts", "dist"]
 }

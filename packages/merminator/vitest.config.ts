@@ -7,12 +7,12 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             reporter: ['text', 'json', 'html'],
-            reportsDirectory: '../../coverage'
+            reportsDirectory: '../../coverage',
         },
     },
     esbuild: {
         loader: 'ts',
         target: 'es2022',
-        format: 'esm'
-    }
+        format: 'esm',
+    },
 });

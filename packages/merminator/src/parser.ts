@@ -1,4 +1,4 @@
-import { CstParser, Lexer, IToken, CstNode, ILexingResult } from "chevrotain";
+import { CstParser, Lexer, IToken, CstNode, ILexingResult } from 'chevrotain';
 import {
     allTokens,
     Class,
@@ -17,18 +17,18 @@ import {
     OpenBlock,
     RequiredType,
     Type,
-} from "./lexer.js"; // Ensure TypeScript understands the import
+} from './lexer.js'; // Ensure TypeScript understands the import
 
-import Log4js from "log4js";
+import Log4js from 'log4js';
 
 // Logger
-const logger = Log4js.getLogger("gridql/RepositoryDiagram");
+const logger = Log4js.getLogger('gridql/RepositoryDiagram');
 
 export class RepositoryDiagram extends CstParser {
     private lexer: Lexer;
 
     // ✅ Declare rule methods as class fields with arrow functions
-    public statementClause = this.RULE("statementClause", () => {
+    public statementClause = this.RULE('statementClause', () => {
         this.MANY(() => {
             this.OR([
                 { ALT: () => this.SUBRULE(this.compositionClause) },
@@ -37,26 +37,23 @@ export class RepositoryDiagram extends CstParser {
         });
     });
 
-    public compositionClause = this.RULE("compositionClause", () => {
-        this.CONSUME(Type, { LABEL: "lhs" });
+    public compositionClause = this.RULE('compositionClause', () => {
+        this.CONSUME(Type, { LABEL: 'lhs' });
         this.CONSUME(ComposedOf);
-        this.CONSUME2(Type, { LABEL: "rhs" });
+        this.CONSUME2(Type, { LABEL: 'rhs' });
     });
 
-    public classClause = this.RULE("classClause", () => {
+    public classClause = this.RULE('classClause', () => {
         this.CONSUME(Class);
         this.CONSUME(Type);
         this.CONSUME(OpenBlock);
         this.MANY(() => {
-            this.OR([
-                { ALT: () => this.SUBRULE(this.fieldClause) },
-                { ALT: () => this.SUBRULE(this.methodClause) },
-            ]);
+            this.OR([{ ALT: () => this.SUBRULE(this.fieldClause) }, { ALT: () => this.SUBRULE(this.methodClause) }]);
         });
         this.CONSUME(CloseBlock);
     });
 
-    public fieldClause = this.RULE("fieldClause", () => {
+    public fieldClause = this.RULE('fieldClause', () => {
         this.CONSUME(Identifier);
         this.CONSUME(Colon);
         this.SUBRULE(this.typeClause);
@@ -67,7 +64,7 @@ export class RepositoryDiagram extends CstParser {
         });
     });
 
-    public typeClause = this.RULE("typeClause", () => {
+    public typeClause = this.RULE('typeClause', () => {
         this.OR([
             { ALT: () => this.CONSUME(RequiredType) },
             { ALT: () => this.CONSUME2(Type) },
@@ -75,13 +72,13 @@ export class RepositoryDiagram extends CstParser {
         ]);
     });
 
-    public arrayClause = this.RULE("arrayClause", () => {
+    public arrayClause = this.RULE('arrayClause', () => {
         this.CONSUME(OpenArray);
         this.CONSUME(Type);
         this.CONSUME(CloseArray);
     });
 
-    public methodClause = this.RULE("methodClause", () => {
+    public methodClause = this.RULE('methodClause', () => {
         this.CONSUME(Identifier);
         this.CONSUME(OpenArgList);
         this.SUBRULE(this.argList);
@@ -90,7 +87,7 @@ export class RepositoryDiagram extends CstParser {
         this.SUBRULE(this.typeClause);
     });
 
-    public argList = this.RULE("argList", () => {
+    public argList = this.RULE('argList', () => {
         this.MANY_SEP({
             SEP: Comma,
             DEF: () => {
@@ -101,7 +98,7 @@ export class RepositoryDiagram extends CstParser {
         });
     });
 
-    public varList = this.RULE("varList", () => {
+    public varList = this.RULE('varList', () => {
         this.MANY_SEP({
             SEP: Comma,
             DEF: () => {
@@ -112,7 +109,7 @@ export class RepositoryDiagram extends CstParser {
         });
     });
 
-    public valueClause = this.RULE("valueClause", () => {
+    public valueClause = this.RULE('valueClause', () => {
         this.OR([
             { ALT: () => this.CONSUME(DoubleQuotedString) },
             { ALT: () => this.CONSUME(SingleQuotedString) },
@@ -137,7 +134,7 @@ export class RepositoryDiagram extends CstParser {
 
         if (this.errors.length > 0) {
             logger.error(JSON.stringify(this.errors, null, 2));
-            throw new Error("Parsing Errors:\n" + this.errors[0].message);
+            throw new Error('Parsing Errors:\n' + this.errors[0].message);
         }
 
         return ctx;

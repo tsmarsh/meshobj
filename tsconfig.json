@@ -3,7 +3,7 @@
     "files": [],
     "references": [
         { "path": "packages/common" },
-        { "path": "packages/server"},
+        { "path": "packages/server" },
         { "path": "packages/mongo_repo" },
         { "path": "packages/postgres_repo" },
         { "path": "packages/sqlite_repo" },

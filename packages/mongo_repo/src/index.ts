@@ -38,7 +38,7 @@ export async function buildMongoCollection(
 
 export class MongoPlugin implements Plugin {
     private clients: Record<string, MongoClient>;
-    
+
     constructor() {
         this.clients = {};
     }
@@ -76,4 +76,3 @@ export async function createMongoRepository(mongoConfig: MongoConfig, clients: R
     const collection = await buildMongoCollection(mongoConfig, clients);
     return new MongoRepository(collection);
 }
-

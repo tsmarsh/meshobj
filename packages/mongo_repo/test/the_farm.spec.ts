@@ -35,5 +35,5 @@ let cleanup = async () => {
 };
 
 describe('Mongo Farm', () => {
-    ServerCertificiation(setup, { "mongo": new MongoPlugin() }, config);
+    ServerCertificiation(setup, { mongo: new MongoPlugin() }, config);
 });

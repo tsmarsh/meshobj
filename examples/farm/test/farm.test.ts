@@ -14,21 +14,16 @@ let farm_api: any;
 
 let environment: StartedDockerComposeEnvironment;
 
-describe('Farm Service Smoke Test', () => {    
+describe('Farm Service Smoke Test', () => {
     beforeAll(async () => {
         // Start the docker-compose environment
-        environment = await new DockerComposeEnvironment(
-            path.resolve(__dirname, '..'),
-            'docker-compose.yml'
-        ).up();
+        environment = await new DockerComposeEnvironment(path.resolve(__dirname, '..'), 'docker-compose.yml').up();
 
-
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
         const swagger_docs: Document[] = await getSwaggerDocs();
         await buildApi(swagger_docs, '');
         await buildModels();
-
     }, 60000); // Increase timeout for container startup
 
     afterAll(async () => {
@@ -51,26 +46,20 @@ describe('Farm Service Smoke Test', () => {
             }
         }`;
 
-        const json = await callSubgraph(
-            new URL(`http://localhost:3033/farm/graph`),
-            query,
-            'getById',
-            null
-        );
+        const json = await callSubgraph(new URL(`http://localhost:3033/farm/graph`), query, 'getById', null);
 
         expect(json.name).toBe('Emerdale');
         expect(json.coops.length).toBe(3);
     });
-
-}); 
+});
 
 async function getSwaggerDocs() {
     return await Promise.all(
-        ["/hen", "/coop", "/farm"].map(async (restlette) => {
+        ['/hen', '/coop', '/farm'].map(async (restlette) => {
             let url = `http://localhost:3033${restlette}/api/api-docs/swagger.json`;
 
             const response = await fetch(url);
-            
+
             let doc = await response.json();
             return doc;
         }),
@@ -120,7 +109,7 @@ async function buildModels() {
 
     await coop_api.create(null, { name: 'pink', farm_id });
 
-    await coop_api.update({ id: coop1_id }, { name: 'purple', farm_id});
+    await coop_api.update({ id: coop1_id }, { name: 'purple', farm_id });
 
     const hens = [
         { name: 'chuck', eggs: 2, coop_id: coop1_id },

@@ -5,7 +5,7 @@ import { z } from 'zod';
 export const SingletonSchema = z.object({
     query: z.string(),
     name: z.string(),
-    id: z.string().optional()
+    id: z.string().optional(),
 });
 
 export type Singleton = z.infer<typeof SingletonSchema>;
@@ -13,7 +13,7 @@ export type Singleton = z.infer<typeof SingletonSchema>;
 export const VectorSchema = z.object({
     query: z.string(),
     name: z.string(),
-    id: z.string().optional()
+    id: z.string().optional(),
 });
 
 export type Vector = z.infer<typeof VectorSchema>;
@@ -22,7 +22,7 @@ export const ResolverSchema = z.object({
     name: z.string(),
     id: z.string().optional(),
     queryName: z.string(),
-    url: z.string().url()
+    url: z.string().url(),
 });
 
 export type Resolver = z.infer<typeof ResolverSchema>;
@@ -30,7 +30,7 @@ export type Resolver = z.infer<typeof ResolverSchema>;
 export const RootConfigSchema = z.object({
     singletons: z.array(SingletonSchema).optional(),
     vectors: z.array(VectorSchema).optional(),
-    resolvers: z.array(ResolverSchema).optional()
+    resolvers: z.array(ResolverSchema).optional(),
 });
 
 export type RootConfig = z.infer<typeof RootConfigSchema>;
@@ -46,7 +46,7 @@ export const EnvelopeSchema = z.object({
     payload: PayloadSchema,
     created_at: z.date().optional(),
     deleted: z.boolean().optional(),
-    authorized_tokens: z.array(z.string()).optional()
+    authorized_tokens: z.array(z.string()).optional(),
 });
 
 export type Envelope = z.infer<typeof EnvelopeSchema>;

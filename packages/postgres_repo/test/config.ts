@@ -1,6 +1,6 @@
-import { Config } from "@meshobj/server"
+import { Config } from '@meshobj/server';
 import fs from 'fs';
-import { PostgresConfig } from "../src";
+import { PostgresConfig } from '../src';
 
 const port = 4242;
 
@@ -12,28 +12,28 @@ const prefix = 'farm';
 const env = 'test';
 
 const database = () => ({
-    type: "postgres",
+    type: 'postgres',
     host: process.env.POSTGRES_HOST || 'localhost',
     port: parseInt(process.env.POSTGRES_PORT || '5432'),
     db: `test`,
     user: `postgres`,
-    password: `password`
-})
+    password: `password`,
+});
 
 const henDB = (): PostgresConfig => ({
     ...database(),
-    table: `${prefix}_${env}_hen`
-})
+    table: `${prefix}_${env}_hen`,
+});
 
 const coopDB = (): PostgresConfig => ({
     ...database(),
-    table: `${prefix}_${env}_coop`
-})
+    table: `${prefix}_${env}_coop`,
+});
 
 const farmDB = (): PostgresConfig => ({
     ...database(),
-    table: `${prefix}_${env}_farm`
-})
+    table: `${prefix}_${env}_farm`,
+});
 
 const farmGraph = fs.readFileSync(`${config_dir}graph/farm.graphql`, 'utf8');
 const coopGraph = fs.readFileSync(`${config_dir}graph/coop.graphql`, 'utf8');
@@ -48,111 +48,111 @@ export const config = (): Config => ({
 
     graphlettes: [
         {
-            path: "/farm/graph",
+            path: '/farm/graph',
             storage: farmDB(),
             schema: farmGraph,
             rootConfig: {
                 singletons: [
                     {
-                        name: "getById",
-                        query: "id = '{{id}}'"
-                    }
+                        name: 'getById',
+                        query: "id = '{{id}}'",
+                    },
                 ],
                 vectors: [],
                 resolvers: [
                     {
-                        name: "coops",
-                        queryName: "getByFarm",
-                        url: `${url}/coop/graph`
-                    }
-                ]
-            }
+                        name: 'coops',
+                        queryName: 'getByFarm',
+                        url: `${url}/coop/graph`,
+                    },
+                ],
+            },
         },
         {
-            path: "/coop/graph",
+            path: '/coop/graph',
             storage: coopDB(),
             schema: coopGraph,
             rootConfig: {
                 singletons: [
                     {
-                        name: "getByName",
-                        id: "name",
-                        query: "payload->>'name' = '{{id}}'"
+                        name: 'getByName',
+                        id: 'name',
+                        query: "payload->>'name' = '{{id}}'",
                     },
                     {
-                        name: "getById",
-                        query: "id = '{{id}}'"
-                    }
+                        name: 'getById',
+                        query: "id = '{{id}}'",
+                    },
                 ],
                 vectors: [
                     {
-                        name: "getByFarm",
-                        query: "payload->>'farm_id' = '{{id}}'"
-                    }
+                        name: 'getByFarm',
+                        query: "payload->>'farm_id' = '{{id}}'",
+                    },
                 ],
                 resolvers: [
                     {
-                        name: "farm",
-                        id: "farm_id",
-                        queryName: "getById",
-                        url: `${url}/farm/graph`
+                        name: 'farm',
+                        id: 'farm_id',
+                        queryName: 'getById',
+                        url: `${url}/farm/graph`,
                     },
                     {
-                        name: "hens",
-                        queryName: "getByCoop",
-                        url: `${url}/hen/graph`
-                    }
-                ]
-            }
+                        name: 'hens',
+                        queryName: 'getByCoop',
+                        url: `${url}/hen/graph`,
+                    },
+                ],
+            },
         },
         {
-            path: "/hen/graph",
+            path: '/hen/graph',
             storage: henDB(),
             schema: henGraph,
             rootConfig: {
                 singletons: [
                     {
-                        name: "getById",
-                        query: "id = '{{id}}'"
-                    }
+                        name: 'getById',
+                        query: "id = '{{id}}'",
+                    },
                 ],
                 vectors: [
                     {
-                        name: "getByName",
-                        query: "payload->>'name' = '{{name}}'"
+                        name: 'getByName',
+                        query: "payload->>'name' = '{{name}}'",
                     },
                     {
-                        name: "getByCoop",
-                        query: "payload->>'coop_id' = '{{id}}'"
-                    }
+                        name: 'getByCoop',
+                        query: "payload->>'coop_id' = '{{id}}'",
+                    },
                 ],
                 resolvers: [
                     {
-                        name: "coop",
-                        id: "coop_id",
-                        queryName: "getById",
-                        url: `${url}/coop/graph`
-                    }
-                ]
-            }
-        }
+                        name: 'coop',
+                        id: 'coop_id',
+                        queryName: 'getById',
+                        url: `${url}/coop/graph`,
+                    },
+                ],
+            },
+        },
     ],
 
     restlettes: [
         {
-            path: "/farm/api",
+            path: '/farm/api',
             storage: farmDB(),
-            schema: farmJSONSchema
+            schema: farmJSONSchema,
         },
         {
-            path: "/coop/api",
+            path: '/coop/api',
             storage: coopDB(),
-            schema: coopJSONSchema
+            schema: coopJSONSchema,
         },
         {
-            path: "/hen/api",
+            path: '/hen/api',
             storage: henDB(),
-            schema: henJSONSchema
-        }
-    ]
-})
+            schema: henJSONSchema,
+        },
+    ],
+});

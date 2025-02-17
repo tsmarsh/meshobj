@@ -11,6 +11,7 @@ The system is built as a modular monolith with three main domains:
 - **Hens** (MySQL) - Tracks individual hens and their egg production
 
 Each domain maintains its own:
+
 - Database storage
 - REST API endpoints
 - GraphQL schema
@@ -35,19 +36,20 @@ Each domain maintains its own:
 ### Running the Application
 
 1. Start the services:
-   ```bash
-   docker-compose up
-   ```
+
+    ```bash
+    docker-compose up
+    ```
 
 2. The following endpoints will be available:
-   - GraphQL Endpoints:
-     - Farms: http://localhost:3033/farm/graph
-     - Coops: http://localhost:3033/coop/graph
-     - Hens: http://localhost:3033/hen/graph
-   - REST API Documentation:
-     - Farms: http://localhost:3033/farm/api/api-docs
-     - Coops: http://localhost:3033/coop/api/api-docs
-     - Hens: http://localhost:3033/hen/api/api-docs
+    - GraphQL Endpoints:
+        - Farms: http://localhost:3033/farm/graph
+        - Coops: http://localhost:3033/coop/graph
+        - Hens: http://localhost:3033/hen/graph
+    - REST API Documentation:
+        - Farms: http://localhost:3033/farm/api/api-docs
+        - Coops: http://localhost:3033/coop/api/api-docs
+        - Hens: http://localhost:3033/hen/api/api-docs
 
 ### Running Tests
 
@@ -58,31 +60,30 @@ npm test
 ## Example Queries
 
 ### Query a Farm and its Related Data
+
 ```graphql
 {
-  getById(id: "farm-id") {
-    name 
-    coops {
-      name
-      hens {
+    getById(id: "farm-id") {
         name
-        eggs
-      }
+        coops {
+            name
+            hens {
+                name
+                eggs
+            }
+        }
     }
-  }
 }
 ```
 
 ### Create a New Coop
+
 ```graphql
 mutation {
-  create(input: { 
-    name: "Red Coop", 
-    farm_id: "farm-id" 
-  }) {
-    id
-    name
-  }
+    create(input: { name: "Red Coop", farm_id: "farm-id" }) {
+        id
+        name
+    }
 }
 ```
 
@@ -91,19 +92,21 @@ mutation {
 ### Database Choice Rationale
 
 - **Farms (MongoDB)**
-  - Flexible schema for varying farm types
-  - Document-based storage for complex hierarchical data
-  - Excellent for querying nested farm structures
+
+    - Flexible schema for varying farm types
+    - Document-based storage for complex hierarchical data
+    - Excellent for querying nested farm structures
 
 - **Coops (PostgreSQL)**
-  - Structured data with relationships
-  - Strong ACID compliance for coop management
-  - Robust querying capabilities for location-based operations
+
+    - Structured data with relationships
+    - Strong ACID compliance for coop management
+    - Robust querying capabilities for location-based operations
 
 - **Hens (MySQL)**
-  - High-performance for frequent updates (egg counting)
-  - Strong consistency for inventory tracking
-  - Efficient for simple CRUD operations
+    - High-performance for frequent updates (egg counting)
+    - Strong consistency for inventory tracking
+    - Efficient for simple CRUD operations
 
 ### Integration Pattern
 
@@ -112,14 +115,15 @@ The system uses a unique approach to service integration:
 1. Each domain maintains its own database and service layer
 2. GraphQL resolvers handle cross-service communication
 3. The configuration system (`config.conf`) defines:
-   - Service endpoints
-   - Database connections
-   - GraphQL resolvers
-   - REST API endpoints
+    - Service endpoints
+    - Database connections
+    - GraphQL resolvers
+    - REST API endpoints
 
 ## Development
 
 ### Project Structure
+
 ```
 examples/farm/
 ├── config/
@@ -141,6 +145,7 @@ examples/farm/
 ## Testing
 
 The project includes a simple smoke test that:
+
 - Spin up the entire system using testcontainers
 - Verify cross-service communication
 - Test data consistency across databases

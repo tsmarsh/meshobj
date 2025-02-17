@@ -55,21 +55,21 @@ You only need three configuration files:
 - The JSONSchema
 - The GraphQL Schema
 - A configuration file that details
-  - The queries
-  - The resolvers
-  - The mongo connection
+    - The queries
+    - The resolvers
+    - The mongo connection
 
 The 'simple' test cases in [server](../server/test) show how easy this is to configure.
 
 But we still need to ensure that:
 
 - types in the jsonschema are compatible with graphql schema
-  - Otherwise queries will fail
+    - Otherwise queries will fail
 - The restlette and graphlettes are pointed at the same collection in the same database
-  - Otherwise changes in the restlette will not be queriable
+    - Otherwise changes in the restlette will not be queriable
 - The queries are configured correctly and match the schema
-  - Otherwise queries will throw errors
-  - return the wrong data
+    - Otherwise queries will throw errors
+    - return the wrong data
 
 There is very little opportunity for forgiveness here. We have loose objects that need to be linked together.
 

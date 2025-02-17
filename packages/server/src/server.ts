@@ -1,12 +1,7 @@
 import express, { Application } from 'express';
 import { DTOFactory, root, init as graph_init } from '@meshobj/graphlette';
 import { init as rest_init } from '@meshobj/restlette';
-import {
-    Config,
-    Graphlette,
-    Restlette,
-    StorageConfig,
-} from './configTypes';
+import { Config, Graphlette, Restlette, StorageConfig } from './configTypes';
 import { Repository, Searcher, Validator } from '@meshobj/common';
 import { Crud } from '@meshobj/restlette';
 import { JSONSchemaValidator } from '@meshobj/restlette';
@@ -16,13 +11,18 @@ import { CasbinAuth } from '@meshobj/casbin_auth';
 import cors from 'cors';
 import { Plugin } from './plugin';
 
-async function processGraphlette(graphlette: Graphlette, auth: Auth, app: Application, plugins: Record<string, Plugin>) {
+async function processGraphlette(
+    graphlette: Graphlette,
+    auth: Auth,
+    app: Application,
+    plugins: Record<string, Plugin>,
+) {
     const { schema, storage, path, rootConfig } = graphlette;
 
     const dtoFactory = new DTOFactory(rootConfig.resolvers);
     let searcher: Searcher;
 
-    if (plugins[storage.type]) {    
+    if (plugins[storage.type]) {
         searcher = await plugins[storage.type].createSearcher(storage, dtoFactory, auth);
     } else {
         throw new Error(`Plugin for ${storage.type} not found`);
@@ -33,14 +33,20 @@ async function processGraphlette(graphlette: Graphlette, auth: Auth, app: Applic
 }
 
 async function buildRepository(storage: StorageConfig, plugins: Record<string, Plugin>): Promise<Repository> {
-    if (plugins[storage.type]) {    
+    if (plugins[storage.type]) {
         return plugins[storage.type].createRepository(storage);
     } else {
         throw new Error(`Plugin for ${storage.type} not found`);
     }
 }
 
-async function processRestlette(restlette: Restlette, auth: Auth, app: Application, port: number, plugins: Record<string, Plugin>) {
+async function processRestlette(
+    restlette: Restlette,
+    auth: Auth,
+    app: Application,
+    port: number,
+    plugins: Record<string, Plugin>,
+) {
     const validator: Validator = JSONSchemaValidator(restlette.schema);
     const repo: Repository = await buildRepository(restlette.storage, plugins);
     const crud = new Crud(auth, repo, validator, restlette.path, restlette.tokens);

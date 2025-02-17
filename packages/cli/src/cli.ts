@@ -47,12 +47,12 @@ export default async function startServer(configPath?: string) {
         }
 
         const app = await init(config, {
-            "sql": new SQLitePlugin(),
-            "mongo": new MongoPlugin(),
-            "mysql": new MySQLPlugin(),
-            "postgres": new PostgresPlugin()
-        }); 
-        
+            sql: new SQLitePlugin(),
+            mongo: new MongoPlugin(),
+            mysql: new MySQLPlugin(),
+            postgres: new PostgresPlugin(),
+        });
+
         await app.listen(config.port);
         log.info(`Server running on port ${config.port}`);
 

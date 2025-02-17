@@ -9,7 +9,6 @@ import * as jwt from 'jsonwebtoken';
 import { Plugin } from '../src/plugin';
 import { Config } from '../src/configTypes';
 
-
 let __TOKEN__ = ''; // Placeholder for JWT token
 let config: Config;
 
@@ -31,8 +30,6 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
         await setup();
 
         config = await configurize();
-
-
 
         const sub = 'test-user';
         __TOKEN__ = jwt.sign({ sub }, 'totallyASecret', { expiresIn: '1h' });
@@ -96,7 +93,9 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
                 `Bearer ${__TOKEN__}`,
             );
 
-            expect(json.name, `This is a catch all, your config is probably wrong: ${JSON.stringify(config)}`).toBe('Emerdale');
+            expect(json.name, `This is a catch all, your config is probably wrong: ${JSON.stringify(config)}`).toBe(
+                'Emerdale',
+            );
             expect(json.coops.length).toBe(3);
         });
 
@@ -115,7 +114,9 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
                 `Bearer ${__TOKEN__}`,
             );
 
-            expect(json[0].id, `Most of the time this has failed its because you have old data in storage`).toBe(hen_ids['duck']);
+            expect(json[0].id, `Most of the time this has failed its because you have old data in storage`).toBe(
+                hen_ids['duck'],
+            );
             expect(json[0].name).toBe('duck');
         });
 
@@ -160,7 +161,9 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
                 `Bearer ${__TOKEN__}`,
             );
 
-            expect(json.id, `Idempotency isn't working. Check the plugins for examples of how to implement it`).toBe(coop1_id);
+            expect(json.id, `Idempotency isn't working. Check the plugins for examples of how to implement it`).toBe(
+                coop1_id,
+            );
             expect(json.name).toBe('purple');
         });
 

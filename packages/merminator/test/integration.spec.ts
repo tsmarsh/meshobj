@@ -9,7 +9,7 @@ import { ConfigSchema } from '@meshobj/server';
 import { J } from 'vitest/dist/chunks/reporters.nr4dxCkA.js';
 
 describe('Merminator Integration Test', () => {
-    const testDir = __dirname
+    const testDir = __dirname;
     const outputDir = path.join(testDir, 'output');
     const mermaidFile = path.join(testDir, 'test.mermaid');
     const testUrl = 'http://localhost:8080';
@@ -50,7 +50,6 @@ describe('Merminator Integration Test', () => {
             console.error('Zod validation errors:', result.error);
         }
         expect(result.success).toBe(true);
-
     });
 
     test('the json schemas are valid', () => {
@@ -60,10 +59,8 @@ describe('Merminator Integration Test', () => {
         expect(jsonSchemaFiles.length).toBe(3); // Farm, Coop, and Hen schemas
 
         // Validate each JSON Schema
-        jsonSchemaFiles.forEach(file => {
-            const schemaContent = JSON.parse(
-                fs.readFileSync(path.join(jsonSchemaDir, file), 'utf-8')
-            );
+        jsonSchemaFiles.forEach((file) => {
+            const schemaContent = JSON.parse(fs.readFileSync(path.join(jsonSchemaDir, file), 'utf-8'));
             expect(() => validateJsonSchema({}, schemaContent)).not.toThrow();
         });
     });
@@ -74,13 +71,10 @@ describe('Merminator Integration Test', () => {
         expect(graphqlFiles.length).toBe(3); // Farm, Coop, and Hen schemas
 
         // Validate each GraphQL Schema
-        graphqlFiles.forEach(file => {
-            const schemaContent = fs.readFileSync(
-                path.join(graphqlDir, file),
-                'utf-8'
-            );
+        graphqlFiles.forEach((file) => {
+            const schemaContent = fs.readFileSync(path.join(graphqlDir, file), 'utf-8');
             const gqlSchema = buildSchema(schemaContent);
             expect(validateSchema(gqlSchema)).toEqual([]);
         });
-    })
-}); 
+    });
+});
