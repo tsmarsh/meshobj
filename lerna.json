@@ -3,14 +3,14 @@
     "version": "0.1.2",
     "npmClient": "yarn",
     "command": {
-        "version": {
-            "ignoreChanges": ["examples/**", "**/*.md", "**/*.test.ts", "**/*.spec.ts"],
-            "conventionalCommits": true,
-            "createRelease": "github"
-        },
         "publish": {
             "access": "public",
-            "ignoreChanges": ["examples/**", "**/*.md", "**/*.test.ts", "**/*.spec.ts"]
+            "ignoreChanges": [
+                "examples/**",
+                "**/*.md",
+                "**/*.test.ts",
+                "**/*.spec.ts"
+            ]
         }
     }
 }
