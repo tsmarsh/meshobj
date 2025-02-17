@@ -4,6 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { buildSchema, validateSchema } from 'graphql';
+const parser = require('@pushcorn/hocon-parser');
+import { ConfigSchema } from '@meshobj/server';
+import { J } from 'vitest/dist/chunks/reporters.nr4dxCkA.js';
 
 describe('Merminator Integration Test', () => {
     const testDir = __dirname
@@ -36,11 +39,18 @@ describe('Merminator Integration Test', () => {
         }
     });
 
-    test('the config file exists', () => {
+    test('the config file is valid', async () => {
         const configPath = path.join(outputDir, 'config/config.conf');
         expect(fs.existsSync(configPath)).toBe(true);
-        const configContent = fs.readFileSync(configPath, 'utf-8');
-        expect(configContent).toBeTruthy();
+
+        const configJson = await parser.parse({ url: configPath });
+
+        const result = ConfigSchema.safeParse(configJson);
+        if (!result.success) {
+            console.error('Zod validation errors:', result.error);
+        }
+        expect(result.success).toBe(true);
+
     });
 
     test('the json schemas are valid', () => {

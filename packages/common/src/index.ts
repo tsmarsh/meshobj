@@ -1,41 +1,55 @@
 import { TemplateDelegate } from 'handlebars';
+import { z } from 'zod';
 
-export type Singleton = {
-    query: string;
-    name: string;
-    id?: string;
-};
+// Convert common types to Zod schemas
+export const SingletonSchema = z.object({
+    query: z.string(),
+    name: z.string(),
+    id: z.string().optional()
+});
 
-export type Vector = {
-    query: string;
-    name: string;
-    id?: string;
-};
+export type Singleton = z.infer<typeof SingletonSchema>;
 
-export type Resolver = {
-    name: string;
-    id?: string;
-    queryName: string;
-    url: string;
-};
+export const VectorSchema = z.object({
+    query: z.string(),
+    name: z.string(),
+    id: z.string().optional()
+});
 
-export type RootConfig = {
-    singletons?: Singleton[];
-    vectors?: Vector[];
-    resolvers?: Resolver[];
-};
+export type Vector = z.infer<typeof VectorSchema>;
 
-export type Id = string | number;
+export const ResolverSchema = z.object({
+    name: z.string(),
+    id: z.string().optional(),
+    queryName: z.string(),
+    url: z.string().url()
+});
 
-export type Payload = Record<string, any>;
+export type Resolver = z.infer<typeof ResolverSchema>;
 
-export type Envelope = {
-    id?: Id;
-    payload: Payload;
-    created_at?: Date;
-    deleted?: boolean;
-    authorized_tokens?: string[];
-};
+export const RootConfigSchema = z.object({
+    singletons: z.array(SingletonSchema).optional(),
+    vectors: z.array(VectorSchema).optional(),
+    resolvers: z.array(ResolverSchema).optional()
+});
+
+export type RootConfig = z.infer<typeof RootConfigSchema>;
+
+export const IdSchema = z.string();
+export type Id = z.infer<typeof IdSchema>;
+
+export const PayloadSchema = z.record(z.any());
+export type Payload = z.infer<typeof PayloadSchema>;
+
+export const EnvelopeSchema = z.object({
+    id: IdSchema.optional(),
+    payload: PayloadSchema,
+    created_at: z.date().optional(),
+    deleted: z.boolean().optional(),
+    authorized_tokens: z.array(z.string()).optional()
+});
+
+export type Envelope = z.infer<typeof EnvelopeSchema>;
 
 export interface Repository {
     create: (envelope: Envelope, tokens?: string[]) => Promise<Envelope>;

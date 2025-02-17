@@ -927,6 +927,7 @@ __metadata:
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.3"
     vitest: "npm:^2.1.8"
+    zod: "npm:^3.24.2"
   languageName: unknown
   linkType: soft
 
@@ -976,6 +977,7 @@ __metadata:
     "@meshobj/graphlette": "npm:^0.1.2"
     "@meshobj/restlette": "npm:^0.1.2"
     "@meshobj/server": "npm:^0.1.2"
+    "@pushcorn/hocon-parser": "npm:^1.3.1"
     "@types/jsonschema": "npm:^1.1.1"
     "@types/node": "npm:^22.10.6"
     "@types/pluralize": "npm:^0.0.33"
@@ -988,6 +990,7 @@ __metadata:
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.3"
     vitest: "npm:^1.3.1"
+    zod: "npm:^3.22.4"
   bin:
     merminator: dist/index.js
   languageName: unknown
@@ -1690,6 +1693,18 @@ __metadata:
   version: 0.1.1
   resolution: "@pkgr/core@npm:0.1.1"
   checksum: 10c0/3f7536bc7f57320ab2cf96f8973664bef624710c403357429fbf680a5c3b4843c1dbd389bb43daa6b1f6f1f007bb082f5abcb76bb2b5dc9f421647743b71d3d8
+  languageName: node
+  linkType: hard
+
+"@pushcorn/hocon-parser@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@pushcorn/hocon-parser@npm:1.3.1"
+  dependencies:
+    commander: "npm:12.1.0"
+    rock-req: "npm:5.1.3"
+  bin:
+    parse-hocon: bin/parse-hocon
+  checksum: 10c0/0176076a4fcca6715e6c11915c79dfd234e2c42a077a5debf8916f1c59701ce7efc01385ac51bb1981ba2d88b5c0a305148500b23260759293e57f5c294c39a9
   languageName: node
   linkType: hard
 
@@ -3792,7 +3807,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^12.0.0":
+"commander@npm:12.1.0, commander@npm:^12.0.0":
   version: 12.1.0
   resolution: "commander@npm:12.1.0"
   checksum: 10c0/6e1996680c083b3b897bfc1cfe1c58dfbcd9842fd43e1aaf8a795fbc237f65efcc860a3ef457b318e73f29a4f4a28f6403c3d653d021d960e4632dd45bde54a9
@@ -9651,6 +9666,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rock-req@npm:5.1.3":
+  version: 5.1.3
+  resolution: "rock-req@npm:5.1.3"
+  checksum: 10c0/ce6bebe1cfd31de2cfdae7195e7094062ad9d6fd8cad28e9708d52d401eb386dfabd946c4583c98b3f94bded344f1b138b251140003d2b968a05c24f84ffd5a3
+  languageName: node
+  linkType: hard
+
 "rollup@npm:^4.20.0, rollup@npm:^4.23.0":
   version: 4.30.1
   resolution: "rollup@npm:4.30.1"
@@ -11880,5 +11902,12 @@ __metadata:
     compress-commons: "npm:^6.0.2"
     readable-stream: "npm:^4.0.0"
   checksum: 10c0/50f2fb30327fb9d09879abf7ae2493705313adf403e794b030151aaae00009162419d60d0519e807673ec04d442e140c8879ca14314df0a0192de3b233e8f28b
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.22.4, zod@npm:^3.24.2":
+  version: 3.24.2
+  resolution: "zod@npm:3.24.2"
+  checksum: 10c0/c638c7220150847f13ad90635b3e7d0321b36cce36f3fc6050ed960689594c949c326dfe2c6fa87c14b126ee5d370ccdebd6efb304f41ef5557a4aaca2824565
   languageName: node
   linkType: hard
