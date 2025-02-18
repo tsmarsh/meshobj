@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.meshql</groupId>
-    <artifactId>meshql-parent</artifactId>
+    <artifactId>meshql</artifactId>
     <version>0.2.0</version>
     <packaging>pom</packaging>
 
@@ -13,12 +13,12 @@
     <description>A service mesh that auto-generates REST and GraphQL endpoints based on a structured domain model</description>
 
     <modules>
-        <module>meshql-core</module>
-        <module>meshql-server</module>
-        <module>meshql-cli</module>
-        <module>meshql-repositories</module>
-        <module>meshql-api</module>
-        <module>meshql-auth</module>
+        <module>core</module>
+        <module>server</module>
+        <module>cli</module>
+        <module>repos</module>
+        <module>api</module>
+        <module>auth</module>
     </modules>
 
     <properties>
