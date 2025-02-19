@@ -17,8 +17,19 @@
         <dependency>
         <groupId>com.graphql-java</groupId>
         <artifactId>graphql-java</artifactId>
+            <version>22.3</version>
     </dependency>
-    
+
+        <dependency>
+            <groupId>com.tailoredshapes</groupId>
+            <artifactId>stash</artifactId>
+            <version>0.3.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tailoredshapes</groupId>
+            <artifactId>underbar.ocho</artifactId>
+            <version>0.3.8</version>
+        </dependency>
     <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>

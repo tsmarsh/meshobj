@@ -6,6 +6,7 @@ import graphql.util.TraverserContext;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
 public class QueryVisitor extends NodeVisitorStub {
     private final String queryName;
@@ -19,20 +20,18 @@ public class QueryVisitor extends NodeVisitorStub {
     @Override
     public TraversalControl visitField(Field node, TraverserContext<Node> context) {
         if (node.getName().equals(queryName)) {
-            var hasAtArgument = node.getArguments().stream()
+            boolean hasAtArgument = node.getArguments().stream()
                     .anyMatch(arg -> arg.getName().equals("at"));
 
             if (!hasAtArgument) {
-                var atArgument = new Argument(
-                    "at",
-                    new IntValue(BigInteger.valueOf(timestamp))
-                );
-                var newArguments = new ArrayList<>(node.getArguments());
+                Argument atArgument = new Argument("at", new IntValue(BigInteger.valueOf(timestamp)));
+                List<Argument> newArguments = new ArrayList<>(node.getArguments());
                 newArguments.add(atArgument);
-                return TraversalControl.REPLACE(node.transform(builder -> 
-                    builder.arguments(newArguments)));
+
+                Field newNode = node.transform(builder -> builder.arguments(newArguments));
+                context.changeNode(newNode);
             }
         }
         return TraversalControl.CONTINUE;
     }
-} 
+}

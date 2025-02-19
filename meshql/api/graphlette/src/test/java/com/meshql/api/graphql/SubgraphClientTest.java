@@ -2,6 +2,8 @@ package com.meshql.api.graphql;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import graphql.language.Field;
+import graphql.language.SelectionSet;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
