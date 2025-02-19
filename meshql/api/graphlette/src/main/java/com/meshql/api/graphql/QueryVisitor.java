@@ -30,6 +30,9 @@ public class QueryVisitor extends NodeVisitorStub {
 
                 Field newNode = node.transform(builder -> builder.arguments(newArguments));
                 context.changeNode(newNode);
+                System.out.println(AstPrinter.printAst(newNode));
+                context.setAccumulate(newNode);
+                return TraversalControl.CONTINUE;
             }
         }
         return TraversalControl.CONTINUE;

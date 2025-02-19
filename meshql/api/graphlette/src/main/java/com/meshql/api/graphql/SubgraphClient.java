@@ -104,9 +104,8 @@ public class SubgraphClient {
         var document = Parser.parse(query);
 
         var visitor = new QueryVisitor(queryName, timestamp);
-        document = (Document) new AstTransformer().transform(document, visitor);
-
-        return AstPrinter.printAst(document);
+        var updatedNode = new AstTransformer().transform(document, visitor);
+        return AstPrinter.printAst(updatedNode);
     }
 
     public static String processContext(
@@ -132,7 +131,6 @@ public class SubgraphClient {
         }
 
         var selections = processSelectionSet(firstNode.getSelectionSet());
-        var query = String.format("{%s(id: \"%s\"){\n%s}}", queryName, id, selections);
-        return addTimestampToQuery(query, (GraphQLSchema) context.get("schema"), queryName, timestamp);
+        return String.format("{%s(id: \"%s\" at: %d){\n%s}}", queryName, id, timestamp, selections);
     }
 }
