@@ -19,5 +19,6 @@
         <module>postgres</module>
         <module>mysql</module>
         <module>sqlite</module>
+        <module>certification</module>
     </modules>
 </project>
