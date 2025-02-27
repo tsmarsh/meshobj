@@ -11,4 +11,4 @@ public record Envelope(
         Instant createdAt,
         boolean deleted,
         List<String> authorizedTokens
-) {}
+){};
