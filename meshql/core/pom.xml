@@ -15,9 +15,19 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.jknack</groupId>
+            <artifactId>handlebars</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tailoredshapes</groupId>
+            <artifactId>stash</artifactId>
+            <version>0.3.8</version>
         </dependency>
     </dependencies>
 </project>
