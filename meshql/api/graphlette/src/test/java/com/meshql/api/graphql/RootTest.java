@@ -1,5 +1,8 @@
 package com.meshql.api.graphql;
 
+import com.meshql.api.graphql.config.QueryConfig;
+import com.meshql.api.graphql.config.ResolverConfig;
+import com.meshql.api.graphql.config.RootConfig;
 import com.meshql.core.Auth;
 import com.meshql.core.Searcher;
 import com.tailoredshapes.stash.Stash;
@@ -10,10 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.tailoredshapes.stash.Stash.stash;
+import static com.tailoredshapes.underbar.ocho.Die.rethrow;
 import static com.tailoredshapes.underbar.ocho.UnderBar.list;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -32,7 +38,7 @@ class RootTest {
         MockitoAnnotations.openMocks(this);
 
         List<ResolverConfig> resolvers = list(
-            new ResolverConfig("posts", "userId", "userPosts", "http://localhost:8080/graphql")
+            new ResolverConfig("posts", "user", "userPosts", rethrow(() -> new URI("http://localhost:8080/graphql")))
         );
 
         config = new RootConfig(

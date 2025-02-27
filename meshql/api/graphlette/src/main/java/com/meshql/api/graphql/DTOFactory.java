@@ -1,5 +1,6 @@
 package com.meshql.api.graphql;
 
+import com.meshql.api.graphql.config.ResolverConfig;
 import com.tailoredshapes.stash.Stash;
 import graphql.schema.DataFetchingEnvironment;
 import org.slf4j.Logger;
@@ -10,7 +11,6 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.tailoredshapes.stash.Stash.stash;
@@ -22,13 +22,7 @@ public class DTOFactory {
     public DTOFactory(List<ResolverConfig> config) {
         if (config != null) {
             for (ResolverConfig c : config) {
-                try {
-                    URI uri = new URI(c.url());
-                    resolvers.put(c.name(), assignResolver(c.id(), c.queryName(), uri));
-                } catch (URISyntaxException e) {
-                    logger.error("Invalid URL: {}", c.url());
-                    throw new IllegalArgumentException("Invalid URL: " + c.url(), e);
-                }
+                resolvers.put(c.name(), assignResolver(c.id(), c.queryName(), c.url()));
             }
         }
     }
@@ -62,7 +56,7 @@ public class DTOFactory {
         return (parent, env) -> {
             Object foreignKey = parent.get(id);
             if (foreignKey == null) {
-                return CompletableFuture.completedFuture(Map.of());
+                return stash();
             }
 
             String query = SubgraphClient.processContext(

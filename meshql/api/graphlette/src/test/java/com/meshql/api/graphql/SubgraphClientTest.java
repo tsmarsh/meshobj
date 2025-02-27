@@ -79,7 +79,7 @@ class SubgraphClientTest {
                 "query { user(id: \"123\") { id name } }",
                 "user",
                 "Bearer token123"
-        ).get();
+        );
 
         assertEquals("123", result.get("id"));
         assertEquals("Test User", result.get("name"));

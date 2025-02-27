@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import static com.tailoredshapes.stash.Stash.stash;
+import static com.tailoredshapes.underbar.ocho.Die.rethrow;
+
 public class SubgraphClient {
     private static final Logger logger = LoggerFactory.getLogger(SubgraphClient.class);
     private final HttpClient httpClient;
@@ -28,16 +31,18 @@ public class SubgraphClient {
                 .build();
     }
 
-    public CompletableFuture<Map<String, Object>> callSubgraph(
+    public Stash callSubgraph(
             URI uri,
             String query,
             String queryName,
             String authHeader
     ) {
         var request = createRequest(uri, query, authHeader);
-        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(this::handleResponse)
-                .thenApply(json -> extractData(json, queryName));
+        return rethrow(() -> {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            Stash stash = handleResponse(response);
+            return extractData(stash, queryName);
+        });
     }
 
     private HttpRequest createRequest(URI uri, String query, String authHeader) {
@@ -70,13 +75,13 @@ public class SubgraphClient {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> extractData(Map<String, Object> json, String queryName) {
+    private Stash extractData(Stash json, String queryName) {
         if (json.containsKey("errors")) {
             var errors = (List<Map<String, Object>>) json.get("errors");
             throw new SubgraphException(errors.get(0).get("message").toString());
         }
-        var data = (Map<String, Object>) json.get("data");
-        return data != null ? (Map<String, Object>) data.get(queryName) : Map.of();
+        var data = json.asStash("data");
+        return data != null ? data.asStash(queryName) : stash();
     }
 
     public static String processSelectionSet(SelectionSet selectionSet) {
@@ -93,19 +98,6 @@ public class SubgraphClient {
             return String.format("%s {\n%s}\n", name, processSelectionSet(field.getSelectionSet()));
         }
         return name + "\n";
-    }
-
-    public static String addTimestampToQuery(
-            String query,
-            GraphQLSchema schema,
-            String queryName,
-            long timestamp
-    ) {
-        var document = Parser.parse(query);
-
-        var visitor = new QueryVisitor(queryName, timestamp);
-        var updatedNode = new AstTransformer().transform(document, visitor);
-        return AstPrinter.printAst(updatedNode);
     }
 
     public static String processContext(

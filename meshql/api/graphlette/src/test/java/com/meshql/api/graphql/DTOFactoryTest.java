@@ -1,5 +1,6 @@
 package com.meshql.api.graphql;
 
+import com.meshql.api.graphql.config.ResolverConfig;
 import com.tailoredshapes.stash.Stash;
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
@@ -8,13 +9,15 @@ import graphql.schema.GraphQLSchema;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import static com.tailoredshapes.stash.Stash.stash;
+import static com.tailoredshapes.underbar.ocho.Die.rethrow;
 import static com.tailoredshapes.underbar.ocho.UnderBar.list;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -27,12 +30,12 @@ class DTOFactoryTest {
     @BeforeEach
     void setUp() {
         schema = TestUtils.createTestSchema();
-        List<ResolverConfig> config = List.of(
+        List<ResolverConfig> config = list(
             new ResolverConfig(
                 "posts",
-                "userId",
+                "user",
                 "userPosts",
-                "http://localhost:8080/graphql"
+                rethrow(() -> new URI("http://localhost:8080/graphql"))
             )
         );
         factory = new DTOFactory(config);
@@ -73,9 +76,8 @@ class DTOFactoryTest {
     @Test
     void testResolverExecution() throws ExecutionException, InterruptedException {
         // Setup test data
-        Map<String, Object> parent = new HashMap<>();
-        parent.put("userId", "123");
-        parent.put("_timestamp", System.currentTimeMillis());
+        Stash parent = stash("userId", "123",
+                "_timestamp", System.currentTimeMillis());
 
         // Mock DataFetchingEnvironment
         DataFetchingEnvironment env = mock(DataFetchingEnvironment.class);
@@ -95,7 +97,7 @@ class DTOFactoryTest {
         
         // The actual resolver execution would require a running GraphQL server
         // Here we're just verifying the resolver is properly configured
-        CompletableFuture<Map<String, Object>> future = resolver.resolve(parent, env);
+        Stash future = resolver.resolve(parent, env);
         assertNotNull(future);
     }
 }

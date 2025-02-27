@@ -1,14 +1,13 @@
 package com.meshql.api.graphql;
 
+import com.tailoredshapes.stash.Stash;
 import graphql.schema.DataFetchingEnvironment;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @FunctionalInterface
 public interface ResolverFunction {
-    CompletableFuture<Map<String, Object>> resolve(
-            Map<String, Object> parent,
+    Stash resolve(
+            Stash parent,
             DataFetchingEnvironment env
     );
 }

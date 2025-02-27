@@ -2,11 +2,11 @@ package com.meshql.api.graphql;
 
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.io.TemplateSource;
+import com.meshql.api.graphql.config.QueryConfig;
+import com.meshql.api.graphql.config.RootConfig;
 import com.meshql.core.Auth;
 import com.meshql.core.Searcher;
 import com.tailoredshapes.stash.Stash;
-import graphql.GraphQLContext;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.slf4j.Logger;
@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import static com.tailoredshapes.underbar.ocho.Die.die;
 import static com.tailoredshapes.underbar.ocho.Die.rethrow;

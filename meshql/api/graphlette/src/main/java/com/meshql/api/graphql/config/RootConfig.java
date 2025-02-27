@@ -1,4 +1,4 @@
-package com.meshql.api.graphql;
+package com.meshql.api.graphql.config;
 
 import java.util.List;
 
