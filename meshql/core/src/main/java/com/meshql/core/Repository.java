@@ -7,11 +7,11 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Repository {
-    CompletableFuture<Envelope> create(Envelope envelope, List<String> tokens);
-    CompletableFuture<Optional<Envelope>> read(String id, List<String> tokens, Instant createdAt);
-    CompletableFuture<List<Envelope>> list(List<String> tokens);
-    CompletableFuture<Boolean> remove(String id, List<String> tokens);
-    CompletableFuture<List<Envelope>> createMany(List<Envelope> payloads, List<String> tokens);
-    CompletableFuture<List<Envelope>> readMany(List<String> ids, List<String> tokens);
-    CompletableFuture<Map<String, Boolean>> removeMany(List<String> ids, List<String> tokens);
+    Envelope create(Envelope envelope, List<String> tokens);
+    Optional<Envelope> read(String id, List<String> tokens, Instant createdAt);
+    List<Envelope> list(List<String> tokens);
+    Boolean remove(String id, List<String> tokens);
+    List<Envelope> createMany(List<Envelope> payloads, List<String> tokens);
+    List<Envelope> readMany(List<String> ids, List<String> tokens);
+    Map<String, Boolean> removeMany(List<String> ids, List<String> tokens);
 }
