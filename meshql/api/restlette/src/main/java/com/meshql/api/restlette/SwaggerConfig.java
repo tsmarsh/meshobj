@@ -1,5 +1,6 @@
 package com.meshql.api.restlette;
 
+import com.tailoredshapes.stash.Stash;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class SwaggerConfig {
 
     @SuppressWarnings("unchecked")
-    public static void configureSwagger(OpenAPI openAPI, Map<String, Object> jsonSchema) {
+    public static void configureSwagger(OpenAPI openAPI, Stash jsonSchema) {
         Components components = new Components();
 
         // Add security scheme
@@ -60,21 +61,21 @@ public class SwaggerConfig {
     }
 
     @SuppressWarnings("unchecked")
-    private static Schema<?> createSchemaFromJsonSchema(Map<String, Object> jsonSchema) {
+    private static Schema<?> createSchemaFromJsonSchema(Stash jsonSchema) {
         Schema<?> schema = new Schema<>();
 
         if (jsonSchema.containsKey("type")) {
             schema.type((String) jsonSchema.get("type"));
         }
 
-        if (jsonSchema.containsKey("properties") && jsonSchema.get("properties") instanceof Map) {
-            Map<String, Object> properties = (Map<String, Object>) jsonSchema.get("properties");
+        if (jsonSchema.containsKey("properties")) {
+            Stash properties = jsonSchema.asStash("properties");
 
-            for (Map.Entry<String, Object> entry : properties.entrySet()) {
-                if (entry.getValue() instanceof Map) {
-                    Map<String, Object> propertySchema = (Map<String, Object>) entry.getValue();
+            for (String key : properties.keys()) {
+                if (properties.get(key) instanceof Map) {
+                    Stash propertySchema = properties.asStash(key);
                     Schema<?> propertySchemaObj = createSchemaFromJsonSchema(propertySchema);
-                    schema.addProperty(entry.getKey(), propertySchemaObj);
+                    schema.addProperty(key, propertySchemaObj);
                 }
             }
         }

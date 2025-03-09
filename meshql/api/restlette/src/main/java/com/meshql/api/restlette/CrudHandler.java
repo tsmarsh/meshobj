@@ -59,7 +59,7 @@ public class CrudHandler {
                     false,
                     authTokens);
 
-            Envelope result = repository.create(envelope, tokens).get();
+            Envelope result = repository.create(envelope, tokens);
             response.status(201);
             return result.payload();
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class CrudHandler {
             String id = request.params(":id");
             List<String> authTokens = getAuthTokens(request);
 
-            Optional<Envelope> envelope = repository.read(id, authTokens, Instant.now()).get();
+            Optional<Envelope> envelope = repository.read(id, authTokens, Instant.now());
 
             if (envelope.isEmpty()) {
                 response.status(404);
@@ -111,7 +111,7 @@ public class CrudHandler {
 
             }
 
-            Optional<Envelope> existing = repository.read(id, authTokens, Instant.now()).get();
+            Optional<Envelope> existing = repository.read(id, authTokens, Instant.now());
 
             if (existing.isEmpty()) {
                 response.status(404);
@@ -126,7 +126,7 @@ public class CrudHandler {
                     false,
                     authTokens);
 
-            Envelope result = repository.create(envelope, tokens).get();
+            Envelope result = repository.create(envelope, tokens);
             return result.payload();
         } catch (Exception e) {
             logger.error("Failed to update resource", e);
@@ -144,7 +144,7 @@ public class CrudHandler {
             String id = request.params(":id");
             List<String> authTokens = getAuthTokens(request);
 
-            Boolean result = repository.remove(id, authTokens).get();
+            Boolean result = repository.remove(id, authTokens);
 
             if (!result) {
                 response.status(404);
@@ -169,7 +169,7 @@ public class CrudHandler {
     public List<Stash> list(Request request, Response response) {
         try {
             List<String> authTokens = getAuthTokens(request);
-            List<Envelope> results = repository.list(authTokens).get();
+            List<Envelope> results = repository.list(authTokens);
 
             return map(results, Envelope::payload);
         } catch (Exception e) {
@@ -214,7 +214,7 @@ public class CrudHandler {
                 envelopes.add(envelope);
             }
 
-            List<Envelope> results = repository.createMany(envelopes, tokens).get();
+            List<Envelope> results = repository.createMany(envelopes, tokens);
             response.status(201);
             return objectMapper.writeValueAsString(results);
         } catch (Exception e) {
@@ -240,7 +240,7 @@ public class CrudHandler {
             List<String> ids = Arrays.asList(idsParam.split(","));
             List<String> authTokens = getAuthTokens(request);
 
-            List<Envelope> results = repository.readMany(ids, authTokens).get();
+            List<Envelope> results = repository.readMany(ids, authTokens);
 
             return objectMapper.writeValueAsString(results);
         } catch (Exception e) {

@@ -20,5 +20,6 @@
         <module>mysql</module>
         <module>sqlite</module>
         <module>certification</module>
+        <module>memory</module>
     </modules>
 </project>
