@@ -8,7 +8,6 @@
         <groupId>com.meshql</groupId>
         <artifactId>meshql</artifactId>
         <version>0.2.0</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>api</artifactId>
@@ -27,26 +26,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>properties</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

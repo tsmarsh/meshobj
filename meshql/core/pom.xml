@@ -8,7 +8,6 @@
         <groupId>com.meshql</groupId>
         <artifactId>meshql</artifactId>
         <version>0.2.0</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>core</artifactId>

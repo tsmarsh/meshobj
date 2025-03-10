@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.tailoredshapes.stash.Stash.stash;
 import static com.tailoredshapes.underbar.ocho.Die.rethrow;

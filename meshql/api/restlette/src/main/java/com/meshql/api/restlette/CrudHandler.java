@@ -1,6 +1,7 @@
 package com.meshql.api.restlette;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.meshql.core.Auth;
 import com.meshql.core.Envelope;
 import com.meshql.core.Repository;
@@ -19,7 +20,7 @@ import static com.tailoredshapes.underbar.ocho.UnderBar.map;
 
 public class CrudHandler {
     private static final Logger logger = LoggerFactory.getLogger(CrudHandler.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     private final Auth authorizer;
     private final Repository repository;
@@ -34,6 +35,9 @@ public class CrudHandler {
         this.context = context;
         this.tokens = tokens != null ? tokens : List.of();
         this.validator = validator;
+
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     /**

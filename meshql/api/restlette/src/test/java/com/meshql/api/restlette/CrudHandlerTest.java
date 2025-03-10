@@ -18,6 +18,7 @@ import java.util.*;
 
 import static com.tailoredshapes.stash.Stash.stash;
 import static com.tailoredshapes.underbar.ocho.UnderBar.list;
+import static com.tailoredshapes.underbar.ocho.UnderBar.map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -66,15 +67,16 @@ class CrudHandlerTest {
 
         
         // Get the ID from the repository
-        String henId = createResult.asString("id");
-        
+        Envelope envelope = repository.list(list()).get(0);
+        String henId = envelope.id();
+
         // Test Read
         when(mockRequest.params(":id")).thenReturn(henId);
         
         Stash readResult = crudHandler.read(mockRequest, mockResponse);
         
         assertEquals("Henny", readResult.get("name"));
-        assertEquals(5, readResult.get("eggs"));
+        assertEquals(5.0, readResult.get("eggs"));
         
         // Test Update
         String updatedHenData = "{\"name\":\"Henny\",\"eggs\":10}";
@@ -83,7 +85,7 @@ class CrudHandlerTest {
         Stash updateResult = crudHandler.update(mockRequest, mockResponse);
         
         assertEquals("Henny", updateResult.get("name"));
-        assertEquals(10, updateResult.get("eggs"));
+        assertEquals(10.0, updateResult.get("eggs"));
         
         // Test Delete
         Stash deleteResult = crudHandler.remove(mockRequest, mockResponse);
@@ -163,10 +165,7 @@ class CrudHandlerTest {
         assertEquals(2, envelopes.size());
         
         // Test bulk read
-        List<String> henIds = new ArrayList<>();
-        for (Envelope envelope : envelopes) {
-            henIds.add(envelope.id());
-        }
+        List<String> henIds = map(envelopes, (e) -> e.id());
         
         when(mockRequest.queryParams("ids")).thenReturn(String.join(",", henIds));
         
