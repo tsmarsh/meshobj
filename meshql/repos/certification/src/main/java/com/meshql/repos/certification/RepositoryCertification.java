@@ -3,6 +3,7 @@ package com.meshql.repos.certification;
 import com.meshql.core.Envelope;
 import com.meshql.core.Repository;
 import com.tailoredshapes.stash.Stash;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,29 +14,24 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.tailoredshapes.stash.Stash.stash;
+import static com.tailoredshapes.underbar.ocho.UnderBar.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class RepositoryCertification {
     protected Repository repository;
 
     public abstract void init();
-    public abstract void tini();
 
     @BeforeEach
     public void setUp() throws Exception {
         init();
     }
 
-    @AfterEach
-    public void tearDown(){
-        tini();
-    }
-
     @Test
     public void createShouldStoreAndReturnTheEnvelope() {
         Stash payload = stash("name", "Create Test", "count", 3);
         Instant now = Instant.now();
-        List<String> tokens = List.of("TOKEN");
+        List<String> tokens = list("TOKEN");
 
         Envelope result = repository.create(new Envelope(null, payload, null, false, null), tokens);
 
@@ -48,7 +44,7 @@ public abstract class RepositoryCertification {
     @Test
     public void readShouldRetrieveAnExistingEnvelopeById() {
         Stash payload = stash("name", "Read Test", "count", 51);
-        List<String> tokens = List.of("TOKEN");
+        List<String> tokens = list("TOKEN");
 
         Envelope createResult = repository.create(new Envelope(null, payload, null, false, null), tokens);
         String id = createResult.id();
@@ -61,24 +57,24 @@ public abstract class RepositoryCertification {
 
     @Test
     public void listShouldRetrieveAllCreatedEnvelopes() {
-        List<Envelope> envelopes = List.of(
+        List<Envelope> envelopes = list(
                 new Envelope(null, stash("name", "test1", "count", 4), null, false, null),
                 new Envelope(null, stash("name", "test2", "count", 45), null, false, null),
                 new Envelope(null, stash("name", "test3", "count", 2), null, false, null));
-        List<String> tokens = List.of("TOKEN");
+        List<String> tokens = list("TOKEN");
 
         for (Envelope e : envelopes) {
             repository.create(e, tokens);
         }
 
         List<Envelope> result = repository.list(tokens);
-        assertTrue(result.size() >= envelopes.size());
+        assertEquals(3,result.size());
     }
 
     @Test
     public void removeShouldDeleteAnEnvelopeById() {
         Stash payload = stash("name", "Remove Test", "count", 51);
-        List<String> tokens = List.of("TOKEN");
+        List<String> tokens = list("TOKEN");
 
         Envelope createResult = repository.create(new Envelope(null, payload, null, false, null), tokens);
         String id = createResult.id();
@@ -92,7 +88,7 @@ public abstract class RepositoryCertification {
 
     @Test
     public void createManyShouldStoreMultipleEnvelopes() {
-        List<Envelope> envelopes = List.of(
+        List<Envelope> envelopes = list(
                 new Envelope(null, stash("name", "test1", "count", 4), null, false, null),
                 new Envelope(null, stash("name", "test2", "count", 45), null, false, null),
                 new Envelope(null, stash("name", "test3", "count", 2), null, false, null));
@@ -104,11 +100,11 @@ public abstract class RepositoryCertification {
 
     @Test
     public void readManyShouldRetrieveMultipleEnvelopesByIds() {
-        List<Envelope> envelopes = List.of(
+        List<Envelope> envelopes = list(
                 new Envelope(null, stash("name", "test1", "count", 4), null, false, null),
                 new Envelope(null, stash("name", "test2", "count", 45), null, false, null),
                 new Envelope(null, stash("name", "test3", "count", 2), null, false, null));
-        List<String> tokens = List.of("TOKEN");
+        List<String> tokens = list("TOKEN");
 
         List<Envelope> createResult = repository.createMany(envelopes, tokens);
         List<String> ids = createResult.subList(0, 2).stream()
@@ -121,16 +117,14 @@ public abstract class RepositoryCertification {
 
     @Test
     public void removeManyShouldDeleteMultipleEnvelopesByIds() {
-        List<Envelope> envelopes = List.of(
+        List<Envelope> envelopes = list(
                 new Envelope(null, stash("name", "test1", "count", 4), null, false, null),
                 new Envelope(null, stash("name", "test2", "count", 45), null, false, null),
                 new Envelope(null, stash("name", "test3", "count", 2), null, false, null));
         List<String> tokens = List.of("TOKEN");
 
         List<Envelope> createResult = repository.createMany(envelopes, tokens);
-        List<String> ids = createResult.stream()
-                .map(Envelope::id)
-                .toList();
+        List<String> ids = map(createResult, Envelope::id);
 
         List<String> toDelete = ids.subList(0, 2);
         Map<String, Boolean> result = repository.removeMany(toDelete, tokens);
@@ -178,7 +172,7 @@ public abstract class RepositoryCertification {
 
     @Test
     public void shouldOnlyListTheLatestVersionOfAnId() throws InterruptedException {
-        List<String> tokens = List.of("TOKEN");
+        List<String> tokens = list("TOKEN");
 
         Envelope doc1 = repository.create(
                 new Envelope(null, stash("version", "v1", "msg", "First version"), null, false, null),
@@ -194,12 +188,9 @@ public abstract class RepositoryCertification {
 
         List<Envelope> allDocs = repository.list(tokens);
 
-        // Find our document in the list
-        Optional<Envelope> ourDoc = allDocs.stream()
-                .filter(e -> e.id().equals(doc1.id()))
-                .findFirst();
+        Envelope ourDoc = first(filter(allDocs, e -> e.id().equals(doc1.id())));
 
-        assertTrue(ourDoc.isPresent());
-        assertEquals("v2", ourDoc.get().payload().get("version"));
+        assertNotNull(ourDoc);
+        assertEquals("v2", ourDoc.payload().get("version"));
     }
 }
