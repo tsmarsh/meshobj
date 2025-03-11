@@ -5,7 +5,6 @@ import com.meshql.core.Envelope;
 import com.meshql.core.Repository;
 import com.meshql.core.Searcher;
 import com.tailoredshapes.stash.Stash;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,53 +17,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class SearcherCertification {
 
-    public interface TestFactory {
-        InitResult init() throws Exception;
-        void tearDown() throws Exception;
+    public record SearcherTemplates(
+            Template findById,
+            Template findByName,
+            Template findAllByType,
+            Template findByNameAndType) {
     }
 
-    public static class InitResult {
-        public final Repository repository;
-        public final Searcher searcher;
+    public SearcherTemplates templates;
+    public List<String> tokens = list("TOKEN");
+    public Repository repository;
+    public Searcher searcher;
+    public List<Envelope> saved = new ArrayList<>();
 
-        public InitResult(Repository repository, Searcher searcher) {
-            this.repository = repository;
-            this.searcher = searcher;
-        }
-    }
+    public abstract void init();
 
-    public static class SearcherTemplates {
-        public final Template findById;
-        public final Template findByName;
-        public final Template findAllByType;
-        public final Template findByNameAndType;
-
-        public SearcherTemplates(
-                Template findById,
-                Template findByName,
-                Template findAllByType,
-                Template findByNameAndType
-        ) {
-            this.findById = findById;
-            this.findByName = findByName;
-            this.findAllByType = findAllByType;
-            this.findByNameAndType = findByNameAndType;
-        }
-    }
-
-    private final TestFactory factory;
-    private final SearcherTemplates templates;
-    private final List<String> tokens;
-    private Searcher searcher;
-    private List<Envelope> saved = new ArrayList<>();
-
-    public SearcherCertification(TestFactory factory, SearcherTemplates templates, List<String> tokens) {
-        this.factory = factory;
-        this.templates = templates;
-        this.tokens = tokens != null ? tokens : List.of("TOKEN");
-    }
-
-    abstract InitResult init();
     @BeforeEach
     public void setUp() throws Exception {
         List<Envelope> testData = List.of(
@@ -80,9 +47,7 @@ public abstract class SearcherCertification {
                 new Envelope(null,stash("name", "Casie", "count", 9, "type", "A"), null, false, list())
         );
 
-        InitResult initResult = init();
-        Repository repository = initResult.repository;
-        searcher = initResult.searcher;
+        init();
 
         saved = repository.createMany(new ArrayList<>(testData), tokens);
 
@@ -106,11 +71,9 @@ public abstract class SearcherCertification {
                 false,
                 tokens
         );
+
         repository.create(updatedCass, tokens);
     }
-
-    @AfterEach
-    public abstract void tearDown() throws Exception;
 
     @Test
     public void shouldReturnEmptyResultForNonExistentId() {

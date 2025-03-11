@@ -42,6 +42,13 @@
             <version>4.3.0</version>
         </dependency>
         
+        <!-- Handlebars for templating -->
+        <dependency>
+            <groupId>com.github.jknack</groupId>
+            <artifactId>handlebars</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+        
         <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -61,6 +68,18 @@
             <groupId>de.bwaldvogel</groupId>
             <artifactId>mongo-java-server</artifactId>
             <version>1.45.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.meshql</groupId>
+            <artifactId>noop</artifactId>
+            <version>0.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.meshql</groupId>
+            <artifactId>noop</artifactId>
+            <version>0.2.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

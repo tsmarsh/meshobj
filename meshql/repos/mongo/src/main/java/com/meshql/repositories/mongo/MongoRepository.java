@@ -6,7 +6,6 @@ import com.meshql.core.Repository;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.*;
-import com.tailoredshapes.stash.Stash;
 import com.tailoredshapes.underbar.ocho.UnderBar;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -17,6 +16,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.meshql.repositories.mongo.Converters.documentToEnvelope;
+import static com.meshql.repositories.mongo.Converters.envelopeToDocument;
 import static com.tailoredshapes.underbar.ocho.UnderBar.filter;
 import static com.tailoredshapes.underbar.ocho.UnderBar.map;
 
@@ -46,97 +47,6 @@ public class MongoRepository implements Repository {
             return Filters.and(filter, Filters.in("authorizedTokens", tokens));
         }
         return filter;
-    }
-
-    /**
-     * Converts a MongoDB Document to an Envelope.
-     *
-     * @param doc MongoDB Document
-     * @return Envelope object
-     */
-    private Envelope documentToEnvelope(Document doc) {
-        if (doc == null) {
-            return null;
-        }
-
-        String id = doc.getString("id");
-        Instant createdAt = doc.getDate("createdAt").toInstant();
-        boolean deleted = doc.getBoolean("deleted", false);
-
-        // Convert MongoDB Document to Stash
-        Document payloadDoc = doc.get("payload", Document.class);
-        Stash payload = payloadDoc != null ? documentToStash(payloadDoc) : null;
-
-        // Get authorized tokens
-        List<String> authorizedTokens = doc.getList("authorizedTokens", String.class, Collections.emptyList());
-
-        return new Envelope(id, payload, createdAt, deleted, authorizedTokens);
-    }
-
-    /**
-     * Converts a MongoDB Document to a Stash object.
-     *
-     * @param doc MongoDB Document
-     * @return Stash object
-     */
-    private Stash documentToStash(Document doc) {
-        Map<String, Object> map = new HashMap<>();
-        for (String key : doc.keySet()) {
-            Object value = doc.get(key);
-            if (value instanceof Document) {
-                map.put(key, documentToStash((Document) value));
-            } else {
-                map.put(key, value);
-            }
-        }
-        // Create a new Stash with the map contents
-        Stash stash = new Stash();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            stash.put(entry.getKey(), entry.getValue());
-        }
-        return stash;
-    }
-
-    /**
-     * Converts an Envelope to a MongoDB Document.
-     *
-     * @param envelope Envelope to convert
-     * @return MongoDB Document
-     */
-    private Document envelopeToDocument(Envelope envelope) {
-        Document doc = new Document();
-        doc.put("id", envelope.id());
-        doc.put("createdAt", Date.from(envelope.createdAt()));
-        doc.put("deleted", envelope.deleted());
-
-        if (envelope.authorizedTokens() != null) {
-            doc.put("authorizedTokens", envelope.authorizedTokens());
-        }
-
-        if (envelope.payload() != null) {
-            doc.put("payload", stashToDocument(envelope.payload()));
-        }
-
-        return doc;
-    }
-
-    /**
-     * Converts a Stash object to a MongoDB Document.
-     *
-     * @param stash Stash to convert
-     * @return MongoDB Document
-     */
-    private Document stashToDocument(Stash stash) {
-        Document doc = new Document();
-        for (String key : stash.keySet()) {
-            Object value = stash.get(key);
-            if (value instanceof Stash) {
-                doc.put(key, stashToDocument((Stash) value));
-            } else {
-                doc.put(key, value);
-            }
-        }
-        return doc;
     }
 
     @Override
@@ -235,7 +145,7 @@ public class MongoRepository implements Repository {
                     Aggregates.replaceRoot("$doc"))).into(new ArrayList<>());
 
             return results.stream()
-                    .map(this::documentToEnvelope)
+                    .map(Converters::documentToEnvelope)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
         } catch (Exception e) {
@@ -282,7 +192,7 @@ public class MongoRepository implements Repository {
                     Aggregates.group("$id", new BsonField("doc", new Document("$first", "$$ROOT"))),
                     Aggregates.replaceRoot("$doc"))).into(new ArrayList<>());
 
-            return filter(map(results, this::documentToEnvelope), Objects::nonNull);
+            return filter(map(results, Converters::documentToEnvelope), Objects::nonNull);
 
         } catch (Exception e) {
             logger.error("Error listing documents: {}", e.getMessage(), e);
