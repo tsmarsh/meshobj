@@ -1,6 +1,7 @@
-package com.meshql.repositories.rdbms;
+package com.meshql.repositories.postgres;
 
 import com.meshql.core.Auth;
+import com.meshql.repositories.rdbms.RDBMSSearcher;
 
 import javax.sql.DataSource;
 

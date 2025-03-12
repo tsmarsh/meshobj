@@ -18,5 +18,6 @@
         <module>rdbms</module>
         <module>certification</module>
         <module>memory</module>
+        <module>postgres</module>
     </modules>
 </project>

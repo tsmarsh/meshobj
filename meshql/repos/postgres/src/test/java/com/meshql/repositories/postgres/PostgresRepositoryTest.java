@@ -1,4 +1,4 @@
-package com.meshql.repositories.rdbms;
+package com.meshql.repositories.postgres;
 
 import com.meshql.repos.certification.RepositoryCertification;
 import org.junit.jupiter.api.AfterAll;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RDBMSRepositoryTest extends RepositoryCertification {
+public class PostgresRepositoryTest extends RepositoryCertification {
 
     @Container
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -57,7 +57,7 @@ public class RDBMSRepositoryTest extends RepositoryCertification {
             String tableName = "test" + (++testCounter);
 
             // Create and initialize the repository
-            RDBMSRepository postgresRepository = new PostgresRespository(dataSource, tableName);
+            PostgresRespository postgresRepository = new PostgresRespository(dataSource, tableName);
             postgresRepository.initialize();
             repository = postgresRepository;
         } catch (SQLException e) {

@@ -1,6 +1,7 @@
-package com.meshql.repositories.rdbms;
+package com.meshql.repositories.postgres;
 
 import com.github.jknack.handlebars.Template;
+import com.meshql.repositories.rdbms.RDBMSRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

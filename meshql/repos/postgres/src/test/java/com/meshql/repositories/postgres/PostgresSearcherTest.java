@@ -1,4 +1,4 @@
-package com.meshql.repositories.rdbms;
+package com.meshql.repositories.postgres;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RDBMSSearcherTest extends SearcherCertification {
+public class PostgresSearcherTest extends SearcherCertification {
 
     @Container
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -63,7 +63,7 @@ public class RDBMSSearcherTest extends SearcherCertification {
             String tableName = "test" + (++testCounter);
 
             // Create and initialize the repository
-            RDBMSRepository postgresRepository = new PostgresRespository(dataSource, tableName);
+            PostgresRespository postgresRepository = new PostgresRespository(dataSource, tableName);
             postgresRepository.initialize();
             repository = postgresRepository;
 
