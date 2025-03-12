@@ -63,7 +63,7 @@ public class RDBMSSearcherTest extends SearcherCertification {
             String tableName = "test" + (++testCounter);
 
             // Create and initialize the repository
-            RDBMSRepository postgresRepository = new RDBMSRepository(dataSource, tableName);
+            RDBMSRepository postgresRepository = new PostgresRespository(dataSource, tableName);
             postgresRepository.initialize();
             repository = postgresRepository;
 

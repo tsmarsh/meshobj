@@ -57,7 +57,7 @@ public class RDBMSRepositoryTest extends RepositoryCertification {
             String tableName = "test" + (++testCounter);
 
             // Create and initialize the repository
-            RDBMSRepository postgresRepository = new RDBMSRepository(dataSource, tableName);
+            RDBMSRepository postgresRepository = new PostgresRespository(dataSource, tableName);
             postgresRepository.initialize();
             repository = postgresRepository;
         } catch (SQLException e) {
