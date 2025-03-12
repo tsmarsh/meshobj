@@ -22,6 +22,8 @@ import static com.meshql.repositories.rdbms.Converters.*;
 /**
  * PostgreSQL implementation of the Repository interface.
  */
+
+
 public abstract class RDBMSRepository implements Repository {
     private static final Logger logger = LoggerFactory.getLogger(RDBMSRepository.class);
     private static final int MAX_RETRIES = 5;
@@ -30,7 +32,22 @@ public abstract class RDBMSRepository implements Repository {
     private final DataSource dataSource;
     private final String tableName;
     public  final Handlebars handlebars;
-    private final Map<String, Template> sqlTemplates;
+    private final RequiredTemplates sqlTemplates;
+
+    public record RequiredTemplates(
+            Template createExtension,
+            Template createTable,
+            Template createIdIndex,
+            Template createCreatedAtIndex,
+            Template createDeletedIndex,
+            Template createTokensIndex,
+            Template insert,
+            Template read,
+            Template readMany,
+            Template remove,
+            Template removeMany,
+            Template list
+    ){ };
 
     /**
      * Constructor for PostgresRepository.
@@ -46,7 +63,7 @@ public abstract class RDBMSRepository implements Repository {
         this.sqlTemplates = initializeTemplates();
     }
 
-    public abstract Map<String, Template> initializeTemplates();
+    public abstract RequiredTemplates initializeTemplates();
 
     /**
      * Initializes the database schema.
@@ -61,16 +78,16 @@ public abstract class RDBMSRepository implements Repository {
             context.put("tableName", tableName);
 
             // Create UUID extension if it doesn't exist
-            stmt.execute(sqlTemplates.get("createExtension").apply(context));
+            stmt.execute(sqlTemplates.createExtension().apply(context));
 
             // Create table if it doesn't exist
-            stmt.execute(sqlTemplates.get("createTable").apply(context));
+            stmt.execute(sqlTemplates.createTable().apply(context));
 
             // Create indexes
-            stmt.execute(sqlTemplates.get("createIdIndex").apply(context));
-            stmt.execute(sqlTemplates.get("createCreatedAtIndex").apply(context));
-            stmt.execute(sqlTemplates.get("createDeletedIndex").apply(context));
-            stmt.execute(sqlTemplates.get("createTokensIndex").apply(context));
+            stmt.execute(sqlTemplates.createIdIndex().apply(context));
+            stmt.execute(sqlTemplates.createCreatedAtIndex().apply(context));
+            stmt.execute(sqlTemplates.createDeletedIndex().apply(context));
+            stmt.execute(sqlTemplates.createTokensIndex().apply(context));
 
             logger.info("Initialized PostgreSQL repository with table: {}", tableName);
         } catch (IOException e) {
@@ -99,7 +116,7 @@ public abstract class RDBMSRepository implements Repository {
             Map<String, Object> context = new HashMap<>();
             context.put("tableName", tableName);
 
-            String sql = sqlTemplates.get("insert").apply(context);
+            String sql = sqlTemplates.insert().apply(context);
 
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -162,7 +179,7 @@ public abstract class RDBMSRepository implements Repository {
             context.put("tableName", tableName);
             context.put("hasTokens", tokens != null && !tokens.isEmpty());
 
-            String sql = sqlTemplates.get("read").apply(context);
+            String sql = sqlTemplates.read().apply(context);
 
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -203,7 +220,7 @@ public abstract class RDBMSRepository implements Repository {
             context.put("tableName", tableName);
             context.put("hasTokens", tokens != null && !tokens.isEmpty());
 
-            String sql = sqlTemplates.get("readMany").apply(context);
+            String sql = sqlTemplates.readMany().apply(context);
 
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -236,7 +253,7 @@ public abstract class RDBMSRepository implements Repository {
             context.put("tableName", tableName);
             context.put("hasTokens", tokens != null && !tokens.isEmpty());
 
-            String sql = sqlTemplates.get("remove").apply(context);
+            String sql = sqlTemplates.remove().apply(context);
 
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -271,7 +288,7 @@ public abstract class RDBMSRepository implements Repository {
             context.put("tableName", tableName);
             context.put("hasTokens", tokens != null && !tokens.isEmpty());
 
-            String sql = sqlTemplates.get("removeMany").apply(context);
+            String sql = sqlTemplates.removeMany().apply(context);
 
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -321,7 +338,7 @@ public abstract class RDBMSRepository implements Repository {
             context.put("tableName", tableName);
             context.put("hasTokens", tokens != null && !tokens.isEmpty());
 
-            String sql = sqlTemplates.get("list").apply(context);
+            String sql = sqlTemplates.list().apply(context);
 
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
