@@ -10,8 +10,4 @@ public class MemoryRepositoryCertificationTest extends RepositoryCertification {
         this.repository = new InMemoryRepository();
     }
 
-    @Override
-    public void tini() {
-
-    }
 }

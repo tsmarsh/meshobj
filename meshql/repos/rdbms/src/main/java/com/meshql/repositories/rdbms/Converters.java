@@ -1,4 +1,4 @@
-package com.meshql.repositories.postgres;
+package com.meshql.repositories.rdbms;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

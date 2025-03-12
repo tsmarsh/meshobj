@@ -1,4 +1,4 @@
-package com.meshql.repositories.postgres;
+package com.meshql.repositories.rdbms;
 
 import com.github.jknack.handlebars.Template;
 import com.meshql.core.Auth;
@@ -16,15 +16,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.meshql.repositories.postgres.Converters.resultSetToEnvelope;
-import static com.tailoredshapes.underbar.ocho.UnderBar.filter;
-import static com.tailoredshapes.underbar.ocho.UnderBar.map;
+import static com.meshql.repositories.rdbms.Converters.resultSetToEnvelope;
 
 /**
  * PostgreSQL implementation of the Searcher interface.
  */
-public class PostgresSearcher implements Searcher {
-    private static final Logger logger = LoggerFactory.getLogger(PostgresSearcher.class);
+public abstract class RDBMSSearcher implements Searcher {
+    private static final Logger logger = LoggerFactory.getLogger(RDBMSSearcher.class);
 
     private final DataSource dataSource;
     private final String tableName;
@@ -33,23 +31,12 @@ public class PostgresSearcher implements Searcher {
     /**
      * SQL template for finding a single record.
      */
-    private static final String SINGLETON_QUERY_TEMPLATE = "SELECT * " +
-            "FROM %s " +
-            "WHERE %s " +
-            "  AND created_at <= ? " +
-            "  AND deleted = false " +
-            "ORDER BY created_at DESC " +
-            "LIMIT 1";
+    private final String SINGLETON_QUERY_TEMPLATE;
 
     /**
      * SQL template for finding multiple records.
      */
-    private static final String VECTOR_QUERY_TEMPLATE = "SELECT DISTINCT ON (id) * " +
-            "FROM %s " +
-            "WHERE %s " +
-            "  AND created_at <= ? " +
-            "  AND deleted = false " +
-            "ORDER BY id, created_at DESC";
+    private final String VECTOR_QUERY_TEMPLATE;
 
     /**
      * Constructor for PostgresSearcher.
@@ -58,7 +45,9 @@ public class PostgresSearcher implements Searcher {
      * @param tableName  Name of the table to search
      * @param authorizer Authorization service
      */
-    public PostgresSearcher(DataSource dataSource, String tableName, Auth authorizer) {
+    public RDBMSSearcher(String singletonTemplate, String vectorTemplate, DataSource dataSource, String tableName, Auth authorizer) {
+        this.SINGLETON_QUERY_TEMPLATE = singletonTemplate;
+        this.VECTOR_QUERY_TEMPLATE = vectorTemplate;
         this.dataSource = dataSource;
         this.tableName = tableName;
         this.authorizer = authorizer;

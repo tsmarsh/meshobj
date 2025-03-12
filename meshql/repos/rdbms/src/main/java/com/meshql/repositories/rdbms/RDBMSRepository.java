@@ -1,9 +1,8 @@
-package com.meshql.repositories.postgres;
+package com.meshql.repositories.rdbms;
 
 import com.fasterxml.uuid.Generators;
 import com.meshql.core.Envelope;
 import com.meshql.core.Repository;
-import com.tailoredshapes.stash.Stash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,14 +12,13 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static com.meshql.repositories.postgres.Converters.*;
-import static com.tailoredshapes.underbar.ocho.UnderBar.*;
+import static com.meshql.repositories.rdbms.Converters.*;
 
 /**
  * PostgreSQL implementation of the Repository interface.
  */
-public class PostgresRepository implements Repository {
-    private static final Logger logger = LoggerFactory.getLogger(PostgresRepository.class);
+public class RDBMSRepository implements Repository {
+    private static final Logger logger = LoggerFactory.getLogger(RDBMSRepository.class);
     private static final int MAX_RETRIES = 5;
     private static final long RETRY_DELAY_MS = 2;
 
@@ -33,7 +31,7 @@ public class PostgresRepository implements Repository {
      * @param dataSource DataSource for database connections
      * @param tableName  Name of the table to use for storage
      */
-    public PostgresRepository(DataSource dataSource, String tableName) {
+    public RDBMSRepository(DataSource dataSource, String tableName) {
         this.dataSource = dataSource;
         this.tableName = tableName;
     }

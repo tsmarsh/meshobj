@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>postgres</artifactId>
+    <artifactId>rdbms</artifactId>
 
     <dependencies>
         <!-- Core module dependency -->

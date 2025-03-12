@@ -1,12 +1,6 @@
-package com.meshql.repositories.postgres;
+package com.meshql.repositories.rdbms;
 
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-import com.meshql.auth.noop.NoAuth;
-import com.meshql.core.Auth;
-import com.meshql.core.Repository;
-import com.meshql.core.Searcher;
-import com.meshql.repos.certification.SearcherCertification;
+import com.meshql.repos.certification.RepositoryCertification;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -16,17 +10,16 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test class for PostgresSearcher using Testcontainers.
+ * Test class for PostgresRepository using Testcontainers.
  */
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PostgresSearcherTest extends SearcherCertification {
+public class RDBMSRepositoryTest extends RepositoryCertification {
 
     @Container
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -36,7 +29,6 @@ public class PostgresSearcherTest extends SearcherCertification {
 
     private final List<DataSource> dataSources = new ArrayList<>();
     private int testCounter = 0;
-    private final Handlebars handlebars = new Handlebars();
 
     @BeforeAll
     public static void startContainer() {
@@ -65,31 +57,12 @@ public class PostgresSearcherTest extends SearcherCertification {
             String tableName = "test" + (++testCounter);
 
             // Create and initialize the repository
-            PostgresRepository postgresRepository = new PostgresRepository(dataSource, tableName);
+            RDBMSRepository postgresRepository = new RDBMSRepository(dataSource, tableName);
             postgresRepository.initialize();
             repository = postgresRepository;
-
-            // Create the searcher with NoAuth
-            Auth noAuth = new NoAuth();
-            searcher = new PostgresSearcher(dataSource, tableName, noAuth);
-
-            // Create the templates
-            templates = createTemplates();
-
-        } catch (SQLException | IOException e) {
-            throw new RuntimeException("Failed to initialize PostgreSQL searcher test", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to initialize PostgreSQL repository", e);
         }
-    }
-
-    private SearcherTemplates createTemplates() throws IOException {
-        Template findById = handlebars.compileInline("id = '{{id}}'");
-        Template findByName = handlebars.compileInline("payload->>'name' = '{{id}}'");
-        Template findAllByType = handlebars
-                .compileInline("payload->>'type' = '{{id}}'");
-        Template findByNameAndType = handlebars.compileInline(
-                "payload->>'type' = '{{type}}' AND payload->>'name' = '{{name}}'");
-
-        return new SearcherTemplates(findById, findByName, findAllByType, findByNameAndType);
     }
 
     @AfterAll
