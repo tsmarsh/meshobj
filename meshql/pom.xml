@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.meshobj</groupId>
+    <groupId>com.meshql</groupId>
     <artifactId>meshql</artifactId>
     <version>0.2.0</version>
     <packaging>pom</packaging>
@@ -18,7 +18,6 @@
         <module>auth</module>
         <module>repos</module>
         <module>server</module>
-        <module>cli</module>
     </modules>
 
     <properties>

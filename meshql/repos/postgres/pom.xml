@@ -7,6 +7,7 @@
         <groupId>com.meshql</groupId>
         <artifactId>repos</artifactId>
         <version>0.2.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>postgres</artifactId>
@@ -71,13 +72,6 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>2.16.1</version>
-    </dependency>
-
-    <!-- Testing -->
-    <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <scope>test</scope>
     </dependency>
 
     <!-- Repository Certification -->

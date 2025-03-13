@@ -8,6 +8,7 @@
         <groupId>com.meshql</groupId>
         <artifactId>meshql</artifactId>
         <version>0.2.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>core</artifactId>
@@ -17,11 +18,6 @@
             <groupId>com.github.jknack</groupId>
             <artifactId>handlebars</artifactId>
             <version>4.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.tailoredshapes</groupId>
