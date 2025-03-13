@@ -2,13 +2,13 @@
     "name": "meshobj",
     "private": true,
     "workspaces": [
-        "packages/*",
+        "ts/*",
         "examples/*"
     ],
     "version": "0.1.0",
     "scripts": {
-        "clean": "rimraf \"packages/*/dist\" && rimraf \"examples/*/dist\"",
-        "clean:all": "rimraf \"packages/*/dist\" && rimraf \"examples/*/dist\" && rimraf \"node_modules\" && rimraf \"packages/*/node_modules\" && rimraf \"examples/*/node_modules\"",
+        "clean": "rimraf \"ts/*/dist\" && rimraf \"examples/*/dist\"",
+        "clean:all": "rimraf \"ts/*/dist\" && rimraf \"examples/*/dist\" && rimraf \"node_modules\" && rimraf \"ts/*/node_modules\" && rimraf \"examples/*/node_modules\"",
         "build": "lerna run build",
         "qb": "lerna run build --since main",
         "test": "yarn vitest --run --coverage --reporter=basic --reporter=junit --outputFile=test-report.junit.xml",
@@ -18,7 +18,7 @@
         "lint:fix": "eslint . --fix",
         "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
         "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-        "start": "node packages/server/dist/cli.js --config config/config.conf",
+        "start": "node ts/server/dist/cli.js --config config/config.conf",
         "publish": "lerna publish --no-private"
     },
     "dependencies": {
