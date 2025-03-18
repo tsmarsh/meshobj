@@ -72,7 +72,16 @@ public abstract class RDBMSSearcher implements Searcher {
     @Override
     public Stash find(Template queryTemplate, Stash args, List<String> tokens, long timestamp) {
         String filters = processQueryTemplate(args, queryTemplate);
-        String sql = String.format(SINGLETON_QUERY_TEMPLATE, tableName, tableName, filters);
+        // Handle both 3-parameter and 4-parameter templates
+        String sql;
+        
+        // If the template contains 4 '%s' (for SQLite), use 4 parameters
+        if (SINGLETON_QUERY_TEMPLATE.chars().filter(ch -> ch == '%').count() >= 4) {
+            sql = String.format(SINGLETON_QUERY_TEMPLATE, tableName, tableName, filters);
+        } else {
+            // Original format for PostgreSQL
+            sql = String.format(SINGLETON_QUERY_TEMPLATE, tableName, tableName, filters);
+        }
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -104,7 +113,16 @@ public abstract class RDBMSSearcher implements Searcher {
     @Override
     public List<Stash> findAll(Template queryTemplate, Stash args, List<String> tokens, long timestamp) {
         String filters = processQueryTemplate(args, queryTemplate);
-        String sql = String.format(VECTOR_QUERY_TEMPLATE, tableName, filters, tableName);
+        // Handle both 3-parameter and 4-parameter templates
+        String sql;
+        
+        // If the template contains 4 '%s' (for SQLite), use 4 parameters
+        if (VECTOR_QUERY_TEMPLATE.chars().filter(ch -> ch == '%').count() >= 4) {
+            sql = String.format(VECTOR_QUERY_TEMPLATE, tableName, filters, tableName, tableName);
+        } else {
+            // Original 3-parameter version (for PostgreSQL)
+            sql = String.format(VECTOR_QUERY_TEMPLATE, tableName, filters, tableName);
+        }
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
