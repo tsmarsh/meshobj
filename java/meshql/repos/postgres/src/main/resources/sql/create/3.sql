@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS idx_{{tableName}}_id ON {{tableName}} (id);

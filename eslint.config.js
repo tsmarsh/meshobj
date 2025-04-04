@@ -11,13 +11,13 @@ export default [
             '**/node_modules/**',
             '**/*.js', // Ignore compiled output
             '**/coverage/**',
-            'vitest.workspace.ts',
-            '**/vitest.config.ts',
+            'vitest.workspace.packages',
+            '**/vitest.config.packages',
             '**/test/**',
         ],
     },
     {
-        files: ['**/*.ts'],
+        files: ['**/*.packages'],
         languageOptions: {
             parser: tsparser,
             parserOptions: {
@@ -45,7 +45,7 @@ export default [
     },
     // Test files specific configuration
     {
-        files: ['**/*.test.ts', '**/*.spec.ts'],
+        files: ['**/*.test.packages', '**/*.spec.packages'],
         languageOptions: {
             globals: {
                 ...globals.jest,

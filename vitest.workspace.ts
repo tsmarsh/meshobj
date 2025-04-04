@@ -1,3 +1,3 @@
 import { defineWorkspace } from 'vitest/config';
 
-export default defineWorkspace(['./ts/*/vitest.config.ts']);
+export default defineWorkspace(['./packages/*/vitest.config.packages']);

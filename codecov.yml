@@ -38,13 +38,13 @@ coverage:
         target: 80%
 
 ignore:
-  - "**/index.ts"
-  - "**/cli.ts"
+  - "**/index.packages"
+  - "**/cli.packages"
   - "**/auth/**/*"
   - "examples/**/*"
   - "**/test/**/*"
-  - "**/*.test.ts"
-  - "**/*.spec.ts"
+  - "**/*.test.packages"
+  - "**/*.spec.packages"
   - "**/*.js"
   - "**/*.jsx"
   - "**/*.mjs"
