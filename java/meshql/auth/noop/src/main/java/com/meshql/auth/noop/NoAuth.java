@@ -3,6 +3,7 @@ package com.meshql.auth.noop;
 import com.meshql.core.Auth;
 import com.meshql.core.Envelope;
 import com.tailoredshapes.stash.Stash;
+import spark.Request;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class NoAuth implements Auth {
     }
 
     @Override
-    public List<String> getAuthToken(Stash context) {
+    public List<String> getAuthToken(Request context) {
         return tokens;
     }
 

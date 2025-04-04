@@ -44,7 +44,7 @@ public class CrudHandler {
     public Stash create(Request request, Response response) {
         try {
             Stash payload = Stash.parseJSON(request.body());
-            List<String> authTokens = authorizer.getAuthToken(payload);
+            List<String> authTokens = authorizer.getAuthToken(request);
 
             boolean isValid = validator.validate(payload).get();
             if (!isValid) {
@@ -62,7 +62,7 @@ public class CrudHandler {
                     authTokens);
 
             Envelope result = repository.create(envelope, tokens);
-            response.status(201);
+            response.redirect(request.pathInfo() +"/"+ id);
             return result.payload();
         } catch (Exception e) {
             logger.error("Failed to create resource", e);
@@ -88,6 +88,7 @@ public class CrudHandler {
 
             }
 
+            response.header("X-Canonical-Id", envelope.get().id());
             return envelope.get().payload();
         } catch (Exception e) {
             logger.error("Failed to read resource", e);
@@ -262,7 +263,7 @@ public class CrudHandler {
             if (authHeader != null && !authHeader.isEmpty()) {
                 Stash context = new Stash();
                 context.put("headers", Map.of("authorization", authHeader));
-                return authorizer.getAuthToken(context);
+                return authorizer.getAuthToken(request);
             }
             return List.of();
         } catch (Exception e) {

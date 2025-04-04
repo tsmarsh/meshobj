@@ -27,6 +27,10 @@ public class JSONSchemaValidator implements Validator {
         this.schema = factory.getSchema(schemaNode);
     }
 
+    public JSONSchemaValidator(JsonSchema schema){
+        this.schema = schema;
+    }
+
     @Override
     public CompletableFuture<Boolean> validate(Stash data) {
         try {

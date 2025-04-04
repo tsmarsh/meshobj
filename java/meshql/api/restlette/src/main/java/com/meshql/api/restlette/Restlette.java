@@ -1,5 +1,6 @@
 package com.meshql.api.restlette;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.meshql.core.Auth;
 import com.meshql.core.Plugin;
@@ -17,6 +18,8 @@ import spark.Service;
 
 import java.util.Collections;
 import java.util.Map;
+
+import static com.tailoredshapes.underbar.ocho.Die.rethrow;
 
 public class Restlette {
     private static final Logger logger = LoggerFactory.getLogger(Restlette.class);
@@ -51,11 +54,12 @@ public class Restlette {
         sparkService.delete(apiPath + "/:id", crud::remove);
 
         // Setup Swagger documentation
-        OpenAPI openAPI = createSwaggerDocument(apiPath, port, rc.schema());
-        String swaggerJson = openAPI.getOpenapi();
+//        OpenAPI openAPI = createSwaggerDocument(apiPath, port, rc.schema());
 
-        sparkService.get(apiPath + "/api-docs/swagger.json", (req, res) -> swaggerJson, Object::toString);
-        sparkService.get(apiPath + "/api-docs", new SwaggerUIHandler(apiPath), Object::toString);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        sparkService.get(apiPath + "/api-docs/swagger.json", (req, res) -> openAPI, objectMapper::writeValueAsString);
+//        sparkService.get(apiPath + "/api-docs", new SwaggerUIHandler(apiPath), Object::toString);
 
         return sparkService;
     }

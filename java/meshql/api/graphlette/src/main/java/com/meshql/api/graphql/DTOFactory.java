@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.tailoredshapes.stash.Stash.stash;
@@ -50,16 +51,14 @@ public class DTOFactory implements Filler {
                 .collect(Collectors.toList());
     }
 
-    private ResolverFunction assignResolver(String id, String queryName, URI url) {
+    private ResolverFunction assignResolver(Optional<String> id, String queryName, URI url) {
         logger.debug("Assigning resolver for: {}, {}, {}", id, queryName, url);
-        
-        SubgraphClient client = new SubgraphClient();
 
         return (parent, env) -> {
-            Object foreignKey = parent.get(id);
-            if (foreignKey == null) {
+            if (id.isEmpty() || parent.isEmpty(id.get())) {
                 return stash();
             }
+            Object foreignKey = parent.get(id.get());
 
             String query = SubgraphClient.processContext(
                 foreignKey.toString(),
@@ -69,7 +68,7 @@ public class DTOFactory implements Filler {
             );
 
             String authHeader = extractAuthHeader(env);
-            return client.callSubgraph(url, query, queryName, authHeader);
+            return SubgraphClient.fetch(url, query, queryName, authHeader);
         };
     }
 

@@ -11,6 +11,7 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.Request;
 
 import java.util.HashMap;
 import java.util.List;
@@ -66,8 +67,9 @@ public class Root {
         String name = config.name();
 
         return (DataFetchingEnvironment environment) -> {
+            Request request = environment.getLocalContext();
             Stash args = new Stash(environment.getArguments());
-            List<String> authToken = authorizer.getAuthToken(args);
+            List<String> authToken = authorizer.getAuthToken(request);
 
             long timestamp = getTimestamp(args);
 
@@ -102,9 +104,9 @@ public class Root {
 
         return (DataFetchingEnvironment environment) -> {
             Stash args = new Stash(environment.getArguments());
-//            GraphQLContext graphQLContext = environment.getGraphQlContext();
+            Request request = environment.getLocalContext();
 
-            List<String> authToken = authorizer.getAuthToken(args);
+            List<String> authToken = authorizer.getAuthToken(request);
 
             long timestamp = getTimestamp(args);
             

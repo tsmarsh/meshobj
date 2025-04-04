@@ -13,11 +13,13 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import static com.tailoredshapes.stash.Stash.stash;
 import static com.tailoredshapes.underbar.ocho.Die.rethrow;
 import static com.tailoredshapes.underbar.ocho.UnderBar.list;
+import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,7 +34,7 @@ class DTOFactoryTest {
         List<ResolverConfig> config = list(
             new ResolverConfig(
                 "posts",
-                "user",
+                    Optional.of("user"),
                 "userPosts",
                 rethrow(() -> new URI("http://localhost:8080/graphql"))
             )
@@ -96,7 +98,7 @@ class DTOFactoryTest {
         
         // The actual resolver execution would require a running GraphQL server
         // Here we're just verifying the resolver is properly configured
-        Stash future = resolver.resolve(parent, env);
+        Object future = resolver.resolve(parent, env);
         assertNotNull(future);
     }
 }

@@ -16,10 +16,12 @@ import org.mockito.MockitoAnnotations;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.tailoredshapes.stash.Stash.stash;
 import static com.tailoredshapes.underbar.ocho.Die.rethrow;
 import static com.tailoredshapes.underbar.ocho.UnderBar.list;
+import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
@@ -37,13 +39,13 @@ class RootTest {
         MockitoAnnotations.openMocks(this);
 
         List<ResolverConfig> resolvers = list(
-            new ResolverConfig("posts", "user", "userPosts", rethrow(() -> new URI("http://localhost:8080/graphql")))
+            new ResolverConfig("posts", Optional.of("user"), "userPosts", rethrow(() -> new URI("http://localhost:8080/graphql")))
         );
 
         config = new RootConfig(
             resolvers,
-            list(new QueryConfig("user", "SELECT * FROM users WHERE id = {{id}}")),
-            list(new QueryConfig("users", "SELECT * FROM users"))
+            list(new QueryConfig("user", empty(),"SELECT * FROM users WHERE id = {{id}}")),
+            list(new QueryConfig("users", empty(),"SELECT * FROM users"))
         );
 
         dtoFactory = new DTOFactory(resolvers);

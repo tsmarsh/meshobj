@@ -31,6 +31,7 @@ import java.util.Map;
 
 import static com.tailoredshapes.stash.Stash.stash;
 import static com.tailoredshapes.underbar.io.Requests.get;
+import static com.tailoredshapes.underbar.ocho.Die.rethrow;
 import static com.tailoredshapes.underbar.ocho.UnderBar.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -88,10 +89,16 @@ class RestletteIntegrationTest {
 
 //    @Test
 //    void testSwaggerDocsAvailable() {
-//        String docsResponse = get("http://localhost:" + PORT + API_PATH + "/api-docs/swagger.json", Function.identity()).join();
-//
-//        assertNotNull(docsResponse);
-//       assertEquals(API_PATH + " API", docsResponse.asStash("info").asString("title"));
+//        HttpRequest docRequest = HttpRequest.newBuilder()
+//                .uri(URI.create(BASE_URL + "/api-docs/swagger.json"))
+//                .header("Content-Type", "application/json")
+//                .header("Authorization", "test-token")
+//                .GET()
+//                .build();
+//        HttpResponse<String> response = rethrow(() -> httpClient.send(docRequest, HttpResponse.BodyHandlers.ofString()));
+//        assertNotNull(response);
+//        Stash stash = Stash.parseJSON(response.body());
+//        assertEquals("3.0.1", stash.get("openapi"));
 //    }
 
     @Test

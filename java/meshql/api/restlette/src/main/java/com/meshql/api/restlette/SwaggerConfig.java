@@ -1,5 +1,6 @@
 package com.meshql.api.restlette;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonSchema;
 import io.swagger.v3.core.util.Json;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 
+
+import java.util.Map;
 
 import static com.tailoredshapes.underbar.ocho.Die.rethrow;
 
@@ -31,7 +34,7 @@ public class SwaggerConfig {
 
 
         // Add schemas
-        components.addSchemas("State", createSchemaFromJsonSchema(jsonSchema) );
+        components.addSchemas("State", createSchemaFromJsonSchema(jsonSchema));
 
         // Add operation status schema
         components.addSchemas("OperationStatus", new Schema<>()
@@ -65,9 +68,18 @@ public class SwaggerConfig {
     }
 
     public static Schema<?> createSchemaFromJsonSchema(JsonSchema og) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = rethrow(() -> mapper.writeValueAsString(og.getSchemaNode()));
+        try {
+            // Get the underlying schema node
+            JsonNode schemaNode = og.getSchemaNode();
 
-        return rethrow(() -> Json.mapper().readValue(jsonString, Schema.class));
+            // Parse it to intermediate Map representation first
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> schemaMap = mapper.convertValue(schemaNode, Map.class);
+
+            // Now use the Swagger mapper to build a Schema from the Map
+            return io.swagger.v3.core.util.Json.mapper().convertValue(schemaMap, Schema.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to convert JSON schema to Swagger schema", e);
+        }
     }
 }

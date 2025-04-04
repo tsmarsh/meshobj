@@ -1,9 +1,9 @@
 package com.meshql.core;
 
-import com.tailoredshapes.stash.Stash;
+import spark.Request;
 import java.util.List;
 
 public interface Auth {
-    List<String> getAuthToken(Stash context);
+    List<String> getAuthToken(Request context);
     boolean isAuthorized(List<String> credentials, Envelope data);
 } 

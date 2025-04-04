@@ -2,8 +2,10 @@ package com.meshql.api.graphql;
 
 import com.google.gson.Gson;
 import com.meshql.core.Auth;
+import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
+import graphql.scalars.ExtendedScalars;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
@@ -17,6 +19,7 @@ import spark.Service;
 import java.util.Map;
 
 import static com.tailoredshapes.underbar.ocho.UnderBar.each;
+import static com.tailoredshapes.underbar.ocho.UnderBar.hash;
 
 public class Graphlette {
     private static final Gson gson = new Gson();
@@ -30,6 +33,10 @@ public class Graphlette {
         TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
 
         RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring();
+        builder.scalar(ExtendedScalars.Date)
+                .scalar(ExtendedScalars.DateTime)
+                .scalar(ExtendedScalars.Time);
+
         each(fetchers, (t, f) -> {
             builder.type("Query", b -> b.dataFetcher(t, f));
         });
@@ -45,12 +52,18 @@ public class Graphlette {
 
     private Object handleGraphQLRequest(Request request, Response response) {
         response.type("application/json");
-
         try {
             GraphQLRequest graphQLRequest = gson.fromJson(request.body(), GraphQLRequest.class);
 
-            ExecutionResult result = graphQL.execute(graphQLRequest.getQuery());
+            // Create a context map that includes the request object
 
+            // Pass the context when executing the query
+            ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                    .query(graphQLRequest.getQuery())
+                    .localContext(request)
+                    .build();
+
+            ExecutionResult result = graphQL.execute(executionInput);
             return gson.toJson(result.toSpecification());
         } catch (Exception e) {
             response.status(500);

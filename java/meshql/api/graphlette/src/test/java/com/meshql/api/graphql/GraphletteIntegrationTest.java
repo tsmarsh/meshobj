@@ -34,6 +34,7 @@ import java.util.Map;
 import static com.tailoredshapes.stash.Stash.stash;
 import static com.tailoredshapes.underbar.ocho.Die.rethrow;
 import static com.tailoredshapes.underbar.ocho.UnderBar.list;
+import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -91,11 +92,11 @@ class GraphletteIntegrationTest {
         List<ResolverConfig> resolvers = list();
 
         List<QueryConfig> singletons = list(
-                new QueryConfig("testObject", "json_extract(payload, '$.id') = '{{id}}'")
+                new QueryConfig("testObject",empty(), "json_extract(payload, '$.id') = '{{id}}'")
         );
 
         List<QueryConfig> vectors = list(
-                new QueryConfig("getByTitle", "json_extract(payload, '$.title') = '{{title}}'")
+                new QueryConfig("getByTitle", empty(), "json_extract(payload, '$.title') = '{{title}}'")
         );
 
         RootConfig rootConfig = new RootConfig(
