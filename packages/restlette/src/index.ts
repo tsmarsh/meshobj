@@ -4,6 +4,7 @@ import Log4js from 'log4js';
 import swaggerUi, { JsonObject } from 'swagger-ui-express';
 import { Crud } from './crud.js';
 import { paths } from './swagger';
+import { Repository } from '@meshobj/common';
 
 const logger = Log4js.getLogger('meshobj/restlette');
 
@@ -76,9 +77,31 @@ export function init(
     return app;
 }
 
+function createHealthCheck(repo: Repository) {
+    const health = async (_req: express.Request, res: express.Response) => {
+        res.status(200).json({ status: 'ok' });
+    };
+
+    const ready = async (_req: express.Request, res: express.Response) => {
+        try {
+            // Try to perform a simple operation to verify database connection
+            await repo.list();
+            res.status(200).json({ status: 'ok' });
+        } catch (error) {
+            logger.error('Readiness check failed:', error);
+            res.status(503).json({ status: 'error', message: 'Database connection failed' });
+        }
+    };
+
+    return { health, ready };
+}
+
 function createRestletteRouter(apiPath: string, crud: Crud): Router {
     const router = Router();
+    const { health, ready } = createHealthCheck(crud['_repo']);
 
+    router.get('/health', health);
+    router.get('/ready', ready);
     router.post('/bulk', crud.bulk_create);
     router.get('/bulk', crud.bulk_read);
     router.post('/', crud.create);
@@ -92,3 +115,4 @@ function createRestletteRouter(apiPath: string, crud: Crud): Router {
 
 export { JSONSchemaValidator } from './validation';
 export { Crud } from './crud';
+export { createHealthCheck };

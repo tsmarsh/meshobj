@@ -1124,8 +1124,6 @@ __metadata:
     typescript: "npm:^5.7.3"
     vitest: "npm:^2.1.8"
     yargs: "npm:^17.7.2"
-  bin:
-    server: ./dist/cli.js
   languageName: unknown
   linkType: soft
 
@@ -7318,7 +7316,6 @@ __metadata:
     globals: "npm:^14.0.0"
     lcov-result-merger: "npm:^5.0.1"
     lerna: "npm:^8.1.9"
-    pnpm: "npm:^9.15.3"
     prettier: "npm:^3.2.0"
     typescript: "npm:^5.7.3"
     vitest: "npm:^2.1.9"
@@ -8990,18 +8987,6 @@ __metadata:
   version: 8.0.0
   resolution: "pluralize@npm:8.0.0"
   checksum: 10c0/2044cfc34b2e8c88b73379ea4a36fc577db04f651c2909041b054c981cd863dd5373ebd030123ab058d194ae615d3a97cfdac653991e499d10caf592e8b3dc33
-  languageName: node
-  linkType: hard
-
-"pnpm@npm:^9.15.3":
-  version: 9.15.3
-  resolution: "pnpm@npm:9.15.3"
-  dependencies:
-    node-gyp: "npm:latest"
-  bin:
-    pnpm: bin/pnpm.cjs
-    pnpx: bin/pnpx.cjs
-  checksum: 10c0/8c263d771d4edcd08e52d1af9e8c233eab22c7f19f5b1ef7888208c636dec7ded01d0f231c9a3a3bb544235d6d06bd1034b345070b322739cb9bd717e2cc1a78
   languageName: node
   linkType: hard
 
