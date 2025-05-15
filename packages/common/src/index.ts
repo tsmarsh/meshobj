@@ -75,6 +75,7 @@ export interface Searcher {
         creds?: string[],
         timestamp?: number,
     ): Promise<Record<string, any>[]>;
+    ready: () => Promise<boolean>;
 }
 
 export interface Validator {

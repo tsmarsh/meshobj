@@ -29,7 +29,7 @@ async function processGraphlette(
     }
 
     const rt = root(searcher, dtoFactory, auth, rootConfig);
-    graph_init(app, schema, path, rt);
+    graph_init(app, schema, path, rt, searcher);
 }
 
 async function buildRepository(storage: StorageConfig, plugins: Record<string, Plugin>): Promise<Repository> {

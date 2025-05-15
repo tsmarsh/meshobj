@@ -6,6 +6,7 @@ import HandleBars from 'handlebars';
 import Handlebars from 'handlebars';
 import { getLogger } from 'log4js';
 import { Schema } from './types';
+import { MongoClient } from 'mongodb';
 
 let logger = getLogger('meshobj/mongosearcher');
 
@@ -13,11 +14,15 @@ export class MongoSearcher implements Searcher {
     private authorizer: Auth;
     private db: Collection<Envelope>;
     private dtoFactory: DTOFactory;
+    private dbClient: MongoClient;
+    private collection: string;
 
-    constructor(db: Collection<Envelope>, dtoFactory: DTOFactory, authorizer: Auth) {
+    constructor(db: Collection<Envelope>, dtoFactory: DTOFactory, authorizer: Auth, dbClient: MongoClient, collection: string) {
         this.authorizer = authorizer;
         this.db = db;
         this.dtoFactory = dtoFactory;
+        this.dbClient = dbClient;
+        this.collection = collection;
     }
 
     processQueryTemplate(parameters: Record<string, any>, queryTemplate: HandleBars.TemplateDelegate): any {
@@ -120,4 +125,13 @@ export class MongoSearcher implements Searcher {
             return r.payload;
         });
     }
+
+    ready = async (): Promise<boolean> => {
+        try {
+            await this.dbClient.db().command({ ping: 1 });
+            return true;
+        } catch {
+            return false;
+        }
+    };
 }

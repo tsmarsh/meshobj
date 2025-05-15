@@ -66,7 +66,8 @@ export async function createMongoSearcher(
     clients: Record<string, MongoClient>,
 ) {
     const collection = await buildMongoCollection(mongoConfig, clients);
-    return new MongoSearcher(collection, dtoFactory, auth);
+    const client = clients[mongoConfig.uri];
+    return new MongoSearcher(collection, dtoFactory, auth, client, mongoConfig.collection);
 }
 
 /**
