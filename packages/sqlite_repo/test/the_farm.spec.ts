@@ -15,7 +15,7 @@ Log4js.configure({
     },
 });
 
-let setup = async () => {};
+let setup = async () => { };
 
 let cleanup = async () => {
     const fs = require('fs');
@@ -27,5 +27,5 @@ let cleanup = async () => {
 };
 
 describe('The Farm', () => {
-    ServerCertificiation(setup, { sql: new SQLitePlugin() }, config);
+    ServerCertificiation(setup, { sql: new SQLitePlugin() }, config, cleanup);
 });

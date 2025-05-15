@@ -25,7 +25,7 @@ let hen_api: any;
 let coop_api: any;
 let farm_api: any;
 
-export function ServerCertificiation(setup, plugins: Record<string, Plugin>, configurize: () => Promise<Config>) {
+export function ServerCertificiation(setup: () => Promise<void>, plugins: Record<string, Plugin>, configurize: () => Promise<Config>, cleanup?: () => Promise<void>) {
     beforeAll(async () => {
         await setup();
 
@@ -68,6 +68,9 @@ export function ServerCertificiation(setup, plugins: Record<string, Plugin>, con
         }
         if (server) {
             server.close();
+        }
+        if (cleanup) {
+            await cleanup();
         }
     });
 
