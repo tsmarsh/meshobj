@@ -202,4 +202,13 @@ export class PostgresRepository implements Repository {
             deleted: !!row.deleted,
         }));
     };
+
+    ready = async (): Promise<boolean> => {
+        try {
+            await this.pool.query('SELECT 1');
+            return true;
+        } catch {
+            return false;
+        }
+    };
 }

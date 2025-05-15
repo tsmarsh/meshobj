@@ -79,4 +79,8 @@ export class InMemory implements Repository {
         }
         return r;
     }
+
+    async ready(): Promise<boolean> {
+        return true;
+    }
 }

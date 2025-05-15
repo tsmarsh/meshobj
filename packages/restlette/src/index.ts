@@ -84,9 +84,12 @@ function createHealthCheck(repo: Repository) {
 
     const ready = async (_req: express.Request, res: express.Response) => {
         try {
-            // Try to perform a simple operation to verify database connection
-            await repo.list();
-            res.status(200).json({ status: 'ok' });
+            const ok = await repo.ready();
+            if (ok) {
+                res.status(200).json({ status: 'ok' });
+            } else {
+                res.status(503).json({ status: 'error', message: 'Database not ready' });
+            }
         } catch (error) {
             logger.error('Readiness check failed:', error);
             res.status(503).json({ status: 'error', message: 'Database connection failed' });

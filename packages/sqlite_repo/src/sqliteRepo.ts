@@ -162,4 +162,13 @@ export class SQLiteRepository implements Repository {
         }
         return envelopes;
     };
+
+    ready = async (): Promise<boolean> => {
+        try {
+            await this.db.get('SELECT 1');
+            return true;
+        } catch {
+            return false;
+        }
+    };
 }

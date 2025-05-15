@@ -59,6 +59,7 @@ export interface Repository {
     createMany: (payloads: Envelope[], tokens?: string[]) => Promise<Envelope[]>;
     readMany: (ids: Id[], tokens?: string[]) => Promise<Envelope[]>;
     removeMany: (ids: Id[], tokens?: string[]) => Promise<Record<Id, boolean>>;
+    ready: () => Promise<boolean>;
 }
 
 export interface Searcher {

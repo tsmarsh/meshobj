@@ -155,4 +155,13 @@ export class MongoRepository implements Repository {
             return { id: d.id, created_at: d.created_at, payload: d.payload };
         });
     };
+
+    ready = async (): Promise<boolean> => {
+        try {
+            await (this.db as any).db.command({ ping: 1 });
+            return true;
+        } catch {
+            return false;
+        }
+    };
 }

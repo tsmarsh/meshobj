@@ -12,12 +12,14 @@ describe('Health Check Endpoints', () => {
     beforeEach(() => {
         app = express();
         mockRepo = {
+            ready: vi.fn(),
             list: vi.fn(),
             create: vi.fn(),
             read: vi.fn(),
             createMany: vi.fn(),
             readMany: vi.fn(),
             remove: vi.fn(),
+            removeMany: vi.fn(),
         } as unknown as Repository;
 
         const { health, ready } = createHealthCheck(mockRepo);
@@ -42,18 +44,18 @@ describe('Health Check Endpoints', () => {
 
     describe('GET /ready', () => {
         it('should return 200 OK when database is connected', async () => {
-            vi.mocked(mockRepo.list).mockResolvedValueOnce([]);
+            vi.mocked(mockRepo.ready).mockResolvedValueOnce(true);
 
             const response = await fetch(`http://localhost:${port}/ready`);
 
             expect(response.status).toBe(200);
             const body = await response.json();
             expect(body).toEqual({ status: 'ok' });
-            expect(mockRepo.list).toHaveBeenCalledTimes(1);
+            expect(mockRepo.ready).toHaveBeenCalledTimes(1);
         });
 
         it('should return 503 when database connection fails', async () => {
-            vi.mocked(mockRepo.list).mockRejectedValueOnce(new Error('Database connection failed'));
+            vi.mocked(mockRepo.ready).mockResolvedValueOnce(false);
 
             const response = await fetch(`http://localhost:${port}/ready`);
 
@@ -61,9 +63,9 @@ describe('Health Check Endpoints', () => {
             const body = await response.json();
             expect(body).toEqual({
                 status: 'error',
-                message: 'Database connection failed'
+                message: 'Database not ready'
             });
-            expect(mockRepo.list).toHaveBeenCalledTimes(1);
+            expect(mockRepo.ready).toHaveBeenCalledTimes(1);
         });
     });
 }); 
