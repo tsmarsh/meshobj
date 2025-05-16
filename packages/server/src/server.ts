@@ -10,6 +10,7 @@ import { Auth } from '@meshobj/auth';
 import { CasbinAuth } from '@meshobj/casbin_auth';
 import cors from 'cors';
 import { Plugin } from './plugin';
+import { checkAllServicesHealth, checkAllServicesReady } from './health';
 
 async function processGraphlette(
     graphlette: Graphlette,
@@ -76,6 +77,18 @@ export async function init(config: Config, plugins: Record<string, Plugin>): Pro
             allowedHeaders: ['Content-Type', 'Authorization'],
         }),
     );
+
+    // Add health check endpoint
+    app.get('/health', async (req, res) => {
+        const status = await checkAllServicesHealth(config);
+        res.json(status);
+    });
+
+    // Add ready check endpoint
+    app.get('/ready', async (req, res) => {
+        const status = await checkAllServicesReady(config);
+        res.status(status.status === 'ok' ? 200 : 503).json(status);
+    });
 
     // Process graphlettes
     for (const graphlette of config.graphlettes) {
