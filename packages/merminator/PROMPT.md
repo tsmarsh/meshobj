@@ -1,9 +1,3 @@
----
-
-title: Merminator Mermaid classDiagram Prompt Guide
-description: Use this reference to construct compatible Mermaid `classDiagram` inputs for the Merminator tool in meshobj.
--------------------------------------------------------------------------------------------------------------------------
-
 # Merminator Mermaid classDiagram Prompt Guide
 
 Merminator is a parser and config generator for a **subset** of Mermaid's `classDiagram` syntax. Use the following rules and examples to construct diagrams that are compatible and functional.
