@@ -13,7 +13,7 @@ const limiter = rateLimit({
     max: 100, // limit each IP to 100 requests per windowMs
 });
 
-const swaggerOptions = (apiPath: string, port: number, schema: Record<string, any>) => ({
+const swaggerOptions = (apiPath: string, port: number, schema: Record<string, any>, host: string = 'localhost') => ({
     openapi: '3.0.0',
     info: {
         version: '0.1.0',
@@ -22,7 +22,7 @@ const swaggerOptions = (apiPath: string, port: number, schema: Record<string, an
     },
     servers: [
         {
-            url: `http://localhost:${port}`,
+            url: `http://${host}:${port}`,
         },
     ],
     components: {
@@ -68,11 +68,33 @@ export function init(
 
     app.use(limiter);
     app.use(apiPath, router);
-    app.get(`${apiPath}/api-docs/swagger.json`, (req: express.Request, res: express.Response) => res.json(swaggerDoc));
 
-    let handler: RequestHandler = swaggerUi.setup(swaggerDoc);
+    // Add error handling for swagger.json
+    app.get(`${apiPath}/api-docs/swagger.json`, (req: express.Request, res: express.Response) => {
+        try {
+            logger.debug('Serving swagger.json', { swaggerDoc });
+            res.json(swaggerDoc);
+        } catch (error) {
+            logger.error('Error serving swagger.json:', error);
+            res.status(500).json({ error: 'Failed to serve swagger documentation' });
+        }
+    });
 
-    app.use(`${apiPath}/api-docs`, swaggerUi.serve, handler);
+    // Add error handling for Swagger UI
+    app.use(`${apiPath}/api-docs`, (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        logger.debug('Swagger UI request:', { path: req.path });
+        next();
+    }, swaggerUi.serve);
+
+    let handler: RequestHandler = swaggerUi.setup(swaggerDoc, {
+        explorer: true,
+        customCss: '.swagger-ui .topbar { display: none }',
+        swaggerOptions: {
+            persistAuthorization: true,
+        }
+    });
+
+    app.use(`${apiPath}/api-docs`, handler);
 
     return app;
 }
