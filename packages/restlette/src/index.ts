@@ -64,6 +64,7 @@ export function init(
     logger.info(`API Docs are available at: http://localhost:${port}${apiPath}/api-docs`);
 
     const swaggerDoc: JsonObject = swaggerOptions(apiPath, port, jsonSchema);
+    console.log("Docs: ", swaggerDoc);
     const router = createRestletteRouter(apiPath, crud);
 
     app.use(limiter);
