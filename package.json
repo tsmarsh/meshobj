@@ -5,6 +5,9 @@
         "packages/*",
         "examples/*"
     ],
+    "engines": {
+        "node": ">=20 <21"
+    },
     "version": "0.1.0",
     "scripts": {
         "clean": "rimraf \\\"packages/*/dist\\\" && rimraf \\\"examples/*/dist\\\"",
