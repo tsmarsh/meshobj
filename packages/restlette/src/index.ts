@@ -71,7 +71,7 @@ export function init(
     app.use(apiPath, router);
 
     // Add error handling for swagger.json
-    app.get(`${apiPath}/api-docs/swagger.json`, (req: express.Request, res: express.Response) => {
+    app.get(`${apiPath}/...`, (req: express.Request, res: express.Response) => {
         try {
             logger.debug('Serving swagger.json', { swaggerDoc });
             res.json(swaggerDoc);
