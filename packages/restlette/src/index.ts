@@ -61,7 +61,7 @@ export function init(
     port: number,
     jsonSchema: Record<string, any>,
 ): express.Application {
-    logger.info(`API Docs are available at: http://localhost:${port}${apiPath}/api-docs`);
+    logger.info(`API Docs are available at: http://localhost:${port}${apiPath}/api-docs/swagger.json`);
 
     const swaggerDoc: JsonObject = swaggerOptions(apiPath, port, jsonSchema);
     console.log("Docs: ", swaggerDoc);
@@ -71,7 +71,7 @@ export function init(
     app.use(apiPath, router);
 
     // Add error handling for swagger.json
-    app.get(`${apiPath}/...`, (req: express.Request, res: express.Response) => {
+    app.get(`${apiPath}/api-docs/swagger.json`, (req: express.Request, res: express.Response) => {
         try {
             logger.debug('Serving swagger.json', { swaggerDoc });
             res.json(swaggerDoc);

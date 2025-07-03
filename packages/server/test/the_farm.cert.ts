@@ -233,9 +233,17 @@ async function getSwaggerDocs(config: Config) {
     return await Promise.all(
         config.restlettes.map(async (restlette: Restlette) => {
             let url = `http://localhost:${config.port}${restlette.path}/api-docs/swagger.json`;
+            let doc = {};
+            let txt;
 
             const response = await fetch(url);
-            let doc = await response.json();
+            try {
+                txt = await response.text();
+                doc = JSON.parse(txt);
+            }catch (e) {
+                console.log("Body found: ", txt);
+            }
+
             return doc;
         }),
     );
