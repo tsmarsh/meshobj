@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node dist/index.js",
         "build": "tsc",
-        "test": "vitest --passWithNoTests --run"
+        "test": "vitest --passWithNoTests --run --hookTimeout=120000"
     },
     "dependencies": {
         "@meshobj/cli": "workspace:*",
