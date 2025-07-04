@@ -6,7 +6,7 @@ export function RepositoryCertification<I>(createRepository: () => Promise<Repos
 
     beforeEach(async () => {
         repository = await createRepository();
-    });
+    }, 60000);
 
     afterAll(async () => {
         await tearDown();

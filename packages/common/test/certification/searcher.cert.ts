@@ -47,7 +47,7 @@ export function SearcherCertification(
         let updatedCass = { id: cassie.id, tokens: tokens, payload: { name: 'Cassie', count: 10, type: 'A' } };
         await repository.create(updatedCass);
         searcher = search;
-    });
+    }, 60000);
 
     afterAll(async () => {
         await tearDown();

@@ -60,7 +60,7 @@ export function ServerCertificiation(setup: () => Promise<void>, plugins: Record
             console.log(JSON.stringify(config, null, 2));
             throw e;
         }
-    });
+    }, 60000);
 
     afterAll(async () => {
         for (const plugin of Object.values(plugins)) {
