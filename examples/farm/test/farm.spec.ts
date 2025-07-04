@@ -1,8 +1,10 @@
-import { DockerComposeEnvironment, StartedDockerComposeEnvironment } from 'testcontainers';
+import { DockerComposeEnvironment, StartedDockerComposeEnvironment, Wait } from 'testcontainers';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import path from 'path';
 import { callSubgraph } from '@meshobj/graphlette';
 import { Document, OpenAPIClient, OpenAPIClientAxios } from 'openapi-client-axios';
+import { defineConfig } from 'vitest/config';
+
 
 let farm_id = '';
 let coop1_id = '';
@@ -17,9 +19,10 @@ let environment: StartedDockerComposeEnvironment;
 describe('Farm Service Smoke Test', () => {
     beforeAll(async () => {
         // Start the docker-compose environment
-        // environment = await new DockerComposeEnvironment(path.resolve(__dirname, '..'), 'docker-compose.yml').up();
-
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        environment = await new DockerComposeEnvironment(path.resolve(__dirname, '..'), 'docker-compose.yml')
+            .withBuild()
+            .withWaitStrategy('farm_1', Wait.forHttp('/ready', 3033).withStartupTimeout(12000))
+            .up();
 
         const swagger_docs: Document[] = await getSwaggerDocs();
         await buildApi(swagger_docs, '');
@@ -51,7 +54,7 @@ describe('Farm Service Smoke Test', () => {
         expect(json.name).toBe('Emerdale');
         expect(json.coops.length).toBe(3);
     });
-});
+}, 120000);
 
 async function getSwaggerDocs() {
     return await Promise.all(
