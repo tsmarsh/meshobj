@@ -1,0 +1,30 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "files": [],
+    "references": [
+        {
+            "path": "../../packages/common"
+        },
+        {
+            "path": "../../packages/server"
+        },
+        {
+            "path": "../../packages/mongo_repo"
+        },
+        {
+            "path": "../../packages/postgres_repo"
+        },
+        {
+            "path": "../../packages/sqlite_repo"
+        },
+        {
+            "path": "../../packages/restlette"
+        },
+        {
+            "path": "../../packages/graphlette"
+        },
+        {
+            "path": "../../packages/casbin_auth"
+        }
+    ]
+}
