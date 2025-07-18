@@ -1,0 +1,29 @@
+scalar Date
+
+type Query {
+  getByName(name: String, at: Float): [Event]
+  getById(id: ID, at: Float): Event
+}
+
+type Event {
+  name: String!
+  data: String!
+  source: String
+  version: String
+  timestamp: DateTime!
+  processedEvent: [ProcessedEvent]
+  id: ID
+  processedEvents: [ProcessedEvent]
+}
+
+type ProcessedEvent {
+  id: ID!
+  raw_event: String!
+  name: String!
+  processed_data: String!
+  processed_timestamp: DateTime!
+  processing_time_ms: Float
+  status: ProcessingStatus!
+  error_message: String
+  id: ID
+}

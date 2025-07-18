@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "raw_event_id",
+    "name",
+    "processed_data",
+    "processed_timestamp",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "raw_event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "name": {
+      "type": "string"
+    },
+    "processed_data": {
+      "type": "string"
+    },
+    "processed_timestamp": {
+      "type": "datetime"
+    },
+    "processing_time_ms": {
+      "type": "number"
+    },
+    "status": {
+      "type": "processingstatus"
+    },
+    "error_message": {
+      "type": "string"
+    }
+  }
+}

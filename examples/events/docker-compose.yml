@@ -1,0 +1,29 @@
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=events_db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  events:
+    build:
+      context: ../..
+      dockerfile: examples/events/Dockerfile
+    ports:
+      - "4055:4055"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/events_db
+      - PORT=4055
+      - ENV=development
+      - PREFIX=events
+      - PLATFORM_URL=http://localhost:4055
+    depends_on:
+      mongodb:
+        condition: service_healthy
