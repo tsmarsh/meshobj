@@ -1982,6 +1982,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@twofarmql/farm-example@workspace:examples/twofarms":
+  version: 0.0.0-use.local
+  resolution: "@twofarmql/farm-example@workspace:examples/twofarms"
+  dependencies:
+    "@meshobj/cli": "workspace:*"
+    "@meshobj/graphlette": "workspace:^"
+    "@types/node": "npm:^20.0.0"
+    axios: "npm:^1.6.7"
+    js-yaml: "npm:^4.1.0"
+    openapi-client-axios: "npm:^7.5.5"
+    testcontainers: "npm:^10.18.0"
+    typescript: "npm:^5.0.0"
+    vitest: "npm:^3.0.5"
+  languageName: unknown
+  linkType: soft
+
 "@tybys/wasm-util@npm:^0.9.0":
   version: 0.9.0
   resolution: "@tybys/wasm-util@npm:0.9.0"
