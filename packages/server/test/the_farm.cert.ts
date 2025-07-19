@@ -291,7 +291,9 @@ async function buildModels() {
 
     await coop_api.create(null, { name: 'pink', farm_id: farm_id });
 
-    first_stamp = Date.now();
+    const now = new Date();
+    first_stamp = Date.now(); //because containers have their own ideas about time
+
 
     await coop_api.update({ id: coop1_id }, { name: 'purple', farm_id: farm_id });
 

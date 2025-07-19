@@ -14,7 +14,7 @@ let container: StartedPostgreSqlContainer | null = null;
 
 const createSearcher = async (): Promise<{ repository: Repository; searcher: Searcher }> => {
     if (!container) {
-        container = await new PostgreSqlContainer()
+        container = await new PostgreSqlContainer("postgres:17-alpine3.21")
             .withUsername('bob')
             .withPassword('max')
             .withDatabase('searcher')

@@ -3,6 +3,8 @@ import { PostgresRepository } from '../src/postgresRepo'; // Assuming the reposi
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import { RepositoryCertification } from '../../common/test/certification/repository.cert';
 import { Environment } from 'testcontainers/build/types';
+import { describe } from 'vitest';
+import { SearcherCertification } from '../../common/test/certification/searcher.cert';
 
 let container: StartedPostgreSqlContainer | null = null;
 let dbs: Pool[] = []; // To track active connections
@@ -14,7 +16,7 @@ const createRepository = async (): Promise<PostgresRepository> => {
         POSTGRES_DB: 'test',
     };
     if (!container) {
-        container = await new PostgreSqlContainer()
+        container = await new PostgreSqlContainer("postgres:17-alpine3.21")
             .withUsername('alice')
             .withPassword('face')
             .withDatabase('repository')
@@ -54,4 +56,7 @@ const tearDown = async (): Promise<void> => {
     }
 };
 
-RepositoryCertification(createRepository, tearDown);
+describe('Postgres Repository', () => {
+    RepositoryCertification(createRepository, tearDown);
+});
+

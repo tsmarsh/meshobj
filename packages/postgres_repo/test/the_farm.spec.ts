@@ -21,7 +21,7 @@ Log4js.configure({
 
 const setup = async () => {
     try {
-        container = await new PostgreSqlContainer()
+        container = await new PostgreSqlContainer("postgres:17-alpine3.21")
             .withUsername('postgres')
             .withPassword('password')
             .withDatabase('test')
