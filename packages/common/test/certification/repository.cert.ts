@@ -16,11 +16,12 @@ export function RepositoryCertification<I>(createRepository: () => Promise<Repos
         it('create should store and return the envelope', async () => {
             const payload: Payload = { name: 'Create Test', count: 3 };
             const now = new Date();
+            const oneMinuteAgo = new Date(now.getTime() - 60_000); //because containers have their own ideas about time
 
             const result = await repository.create({ payload });
 
             expect(result.id).not.toBeNull();
-            expect(result.created_at?.getTime()).toBeGreaterThanOrEqual(now.getTime());
+            expect(result.created_at?.getTime()).toBeGreaterThanOrEqual(oneMinuteAgo.getTime());
             expect(result.deleted).toBeFalsy();
         });
 
