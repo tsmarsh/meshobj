@@ -12,7 +12,7 @@ export function RepositoryCertification<I>(createRepository: () => Promise<Repos
         await tearDown();
     });
 
-    describe('Repository Certification Tests', () => {
+    describe.sequential('Repository Certification Tests', () => {
         it('create should store and return the envelope', async () => {
             const payload: Payload = { name: 'Create Test', count: 3 };
             const now = new Date();

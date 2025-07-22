@@ -53,7 +53,7 @@ export function SearcherCertification(
         await tearDown();
     });
 
-    describe('Searcher Certification Tests', () => {
+    describe.sequential('Searcher Certification Tests', () => {
         it('should return empty result for non-existent ID', async () => {
             const id = 'non-existent-id';
 

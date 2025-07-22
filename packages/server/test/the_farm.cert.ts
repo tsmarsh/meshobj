@@ -74,7 +74,7 @@ export function ServerCertificiation(setup: () => Promise<void>, plugins: Record
         }
     });
 
-    describe('The Farm', () => {
+    describe.sequential('The Farm', () => {
         it('should build a server with multiple nodes', async () => {
             const query = `{
                 getById(id: "${farm_id}") {
