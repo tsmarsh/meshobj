@@ -26,6 +26,6 @@ let cleanup = async () => {
     }
 };
 
-describe('The Farm', () => {
+describe('The SQLite Farm', () => {
     ServerCertificiation(setup, { sql: new SQLitePlugin() }, config, cleanup);
 });

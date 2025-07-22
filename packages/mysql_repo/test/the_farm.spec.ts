@@ -30,6 +30,6 @@ const cleanup = async () => {
     }
 };
 
-describe('The Farm', () => {
+describe('The MySQL Farm', () => {
     ServerCertificiation(setup, { mysql: new MySQLPlugin() }, config);
 });

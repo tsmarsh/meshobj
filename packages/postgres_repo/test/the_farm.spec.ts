@@ -55,6 +55,6 @@ const cleanup = async () => {
 
 const configPath = `${__dirname}/config/config.conf`;
 
-describe('The Farm', () => {
+describe('The Postgres Farm', () => {
     ServerCertificiation(setup, { postgres: new PostgresPlugin() }, config);
 });
