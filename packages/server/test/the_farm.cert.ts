@@ -25,13 +25,14 @@ let hen_api: any;
 let coop_api: any;
 let farm_api: any;
 
-export function ServerCertificiation(setup: () => Promise<void>, plugins: Record<string, Plugin>, configurize: () => Promise<Config>, cleanup?: () => Promise<void>, nowFunc?: () => Promise<number>) {
+function getSystemTimestamp(): Promise<number> {
+    return Promise.resolve(Date.now());
+}
+export function ServerCertificiation(setup: () => Promise<void>, plugins: Record<string, Plugin>, configurize: () => Promise<Config>, cleanup?: () => Promise<void>, getDBTime?: () => Promise<number>) {
     beforeAll(async () => {
         await setup();
 
         config = await configurize();
-
-        first_stamp = nowFunc ? await nowFunc() : Date.now();
 
         const sub = 'test-user';
         __TOKEN__ = jwt.sign({ sub }, 'totallyASecret', { expiresIn: '1h' });
@@ -56,7 +57,7 @@ export function ServerCertificiation(setup: () => Promise<void>, plugins: Record
 
             await buildApi(swagger_docs, __TOKEN__);
 
-            await buildModels();
+            await buildModels(getDBTime ? getDBTime : getSystemTimestamp);
         } catch (e) {
             console.error(e);
             console.log(JSON.stringify(config, null, 2));
@@ -186,7 +187,7 @@ export function ServerCertificiation(setup: () => Promise<void>, plugins: Record
                 `Bearer ${__TOKEN__}`,
             );
 
-            expect(json.name, `Purple was closer to ${first_stamp}`).toBe('red');
+            expect(json.name).toBe('red');
         });
 
         it('should obey the timestamps', async () => {
@@ -206,12 +207,12 @@ export function ServerCertificiation(setup: () => Promise<void>, plugins: Record
             );
 
             const names = json.coops.map((c: any) => c.name);
-            expect(names, `The timestamp was after purples update: ${first_stamp}`).not.toContain('purple');
+            expect(names).not.toContain('purple');
         });
 
         it('should pass timestamps to next layer', async () => {
             const query = `{
-                getById(id: "${farm_id}", at: ${first_stamp}) {
+                getById(id: "${farm_id}", at: ${Date.now()}) {
                     coops {
                     name
                     }
@@ -280,7 +281,7 @@ async function buildApi(swagger_docs: Document[], token: string) {
     }
 }
 
-async function buildModels() {
+async function buildModels(now: () => Promise<number>) {
     const farm = await farm_api.create(null, { name: 'Emerdale' });
 
     farm_id = farm.request.path.slice(-36);
@@ -289,13 +290,15 @@ async function buildModels() {
     coop1_id = coop1.request.path.slice(-36);
 
     const coop2 = await coop_api.create(null, { name: 'yellow', farm_id: farm_id });
-    coop2_id = coop2.headers["x-canonical-id"];
+    coop2_id = coop2.request.path.slice(-36);
 
     await coop_api.create(null, { name: 'pink', farm_id: farm_id });
 
-    await coop_api.update({ id: coop1_id }, { name: 'purple', farm_id: farm_id });
+    //const now = new Date();
+    first_stamp = await now(); //because containers have their own ideas about time
 
-    let coops = await  coop_api.list();
+
+    await coop_api.update({ id: coop1_id }, { name: 'purple', farm_id: farm_id });
 
     const hens = [
         { name: 'chuck', eggs: 2, coop_id: coop1_id },
@@ -303,7 +306,6 @@ async function buildModels() {
         { name: 'euck', eggs: 1, coop_id: coop2_id },
         { name: 'fuck', eggs: 2, coop_id: coop2_id },
     ];
-
 
     const savedHens = await Promise.all(hens.map((hen) => hen_api.create(null, hen)));
 
