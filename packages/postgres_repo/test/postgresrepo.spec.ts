@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { Client, Pool } from 'pg';
 import { PostgresRepository } from '../src/postgresRepo'; // Assuming the repository is in this file
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import { RepositoryCertification } from '../../common/test/certification/repository.cert';
@@ -9,6 +9,12 @@ import { SearcherCertification } from '../../common/test/certification/searcher.
 let container: StartedPostgreSqlContainer | null = null;
 let dbs: Pool[] = []; // To track active connections
 
+let host;
+let port;
+let user = 'alice';
+let password = 'face';
+let db = 'repository';
+
 const createRepository = async (): Promise<PostgresRepository> => {
     // Start a PostgreSQL container using TestContainers
     let env: Environment = {
@@ -17,21 +23,21 @@ const createRepository = async (): Promise<PostgresRepository> => {
     };
     if (!container) {
         container = await new PostgreSqlContainer("postgres:17-alpine3.21")
-            .withUsername('alice')
-            .withPassword('face')
-            .withDatabase('repository')
+            .withUsername(user)
+            .withPassword(password)
+            .withDatabase(db)
             .start();
     }
 
-    const host = container.getHost();
-    const port = container.getMappedPort(5432);
+    host = container.getHost();
+    port = container.getMappedPort(5432);
 
     // Connect to the database
     const pool = new Pool({
-        user: 'alice',
+        user,
         host,
-        database: 'repository',
-        password: 'face',
+        database: db,
+        password,
         port,
     });
 
@@ -56,7 +62,28 @@ const tearDown = async (): Promise<void> => {
     }
 };
 
+async function getPostgresTimestamp(): Promise<number> {
+    const client = new Client({
+        host,
+        port,
+        user,
+        password,
+        database: db,
+    });
+
+    try {
+        await client.connect();
+        const res = await client.query('SELECT NOW() as current_time');
+        let date = res.rows[0].current_time as Date;
+        console.log("Now: ", date.getTime());
+        return date.getTime();
+
+    } finally {
+        await client.end();
+    }
+}
+
 describe('Postgres Repository', () => {
-    RepositoryCertification(createRepository, tearDown);
+    RepositoryCertification(createRepository, tearDown, getPostgresTimestamp);
 });
 

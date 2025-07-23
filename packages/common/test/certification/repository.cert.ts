@@ -1,11 +1,13 @@
 import { describe, it, beforeEach, afterAll, expect } from 'vitest';
 import { Repository, Envelope, Id, Payload } from '../../src';
 
-export function RepositoryCertification<I>(createRepository: () => Promise<Repository>, tearDown: () => Promise<void>) {
+export function RepositoryCertification<I>(createRepository: () => Promise<Repository>, tearDown: () => Promise<void>, nowFunc?: () => Promise<number>) {
     let repository: Repository;
+    let now:number;
 
     beforeEach(async () => {
         repository = await createRepository();
+        now = nowFunc ? await nowFunc() : Date.now();
     }, 60000);
 
     afterAll(async () => {
@@ -15,13 +17,10 @@ export function RepositoryCertification<I>(createRepository: () => Promise<Repos
     describe.sequential('Repository Certification Tests', () => {
         it('create should store and return the envelope', async () => {
             const payload: Payload = { name: 'Create Test', count: 3 };
-            const now = new Date();
-            const oneMinuteAgo = new Date(now.getTime() - 60_000); //because containers have their own ideas about time
-
             const result = await repository.create({ payload });
 
             expect(result.id).not.toBeNull();
-            expect(result.created_at?.getTime()).toBeGreaterThanOrEqual(oneMinuteAgo.getTime());
+            expect(result.created_at?.getTime()).toBeGreaterThanOrEqual(now);
             expect(result.deleted).toBeFalsy();
         });
 

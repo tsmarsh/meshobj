@@ -25,11 +25,13 @@ let hen_api: any;
 let coop_api: any;
 let farm_api: any;
 
-export function ServerCertificiation(setup: () => Promise<void>, plugins: Record<string, Plugin>, configurize: () => Promise<Config>, cleanup?: () => Promise<void>) {
+export function ServerCertificiation(setup: () => Promise<void>, plugins: Record<string, Plugin>, configurize: () => Promise<Config>, cleanup?: () => Promise<void>, nowFunc?: () => Promise<number>) {
     beforeAll(async () => {
         await setup();
 
         config = await configurize();
+
+        first_stamp = nowFunc ? await nowFunc() : Date.now();
 
         const sub = 'test-user';
         __TOKEN__ = jwt.sign({ sub }, 'totallyASecret', { expiresIn: '1h' });
@@ -184,7 +186,7 @@ export function ServerCertificiation(setup: () => Promise<void>, plugins: Record
                 `Bearer ${__TOKEN__}`,
             );
 
-            expect(json.name).toBe('red');
+            expect(json.name, `Purple was closer to ${first_stamp}`).toBe('red');
         });
 
         it('should obey the timestamps', async () => {
@@ -204,12 +206,12 @@ export function ServerCertificiation(setup: () => Promise<void>, plugins: Record
             );
 
             const names = json.coops.map((c: any) => c.name);
-            expect(names).not.toContain('purple');
+            expect(names, `The timestamp was after purples update: ${first_stamp}`).not.toContain('purple');
         });
 
         it('should pass timestamps to next layer', async () => {
             const query = `{
-                getById(id: "${farm_id}", at: ${Date.now()}) {
+                getById(id: "${farm_id}", at: ${first_stamp}) {
                     coops {
                     name
                     }
@@ -287,15 +289,13 @@ async function buildModels() {
     coop1_id = coop1.request.path.slice(-36);
 
     const coop2 = await coop_api.create(null, { name: 'yellow', farm_id: farm_id });
-    coop2_id = coop2.request.path.slice(-36);
+    coop2_id = coop2.headers["x-canonical-id"];
 
     await coop_api.create(null, { name: 'pink', farm_id: farm_id });
 
-    const now = new Date();
-    first_stamp = Date.now(); //because containers have their own ideas about time
-
-
     await coop_api.update({ id: coop1_id }, { name: 'purple', farm_id: farm_id });
+
+    let coops = await  coop_api.list();
 
     const hens = [
         { name: 'chuck', eggs: 2, coop_id: coop1_id },
@@ -303,6 +303,7 @@ async function buildModels() {
         { name: 'euck', eggs: 1, coop_id: coop2_id },
         { name: 'fuck', eggs: 2, coop_id: coop2_id },
     ];
+
 
     const savedHens = await Promise.all(hens.map((hen) => hen_api.create(null, hen)));
 

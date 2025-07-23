@@ -4,9 +4,16 @@ import { ServerCertificiation } from '../../server/test/the_farm.cert';
 import { describe } from 'vitest';
 import { PostgresPlugin } from '../src';
 import { config } from './config';
+import { Client } from 'pg';
 
 let container: StartedPostgreSqlContainer | null = null;
 let serverPort: string = '4242';
+
+let host;
+let port;
+let user = 'postgres';
+let password ='password';
+let db= 'test';
 
 Log4js.configure({
     appenders: {
@@ -22,20 +29,20 @@ Log4js.configure({
 const setup = async () => {
     try {
         container = await new PostgreSqlContainer("postgres:17-alpine3.21")
-            .withUsername('postgres')
-            .withPassword('password')
-            .withDatabase('test')
+            .withUsername(user)
+            .withPassword(password)
+            .withDatabase(db)
             .start();
 
-        const host = container.getHost();
-        const port = container.getMappedPort(5432);
+        host = container.getHost();
+        port = container.getMappedPort(5432);
 
         // Set (or overwrite) any environment variables needed by your application.
         process.env.POSTGRES_HOST = host;
         process.env.POSTGRES_PORT = port.toString();
-        process.env.POSTGRES_DB = 'test';
-        process.env.POSTGRES_USER = 'postgres';
-        process.env.POSTGRES_PASSWORD = 'password';
+        process.env.POSTGRES_DB = db;
+        process.env.POSTGRES_USER = user;
+        process.env.POSTGRES_PASSWORD = password;
 
         // Other environment variables you might need for your application
         process.env.ENV = 'test';
@@ -55,6 +62,28 @@ const cleanup = async () => {
 
 const configPath = `${__dirname}/config/config.conf`;
 
-describe('The Postgres Farm', () => {
-    ServerCertificiation(setup, { postgres: new PostgresPlugin() }, config);
+async function getPostgresTimestamp(): Promise<number> {
+    let config = {
+        host,
+        port,
+        user,
+        password,
+        database: db,
+    };
+
+    const client = new Client(config);
+
+    try {
+        await client.connect();
+        const res = await client.query('SELECT NOW() as current_time');
+        let date = res.rows[0].current_time as Date;=
+        return date.getTime();
+
+    } finally {
+        await client.end();
+    }
+}
+
+describe('The Postgres Farm', async () => {
+    ServerCertificiation(setup, { postgres: new PostgresPlugin() }, config, cleanup, getPostgresTimestamp)
 });

@@ -195,12 +195,20 @@ export class PostgresRepository implements Repository {
         const values = readers.length > 0 ? [readers] : [];
         const result = await this.pool.query(query, values);
 
-        return result.rows.map((row) => ({
+        var all: Envelope[] = result.rows.map((row) => ({
             id: row.id,
             payload: row.payload,
             created_at: row.created_at,
             deleted: !!row.deleted,
         }));
+
+        console.log("List: ", all.map((obj) => {return {
+            "id": obj.id,
+            "payload": obj.payload,
+            "created_at": obj.created_at?.getTime(),
+            "deleted": !!obj.deleted
+        }}))
+        return all;
     };
 
     ready = async (): Promise<boolean> => {
