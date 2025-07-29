@@ -4,12 +4,16 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'node',
+        setupFiles: [],
+        hookTimeout: 120_000,
+        testTimeout: 120_000,
         coverage: {
-            reportsDirectory: '../../coverage',
+            provider: 'v8',
+            exclude: ['**/dist/**', '**/examples/**', '**/*.d.ts'],
         },
     },
     esbuild: {
-        loader: 'ts', // Use TypeScript loader
-        target: 'es2022', // Align with `tsconfig.json`
+        loader: 'ts',
+        target: 'es2022',
     },
 });
