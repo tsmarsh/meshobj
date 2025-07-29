@@ -16,7 +16,7 @@ let farm_api: any;
 
 let environment: StartedDockerComposeEnvironment;
 
-describe('Farm Service Smoke Test', () => {
+describe.sequential('Farm Service Smoke Test', () => {
     beforeAll(async () => {
         // Start the docker-compose environment
         environment = await new DockerComposeEnvironment(path.resolve(__dirname, '..'), 'docker-compose.yml')
