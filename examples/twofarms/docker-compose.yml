@@ -2,7 +2,7 @@ services:
   mongodb:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - "27018:27017"
     environment:
       - MONGO_INITDB_DATABASE=two_farm_db
     healthcheck:
@@ -17,21 +17,21 @@ services:
       context: ../..
       dockerfile: examples/farm/Dockerfile
     ports:
-      - "3033:3033"
+      - "5055:5055"
     environment:
       - MONGO_URI=mongodb://mongodb:27017/two_farm_db
-      - PORT=3033
-      - EQUIP_PORT=4044
+      - PORT=5055
+      - EQUIP_PORT=6066
       - ENV=development
       - PREFIX=farm
-      - PLATFORM_URL=http://farm:3033
+      - PLATFORM_URL=http://farm:5055
     volumes:
       - ./farm:/app/config
     depends_on:
       mongodb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3033/ready"]
+      test: ["CMD", "curl", "-f", "http://localhost:5055/ready"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,21 +42,21 @@ services:
       context: ../..
       dockerfile: examples/farm/Dockerfile
     ports:
-      - "4044:4044"
+      - "6066:6066"
     environment:
       - MONGO_URI=mongodb://mongodb:27017/two_farm_db
-      - PORT=4044
-      - FARM_PORT=3033
+      - PORT=6066
+      - FARM_PORT=5055
       - ENV=development
       - PREFIX=equipment
-      - PLATFORM_URL=http://equipment:4044
+      - PLATFORM_URL=http://equipment:6066
     volumes:
       - ./equipment:/app/config
     depends_on:
       mongodb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4044/ready"]
+      test: ["CMD", "curl", "-f", "http://localhost:6066/ready"]
       interval: 10s
       timeout: 5s
       retries: 5
