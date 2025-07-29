@@ -27,3 +27,9 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3033/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s

@@ -18,16 +18,27 @@ let environment: StartedDockerComposeEnvironment;
 
 describe.sequential('Farm Service Smoke Test', () => {
     beforeAll(async () => {
+        console.log('Starting Docker Compose environment...');
+        const startTime = Date.now();
+        
         // Start the docker-compose environment
         environment = await new DockerComposeEnvironment(path.resolve(__dirname, '..'), 'docker-compose.yml')
             .withBuild()
-            .withWaitStrategy('farm_1', Wait.forHttp('/ready', 3033).withStartupTimeout(12000))
+            .withWaitStrategy('farm_1', Wait.forHttp('/ready', 3033).withStartupTimeout(30000))
+            .withWaitStrategy('mongodb', Wait.forLogMessage('Waiting for connections'))
             .up();
 
+        console.log(`Docker Compose started in ${Date.now() - startTime}ms`);
+        
+        console.log('Fetching Swagger docs...');
         const swagger_docs: Document[] = await getSwaggerDocs();
+        console.log('Building API clients...');
         await buildApi(swagger_docs, '');
+        console.log('Building test models...');
         await buildModels();
-    }, 60000); // Increase timeout for container startup
+        
+        console.log(`Total setup time: ${Date.now() - startTime}ms`);
+    }, 300000); // Increase timeout for container startup
 
     afterAll(async () => {
         if (environment) {
@@ -54,19 +65,35 @@ describe.sequential('Farm Service Smoke Test', () => {
         expect(json.name).toBe('Emerdale');
         expect(json.coops.length).toBe(3);
     });
-}, 120000);
+}, 300000);
 
 async function getSwaggerDocs() {
-    return await Promise.all(
-        ['/hen', '/coop', '/farm'].map(async (restlette) => {
-            let url = `http://localhost:3033${restlette}/api/api-docs/swagger.json`;
-
-            const response = await fetch(url);
-
-            let doc = await response.json();
-            return doc;
-        }),
-    );
+    const maxRetries = 10;
+    const retryDelay = 2000;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            return await Promise.all(
+                ['/hen', '/coop', '/farm'].map(async (restlette) => {
+                    let url = `http://localhost:3033${restlette}/api/api-docs/swagger.json`;
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    let doc = await response.json();
+                    return doc;
+                }),
+            );
+        } catch (error) {
+            if (attempt === maxRetries) {
+                throw error;
+            }
+            console.log(`Attempt ${attempt} failed, retrying in ${retryDelay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+        }
+    }
 }
 
 async function buildApi(swagger_docs: Document[], token: string) {
