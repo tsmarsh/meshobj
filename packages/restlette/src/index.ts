@@ -1,12 +1,11 @@
 import express, { RequestHandler, Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import Log4js from 'log4js';
 import swaggerUi, { JsonObject } from 'swagger-ui-express';
 import { Crud } from './crud.js';
 import { paths } from './swagger';
-import { Repository } from '@meshobj/common';
+import { Repository, getLogger } from '@meshobj/common';
 
-const logger = Log4js.getLogger('meshobj/restlette');
+const logger = getLogger('meshobj/restlette');
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -64,7 +63,7 @@ export function init(
     logger.info(`API Docs are available at: http://localhost:${port}${apiPath}/api-docs/swagger.json`);
 
     const swaggerDoc: JsonObject = swaggerOptions(apiPath, port, jsonSchema);
-    console.log("Docs: ", swaggerDoc);
+    logger.debug("Swagger documentation generated", { swaggerDoc });
     const router = createRestletteRouter(apiPath, crud);
 
     app.use(limiter);

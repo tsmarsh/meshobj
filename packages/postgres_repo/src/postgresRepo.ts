@@ -1,6 +1,8 @@
 import { Pool, types } from 'pg';
 import { v4 as uuid } from 'uuid';
-import { Envelope, Id, Repository } from '@meshobj/common';
+import { Envelope, Id, Repository, getLogger } from '@meshobj/common';
+
+const logger = getLogger('meshobj/postgres_repo');
 
 export class PostgresRepository implements Repository {
     private pool: Pool;
@@ -202,12 +204,15 @@ export class PostgresRepository implements Repository {
             deleted: !!row.deleted,
         }));
 
-        console.log("List: ", all.map((obj) => {return {
-            "id": obj.id,
-            "payload": obj.payload,
-            "created_at": obj.created_at?.getTime(),
-            "deleted": !!obj.deleted
-        }}))
+        logger.debug("List query results", { 
+            count: all.length,
+            results: all.map(obj => ({
+                id: obj.id,
+                payload: obj.payload,
+                created_at: obj.created_at?.getTime(),
+                deleted: !!obj.deleted
+            }))
+        });
         return all;
     };
 

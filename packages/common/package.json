@@ -26,6 +26,7 @@
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
         "handlebars": "^4.7.8",
+        "log4js": "^6.9.1",
         "zod": "^3.24.2"
     },
     "gitHead": "b6648bde930e8a322c8d1a966e152bc83fa0ad31"

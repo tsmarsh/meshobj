@@ -5,13 +5,16 @@ import { ConfiguratorConfigVisitor, Types } from './ConfiguratorConfigVisitor.js
 import { processConfig } from './configProcessor.js';
 import { parser } from './parser.js';
 import { CstNode } from 'chevrotain';
+import { getLogger } from '@meshobj/common';
+
+const logger = getLogger('meshobj/merminator');
 
 export function processJsonSchema(ctx: CstNode, destinationPath: string) {
     const jsonSchemaVisitor = new JSONSchemaVisitor();
     let jsonschemas = jsonSchemaVisitor.visit(ctx);
     for (let schema in jsonschemas) {
         let fname = `${destinationPath}/config/json/${schema.toLowerCase()}.schema.json`;
-        console.log(fname);
+        logger.info('Generated JSON schema file', { filename: fname });
         fs.writeFileSync(fname, JSON.stringify(jsonschemas[schema], null, 2));
     }
 }
@@ -21,7 +24,7 @@ export function processGraphQLSchema(ctx: CstNode, destinationPath: string) {
     let graphSchema = graphSchemaVisitor.visit(ctx);
     for (let schema in graphSchema) {
         let fname = `${destinationPath}/config/graph/${schema.toLowerCase()}.graphql`;
-        console.log(fname);
+        logger.info('Generated GraphQL schema file', { filename: fname });
         fs.writeFileSync(fname, graphSchema[schema].join('\n\n'));
     }
 }
@@ -31,7 +34,7 @@ export function processClusterConfig(ctx: CstNode, host: string, destinationPath
     let config: Types = configuratorConfigVisitor.visit(ctx);
     let configString = processConfig(config, destinationPath);
     let fname = `${destinationPath}/config/config.conf`;
-    console.log(fname);
+    logger.info('Generated configuration file', { filename: fname });
     fs.writeFileSync(fname, configString);
 }
 

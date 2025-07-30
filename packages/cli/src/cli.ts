@@ -7,20 +7,11 @@ import { MongoPlugin } from '@meshobj/mongo_repo';
 import { MySQLPlugin } from '@meshobj/mysql_repo';
 import { PostgresPlugin } from '@meshobj/postgres_repo';
 const parser = require('@pushcorn/hocon-parser');
-import Log4js from 'log4js';
+import { configureLogging, getLogger } from '@meshobj/common';
 
-Log4js.configure({
-    appenders: {
-        out: {
-            type: 'stdout',
-        },
-    },
-    categories: {
-        default: { appenders: ['out'], level: 'debug' },
-    },
-});
-
-const log = Log4js.getLogger();
+// Configure logging
+configureLogging('debug');
+const log = getLogger('meshobj/cli');
 
 export default async function startServer(configPath?: string) {
     const argv = await yargs(process.argv.slice(2))
@@ -65,5 +56,5 @@ export default async function startServer(configPath?: string) {
 
 // Auto-execute if called directly from CLI
 if (require.main === module) {
-    startServer().catch(console.error);
+    startServer().catch((error) => log.error('Server startup failed:', error));
 }

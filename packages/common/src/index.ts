@@ -1,6 +1,9 @@
 import { TemplateDelegate } from 'handlebars';
 import { z } from 'zod';
 
+// Export logging utilities
+export { configureLogging, getLogger } from './logging';
+
 // Convert common types to Zod schemas
 export const SingletonSchema = z.object({
     query: z.string(),

@@ -2,7 +2,7 @@ import express, { Application } from 'express';
 import { DTOFactory, root, init as graph_init } from '@meshobj/graphlette';
 import { init as rest_init } from '@meshobj/restlette';
 import { Config, Graphlette, Restlette, StorageConfig } from './configTypes';
-import { Repository, Searcher, Validator } from '@meshobj/common';
+import { Repository, Searcher, Validator, getLogger } from '@meshobj/common';
 import { Crud } from '@meshobj/restlette';
 import { JSONSchemaValidator } from '@meshobj/restlette';
 import { JWTSubAuthorizer } from '@meshobj/jwt_auth';
@@ -11,6 +11,8 @@ import { CasbinAuth } from '@meshobj/casbin_auth';
 import cors from 'cors';
 import { Plugin } from './plugin';
 import { checkAllServicesHealth, checkAllServicesReady } from './health';
+
+const logger = getLogger('meshobj/server');
 
 async function processGraphlette(
     graphlette: Graphlette,
@@ -104,7 +106,7 @@ export async function init(config: Config, plugins: Record<string, Plugin>): Pro
 }
 
 export async function cleanServer(plugins: Record<string, Plugin>) {
-    console.log('Cleaning server');
+    logger.info('Cleaning server');
     for (const plugin of Object.values(plugins)) {
         await plugin.cleanup();
     }

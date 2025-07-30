@@ -39,6 +39,8 @@ export default [
             ...tseslint.configs['recommended'].rules,
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-var-requires': 'off',
+            // Prevent console.log usage in production code
+            'no-console': ['error', { 'allow': ['warn', 'error'] }],
             // Add your custom rules here
             // "@typescript-eslint/no-explicit-any": "warn"
         },
