@@ -926,6 +926,7 @@ __metadata:
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:^3.0.1"
     handlebars: "npm:^4.7.8"
+    log4js: "npm:^6.9.1"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.3"
     vitest: "npm:^2.1.8"
@@ -992,6 +993,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@meshobj/merminator@workspace:packages/merminator"
   dependencies:
+    "@meshobj/common": "npm:^0.2.0"
     "@meshobj/graphlette": "npm:^0.2.0"
     "@meshobj/mongo_repo": "npm:^0.2.0"
     "@meshobj/restlette": "npm:^0.2.0"
@@ -1004,6 +1006,7 @@ __metadata:
     commander: "npm:^12.0.0"
     graphql: "npm:^16.8.1"
     jsonschema: "npm:^1.4.1"
+    log4js: "npm:^6.9.1"
     pluralize: "npm:^8.0.0"
     rimraf: "npm:^5.0.0"
     ts-node: "npm:^10.9.2"

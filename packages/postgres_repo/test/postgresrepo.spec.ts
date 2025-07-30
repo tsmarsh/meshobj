@@ -75,7 +75,6 @@ async function getPostgresTimestamp(): Promise<number> {
         await client.connect();
         const res = await client.query('SELECT NOW() as current_time');
         let date = res.rows[0].current_time as Date;
-        console.log("Now: ", date.getTime());
         return date.getTime();
 
     } finally {

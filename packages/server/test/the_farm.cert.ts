@@ -41,15 +41,12 @@ export function ServerCertificiation(setup: () => Promise<void>, plugins: Record
             app = await init(config, plugins);
         } catch (e) {
             console.error(e);
-            console.log(JSON.stringify(config, null, 2));
             throw e;
         }
 
         let port = config.port;
 
-        server = await app.listen(port, () => {
-            console.log(`Server running on http://localhost:${port}`);
-        });
+        server = await app.listen(port);
 
         // Build API clients
         try {
@@ -60,7 +57,6 @@ export function ServerCertificiation(setup: () => Promise<void>, plugins: Record
             await buildModels(getDBTime ? getDBTime : getSystemTimestamp);
         } catch (e) {
             console.error(e);
-            console.log(JSON.stringify(config, null, 2));
             throw e;
         }
     }, 60000);
@@ -244,6 +240,7 @@ async function getSwaggerDocs(config: Config) {
                 txt = await response.text();
                 doc = JSON.parse(txt);
             }catch (e) {
+                console.error("Failed to parse swagger doc:", e);
                 console.log("Body found: ", txt);
             }
 
@@ -312,6 +309,4 @@ async function buildModels(now: () => Promise<number>) {
     savedHens.forEach((hen: any) => {
         hen_ids[hen.data.name] = hen.headers['x-canonical-id'];
     });
-
-    console.log('Hens:', JSON.stringify(hen_ids));
 }

@@ -18,7 +18,6 @@ let environment: StartedDockerComposeEnvironment;
 
 describe.sequential('Farm Service Smoke Test', () => {
     beforeAll(async () => {
-        console.log('Starting Docker Compose environment...');
         const startTime = Date.now();
         
         // Start the docker-compose environment
@@ -28,16 +27,9 @@ describe.sequential('Farm Service Smoke Test', () => {
             .withWaitStrategy('mongodb', Wait.forLogMessage('Waiting for connections'))
             .up();
 
-        console.log(`Docker Compose started in ${Date.now() - startTime}ms`);
-        
-        console.log('Fetching Swagger docs...');
         const swagger_docs: Document[] = await getSwaggerDocs();
-        console.log('Building API clients...');
         await buildApi(swagger_docs, '');
-        console.log('Building test models...');
         await buildModels();
-        
-        console.log(`Total setup time: ${Date.now() - startTime}ms`);
     }, 300000); // Increase timeout for container startup
 
     afterAll(async () => {
@@ -90,7 +82,6 @@ async function getSwaggerDocs() {
             if (attempt === maxRetries) {
                 throw error;
             }
-            console.log(`Attempt ${attempt} failed, retrying in ${retryDelay}ms...`);
             await new Promise(resolve => setTimeout(resolve, retryDelay));
         }
     }
