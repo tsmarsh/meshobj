@@ -1318,6 +1318,7 @@ __metadata:
     "@types/express": "npm:^4"
     "@types/handlebars": "npm:^4.1.0"
     c8: "npm:^10.1.3"
+    dataloader: "npm:^2.2.2"
     express: "npm:^4.21.2"
     express-graphql: "npm:^0.12.0"
     fetch-mock: "npm:^12.2.0"
@@ -4801,6 +4802,13 @@ __metadata:
   version: 7.0.0
   resolution: "dargs@npm:7.0.0"
   checksum: 10c0/ec7f6a8315a8fa2f8b12d39207615bdf62b4d01f631b96fbe536c8ad5469ab9ed710d55811e564d0d5c1d548fc8cb6cc70bf0939f2415790159f5a75e0f96c92
+  languageName: node
+  linkType: hard
+
+"dataloader@npm:^2.2.2":
+  version: 2.2.3
+  resolution: "dataloader@npm:2.2.3"
+  checksum: 10c0/9b9a056fbc863ca86da87d59e053e871e263b4966aa4d55e40d61a65e96815fae5530ca220629064ca5f8e3000c0c4ec93292e170c38ff393fb34256b4d7c1aa
   languageName: node
   linkType: hard
 
