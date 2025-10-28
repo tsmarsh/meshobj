@@ -4,5 +4,11 @@ export default defineConfig({
     test: {
         hookTimeout: 120000,
         testTimeout: 120000,
+        coverage: {
+            provider: 'v8',
+            include: ['test/**/*.ts', 'src/**/*.ts'],
+            exclude: ['**/*.d.ts'],
+            all: false,
+        },
     },
 });

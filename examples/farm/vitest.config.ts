@@ -6,7 +6,9 @@ export default defineConfig({
         testTimeout: 120000, // optional, for consistency
         coverage: {
             reportsDirectory: '../../coverage',
-            exclude: ['**/dist/**'],
+            include: ['test/**/*.ts'],
+            exclude: ['**/*.d.ts'],
+            all: false,
         },
     },
 

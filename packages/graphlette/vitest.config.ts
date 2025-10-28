@@ -9,7 +9,9 @@ export default defineConfig({
         testTimeout: 120_000,
         coverage: {
             provider: 'v8',
-            exclude: ['**/dist/**', '**/examples/**', '**/*.d.ts'],
+            include: ['src/**/*.ts'],
+            exclude: ['**/*.d.ts'],
+            all: false,
         },
     },
     esbuild: {
