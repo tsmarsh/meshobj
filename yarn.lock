@@ -1280,6 +1280,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@meshobj/mongo_repo@workspace:packages/mongo_repo"
   dependencies:
+    "@cucumber/cucumber": "npm:^12.2.0"
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/common": "npm:^0.2.0"
     "@meshobj/graphlette": "npm:^0.2.0"
@@ -1300,6 +1301,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@meshobj/mysql_repo@workspace:packages/mysql_repo"
   dependencies:
+    "@cucumber/cucumber": "npm:^12.2.0"
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/common": "npm:^0.2.0"
     "@meshobj/graphlette": "npm:^0.2.0"
@@ -1322,6 +1324,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@meshobj/postgres_repo@workspace:packages/postgres_repo"
   dependencies:
+    "@cucumber/cucumber": "npm:^12.2.0"
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/common": "npm:^0.2.0"
     "@meshobj/graphlette": "npm:^0.2.0"

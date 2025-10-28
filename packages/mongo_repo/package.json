@@ -14,6 +14,7 @@
     "author": "Tom Marsh",
     "license": "MIT",
     "devDependencies": {
+        "@cucumber/cucumber": "^12.2.0",
         "@types/node": "^22.10.6",
         "c8": "^10.1.3",
         "mongodb": "^6.12.0",
@@ -33,7 +34,8 @@
     },
     "scripts": {
         "build": "tsc",
-        "test": "vitest --run --coverage --testTimeout 60000 --hookTimeout 60000"
+        "test": "vitest --run --coverage --testTimeout 60000 --hookTimeout 60000",
+        "test:bdd": "c8 --reporter=text --reporter=html --reporter=json-summary --include='src/**/*.ts' cucumber-js"
     },
     "gitHead": "b6648bde930e8a322c8d1a966e152bc83fa0ad31"
 }
