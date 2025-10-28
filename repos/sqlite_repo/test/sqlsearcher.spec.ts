@@ -1,5 +1,5 @@
 import { Searcher, Envelope, Repository } from '@meshobj/common';
-import { SearcherCertification, TestTemplates } from '../../common/test/certification/searcher.cert';
+import { SearcherCertification, TestTemplates } from '../../packages/common/test/certification/searcher.cert';
 import { DTOFactory } from '@meshobj/graphlette';
 import { NoOp, Auth } from '@meshobj/auth';
 import { compile } from 'handlebars';

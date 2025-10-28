@@ -61,24 +61,61 @@ node packages/cli/dist/cli.js --config path/to/config.conf
 
 ## Architecture
 
-### Core Components
+### Monorepo Structure
+
+The project is organized into three workspaces:
+
+```
+packages/        # Core framework components
+├── server/
+├── cli/
+├── common/
+├── graphlette/
+├── restlette/
+├── auth/
+├── jwt_auth/
+├── casbin_auth/
+└── merminator/
+
+repos/           # Database backend plugins (pluggable architecture)
+├── sqlite_repo/
+├── mongo_repo/
+├── postgres_repo/
+└── mysql_repo/
+
+examples/        # Example applications
+├── farm/
+├── twofarms/
+└── events/
+```
+
+### Core Components (packages/)
 1. **@meshobj/server** - Express-based server combining GraphQL and REST
 2. **@meshobj/cli** - Command-line interface for server management
 3. **@meshobj/merminator** - Generates configuration from Mermaid diagrams
+4. **@meshobj/graphlette** - GraphQL endpoint generator with relationship resolution
+5. **@meshobj/restlette** - REST API generator with OpenAPI docs
+6. **@meshobj/auth** - Authentication interfaces
+7. **@meshobj/jwt_auth** - JWT token authentication
+8. **@meshobj/casbin_auth** - CASBIN role-based authorization
 
-### Database Plugins
-- **@meshobj/mongo_repo** - MongoDB integration
-- **@meshobj/postgres_repo** - PostgreSQL integration  
-- **@meshobj/mysql_repo** - MySQL integration
+### Database Plugins (repos/)
+
+**Plugin Architecture:** Database backends are implemented as separate packages in the `repos/` workspace to emphasize their pluggable nature. Adding support for a new database (e.g., DynamoDB, CouchDB, Redis) follows this pattern:
+
+1. Create new package: `repos/dynamo_repo/`
+2. Implement the `Plugin` interface from `@meshobj/common`:
+   - `createRepository(config)` - CRUD operations
+   - `createSearcher(config, dtoFactory, auth)` - Query operations
+   - `cleanup()` - Resource cleanup
+3. Add BDD test hooks in `test/support/hooks.ts` using database-specific syntax
+4. Register the plugin in `@meshobj/cli`
+
+**Existing Implementations:**
 - **@meshobj/sqlite_repo** - SQLite integration
-
-### API Components
-- **@meshobj/graphlette** - GraphQL endpoint generator with relationship resolution
-- **@meshobj/restlette** - REST API generator with OpenAPI docs
-
-### Authentication
-- **@meshobj/jwt_auth** - JWT token authentication
-- **@meshobj/casbin_auth** - CASBIN role-based authorization
+- **@meshobj/mongo_repo** - MongoDB integration
+- **@meshobj/postgres_repo** - PostgreSQL integration
+- **@meshobj/mysql_repo** - MySQL integration
 
 ## Security Architecture & Common Review Pitfalls
 

@@ -1,10 +1,10 @@
 import { Client, Pool } from 'pg';
 import { PostgresRepository } from '../src/postgresRepo'; // Assuming the repository is in this file
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { RepositoryCertification } from '../../common/test/certification/repository.cert';
+import { RepositoryCertification } from '../../packages/common/test/certification/repository.cert';
 import { Environment } from 'testcontainers/build/types';
 import { describe } from 'vitest';
-import { SearcherCertification } from '../../common/test/certification/searcher.cert';
+import { SearcherCertification } from '../../packages/common/test/certification/searcher.cert';
 
 let container: StartedPostgreSqlContainer | null = null;
 let dbs: Pool[] = []; // To track active connections

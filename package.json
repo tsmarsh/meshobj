@@ -3,6 +3,7 @@
     "private": true,
     "workspaces": [
         "packages/*",
+        "repos/*",
         "examples/*"
     ],
     "engines": {
@@ -10,8 +11,8 @@
     },
     "version": "0.1.0",
     "scripts": {
-        "clean": "rimraf \\\"packages/*/dist\\\" && rimraf \\\"examples/*/dist\\\"",
-        "clean:all": "rimraf \\\"packages/*/dist\\\" && rimraf \\\"examples/*/dist\\\" && rimraf \\\"node_modules\\\" && rimraf \\\"packages/*/node_modules\\\" && rimraf \\\"examples/*/node_modules\\\"",
+        "clean": "rimraf \\\"packages/*/dist\\\" && rimraf \\\"repos/*/dist\\\" && rimraf \\\"examples/*/dist\\\"",
+        "clean:all": "rimraf \\\"packages/*/dist\\\" && rimraf \\\"repos/*/dist\\\" && rimraf \\\"examples/*/dist\\\" && rimraf \\\"node_modules\\\" && rimraf \\\"packages/*/node_modules\\\" && rimraf \\\"repos/*/node_modules\\\" && rimraf \\\"examples/*/node_modules\\\"",
         "build": "lerna run build",
         "qb": "lerna run build --since main",
         "test": "yarn vitest --run --coverage --reporter=basic --reporter=junit --outputFile=test-report.junit.xml",

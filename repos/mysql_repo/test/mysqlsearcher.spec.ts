@@ -1,11 +1,11 @@
-import { SearcherCertification } from '../../common/test/certification/searcher.cert';
+import { SearcherCertification } from '../../packages/common/test/certification/searcher.cert';
 import { createPool, Pool } from 'mysql2/promise';
 import { MySQLSearcher } from '../src/mysqlSearcher';
 import { MySQLRepository } from '../src/mysqlRepo';
 import { compile } from 'handlebars';
 import { GenericContainer, StartedTestContainer } from 'testcontainers';
 import { randomUUID } from 'crypto';
-import { TestTemplates } from '../../common/test/certification/searcher.cert';
+import { TestTemplates } from '../../packages/common/test/certification/searcher.cert';
 import { DTOFactory } from '@meshobj/graphlette';
 import { NoOp } from '@meshobj/auth';
 

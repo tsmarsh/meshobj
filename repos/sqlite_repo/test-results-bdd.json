@@ -14,7 +14,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 1038624
+              "duration": 1078136
             }
           },
           {
@@ -23,11 +23,11 @@
             "line": 7,
             "name": "a fresh repository instance",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:5"
+              "location": "../../packages/common/test/steps/repository.steps.ts:5"
             },
             "result": {
               "status": "passed",
-              "duration": 923759
+              "duration": 766683
             }
           },
           {
@@ -53,11 +53,11 @@
             "line": 10,
             "name": "I create envelopes:",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:22"
+              "location": "../../packages/common/test/steps/repository.steps.ts:22"
             },
             "result": {
               "status": "passed",
-              "duration": 871665
+              "duration": 761535
             }
           },
           {
@@ -66,11 +66,11 @@
             "line": 13,
             "name": "the envelopes should have generated IDs",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:121"
+              "location": "../../packages/common/test/steps/repository.steps.ts:121"
             },
             "result": {
               "status": "passed",
-              "duration": 72521
+              "duration": 75311
             }
           },
           {
@@ -79,11 +79,11 @@
             "line": 14,
             "name": "the envelopes created_at should be greater than or equal to the test start time",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:128"
+              "location": "../../packages/common/test/steps/repository.steps.ts:128"
             },
             "result": {
               "status": "passed",
-              "duration": 43301
+              "duration": 43528
             }
           },
           {
@@ -92,11 +92,11 @@
             "line": 15,
             "name": "the envelopes deleted flag should be false",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:134"
+              "location": "../../packages/common/test/steps/repository.steps.ts:134"
             },
             "result": {
               "status": "passed",
-              "duration": 35842
+              "duration": 35096
             }
           },
           {
@@ -104,7 +104,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 174621
+              "duration": 151365
             }
           }
         ],
@@ -123,7 +123,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 95601
+              "duration": 94763
             }
           },
           {
@@ -132,11 +132,11 @@
             "line": 7,
             "name": "a fresh repository instance",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:5"
+              "location": "../../packages/common/test/steps/repository.steps.ts:5"
             },
             "result": {
               "status": "passed",
-              "duration": 377457
+              "duration": 308207
             }
           },
           {
@@ -162,11 +162,11 @@
             "line": 18,
             "name": "I have created envelopes:",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:12"
+              "location": "../../packages/common/test/steps/repository.steps.ts:12"
             },
             "result": {
               "status": "passed",
-              "duration": 456982
+              "duration": 287798
             }
           },
           {
@@ -175,11 +175,11 @@
             "line": 21,
             "name": "I read envelopes [\"Read Test\"] by their IDs",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:58"
+              "location": "../../packages/common/test/steps/repository.steps.ts:58"
             },
             "result": {
               "status": "passed",
-              "duration": 384434
+              "duration": 330074
             }
           },
           {
@@ -188,11 +188,11 @@
             "line": 22,
             "name": "I should receive 1 envelope",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:140"
+              "location": "../../packages/common/test/steps/repository.steps.ts:140"
             },
             "result": {
               "status": "passed",
-              "duration": 58189
+              "duration": 55010
             }
           },
           {
@@ -201,11 +201,11 @@
             "line": 23,
             "name": "the payload name should be \"Read Test\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:148"
+              "location": "../../packages/common/test/steps/repository.steps.ts:148"
             },
             "result": {
               "status": "passed",
-              "duration": 59879
+              "duration": 59399
             }
           },
           {
@@ -213,7 +213,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 96819
+              "duration": 68073
             }
           }
         ],
@@ -232,7 +232,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 54364
+              "duration": 52806
             }
           },
           {
@@ -241,11 +241,11 @@
             "line": 7,
             "name": "a fresh repository instance",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:5"
+              "location": "../../packages/common/test/steps/repository.steps.ts:5"
             },
             "result": {
               "status": "passed",
-              "duration": 363962
+              "duration": 308548
             }
           },
           {
@@ -283,11 +283,11 @@
             "line": 26,
             "name": "I have created envelopes:",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:12"
+              "location": "../../packages/common/test/steps/repository.steps.ts:12"
             },
             "result": {
               "status": "passed",
-              "duration": 630173
+              "duration": 349871
             }
           },
           {
@@ -296,11 +296,11 @@
             "line": 31,
             "name": "I list all envelopes",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:89"
+              "location": "../../packages/common/test/steps/repository.steps.ts:89"
             },
             "result": {
               "status": "passed",
-              "duration": 314020
+              "duration": 250841
             }
           },
           {
@@ -309,11 +309,11 @@
             "line": 32,
             "name": "I should receive exactly 3 envelopes",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:144"
+              "location": "../../packages/common/test/steps/repository.steps.ts:144"
             },
             "result": {
               "status": "passed",
-              "duration": 44779
+              "duration": 45896
             }
           },
           {
@@ -321,7 +321,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 117819
+              "duration": 63217
             }
           }
         ],
@@ -340,7 +340,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 50377
+              "duration": 51336
             }
           },
           {
@@ -349,11 +349,11 @@
             "line": 7,
             "name": "a fresh repository instance",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:5"
+              "location": "../../packages/common/test/steps/repository.steps.ts:5"
             },
             "result": {
               "status": "passed",
-              "duration": 307377
+              "duration": 222146
             }
           },
           {
@@ -379,11 +379,11 @@
             "line": 35,
             "name": "I have created envelopes:",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:12"
+              "location": "../../packages/common/test/steps/repository.steps.ts:12"
             },
             "result": {
               "status": "passed",
-              "duration": 262003
+              "duration": 193208
             }
           },
           {
@@ -392,11 +392,11 @@
             "line": 38,
             "name": "I remove envelopes [\"Read Test\"] by their IDs",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:74"
+              "location": "../../packages/common/test/steps/repository.steps.ts:74"
             },
             "result": {
               "status": "passed",
-              "duration": 248941
+              "duration": 224844
             }
           },
           {
@@ -405,11 +405,11 @@
             "line": 39,
             "name": "the remove operations should return true",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:158"
+              "location": "../../packages/common/test/steps/repository.steps.ts:158"
             },
             "result": {
               "status": "passed",
-              "duration": 33234
+              "duration": 39234
             }
           },
           {
@@ -418,11 +418,11 @@
             "line": 40,
             "name": "reading envelopes [\"Read Test\"] by their IDs should return nothing",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:104"
+              "location": "../../packages/common/test/steps/repository.steps.ts:104"
             },
             "result": {
               "status": "passed",
-              "duration": 168448
+              "duration": 148182
             }
           },
           {
@@ -430,7 +430,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 50045
+              "duration": 51108
             }
           }
         ],
@@ -449,7 +449,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 41732
+              "duration": 43954
             }
           },
           {
@@ -458,11 +458,11 @@
             "line": 7,
             "name": "a fresh repository instance",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:5"
+              "location": "../../packages/common/test/steps/repository.steps.ts:5"
             },
             "result": {
               "status": "passed",
-              "duration": 228588
+              "duration": 193281
             }
           },
           {
@@ -500,11 +500,11 @@
             "line": 43,
             "name": "I have created envelopes:",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:12"
+              "location": "../../packages/common/test/steps/repository.steps.ts:12"
             },
             "result": {
               "status": "passed",
-              "duration": 212273
+              "duration": 216215
             }
           },
           {
@@ -513,11 +513,11 @@
             "line": 48,
             "name": "I read envelopes [\"test1\", \"test2\"] by their IDs",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:58"
+              "location": "../../packages/common/test/steps/repository.steps.ts:58"
             },
             "result": {
               "status": "passed",
-              "duration": 186220
+              "duration": 197738
             }
           },
           {
@@ -526,11 +526,11 @@
             "line": 49,
             "name": "I should receive exactly 2 envelopes",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:144"
+              "location": "../../packages/common/test/steps/repository.steps.ts:144"
             },
             "result": {
               "status": "passed",
-              "duration": 26108
+              "duration": 27499
             }
           },
           {
@@ -538,7 +538,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 43456
+              "duration": 48075
             }
           }
         ],
@@ -557,7 +557,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 37268
+              "duration": 38872
             }
           },
           {
@@ -566,11 +566,11 @@
             "line": 7,
             "name": "a fresh repository instance",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:5"
+              "location": "../../packages/common/test/steps/repository.steps.ts:5"
             },
             "result": {
               "status": "passed",
-              "duration": 143429
+              "duration": 143981
             }
           },
           {
@@ -608,11 +608,11 @@
             "line": 52,
             "name": "I have created envelopes:",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:12"
+              "location": "../../packages/common/test/steps/repository.steps.ts:12"
             },
             "result": {
               "status": "passed",
-              "duration": 337421
+              "duration": 192958
             }
           },
           {
@@ -621,11 +621,11 @@
             "line": 57,
             "name": "I remove envelopes [\"test1\", \"test2\"] by their IDs",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:74"
+              "location": "../../packages/common/test/steps/repository.steps.ts:74"
             },
             "result": {
               "status": "passed",
-              "duration": 232278
+              "duration": 187130
             }
           },
           {
@@ -634,11 +634,11 @@
             "line": 58,
             "name": "the remove operations should return true for the removed IDs",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:162"
+              "location": "../../packages/common/test/steps/repository.steps.ts:162"
             },
             "result": {
               "status": "passed",
-              "duration": 47103
+              "duration": 47708
             }
           },
           {
@@ -647,11 +647,11 @@
             "line": 59,
             "name": "listing all envelopes should show exactly 1 envelope",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:172"
+              "location": "../../packages/common/test/steps/repository.steps.ts:172"
             },
             "result": {
               "status": "passed",
-              "duration": 118289
+              "duration": 92580
             }
           },
           {
@@ -659,7 +659,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 42179
+              "duration": 47371
             }
           }
         ],
@@ -678,7 +678,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 40528
+              "duration": 39730
             }
           },
           {
@@ -687,11 +687,11 @@
             "line": 7,
             "name": "a fresh repository instance",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:5"
+              "location": "../../packages/common/test/steps/repository.steps.ts:5"
             },
             "result": {
               "status": "passed",
-              "duration": 180771
+              "duration": 136286
             }
           },
           {
@@ -719,11 +719,11 @@
             "line": 62,
             "name": "I create envelopes:",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:22"
+              "location": "../../packages/common/test/steps/repository.steps.ts:22"
             },
             "result": {
               "status": "passed",
-              "duration": 119185
+              "duration": 112314
             }
           },
           {
@@ -732,11 +732,11 @@
             "line": 65,
             "name": "I capture the current timestamp as \"t1\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:32"
+              "location": "../../packages/common/test/steps/repository.steps.ts:32"
             },
             "result": {
               "status": "passed",
-              "duration": 46006
+              "duration": 43914
             }
           },
           {
@@ -745,11 +745,11 @@
             "line": 66,
             "name": "I wait 50 milliseconds",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:36"
+              "location": "../../packages/common/test/steps/repository.steps.ts:36"
             },
             "result": {
               "status": "passed",
-              "duration": 51470642
+              "duration": 51123040
             }
           },
           {
@@ -775,11 +775,11 @@
             "line": 67,
             "name": "I create a new version of envelope \"doc1\":",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:40"
+              "location": "../../packages/common/test/steps/repository.steps.ts:40"
             },
             "result": {
               "status": "passed",
-              "duration": 1125050
+              "duration": 1175271
             }
           },
           {
@@ -788,11 +788,11 @@
             "line": 70,
             "name": "I capture the current timestamp as \"t2\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:32"
+              "location": "../../packages/common/test/steps/repository.steps.ts:32"
             },
             "result": {
               "status": "passed",
-              "duration": 144878
+              "duration": 134649
             }
           },
           {
@@ -801,11 +801,11 @@
             "line": 71,
             "name": "reading envelope \"doc1\" at timestamp \"t2\" should return version \"v2\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:93"
+              "location": "../../packages/common/test/steps/repository.steps.ts:93"
             },
             "result": {
               "status": "passed",
-              "duration": 677461
+              "duration": 919658
             }
           },
           {
@@ -814,11 +814,11 @@
             "line": 72,
             "name": "reading envelope \"doc1\" at timestamp \"t1\" should return version \"v1\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:93"
+              "location": "../../packages/common/test/steps/repository.steps.ts:93"
             },
             "result": {
               "status": "passed",
-              "duration": 547367
+              "duration": 662403
             }
           },
           {
@@ -826,7 +826,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 195518
+              "duration": 291194
             }
           }
         ],
@@ -845,7 +845,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 171399
+              "duration": 178312
             }
           },
           {
@@ -854,11 +854,11 @@
             "line": 7,
             "name": "a fresh repository instance",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:5"
+              "location": "../../packages/common/test/steps/repository.steps.ts:5"
             },
             "result": {
               "status": "passed",
-              "duration": 787282
+              "duration": 811451
             }
           },
           {
@@ -886,11 +886,11 @@
             "line": 75,
             "name": "I create envelopes:",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:22"
+              "location": "../../packages/common/test/steps/repository.steps.ts:22"
             },
             "result": {
               "status": "passed",
-              "duration": 667684
+              "duration": 699908
             }
           },
           {
@@ -899,11 +899,11 @@
             "line": 78,
             "name": "I wait 50 milliseconds",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:36"
+              "location": "../../packages/common/test/steps/repository.steps.ts:36"
             },
             "result": {
               "status": "passed",
-              "duration": 50579482
+              "duration": 50555033
             }
           },
           {
@@ -929,11 +929,11 @@
             "line": 79,
             "name": "I create a new version of envelope \"doc1\":",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:40"
+              "location": "../../packages/common/test/steps/repository.steps.ts:40"
             },
             "result": {
               "status": "passed",
-              "duration": 1259543
+              "duration": 1382644
             }
           },
           {
@@ -942,11 +942,11 @@
             "line": 82,
             "name": "I list all envelopes",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:89"
+              "location": "../../packages/common/test/steps/repository.steps.ts:89"
             },
             "result": {
               "status": "passed",
-              "duration": 979475
+              "duration": 549982
             }
           },
           {
@@ -955,11 +955,11 @@
             "line": 83,
             "name": "I should receive exactly 1 envelope",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:144"
+              "location": "../../packages/common/test/steps/repository.steps.ts:144"
             },
             "result": {
               "status": "passed",
-              "duration": 152844
+              "duration": 105049
             }
           },
           {
@@ -968,11 +968,11 @@
             "line": 84,
             "name": "the payload version should be \"v2\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:153"
+              "location": "../../packages/common/test/steps/repository.steps.ts:153"
             },
             "result": {
               "status": "passed",
-              "duration": 227242
+              "duration": 211745
             }
           },
           {
@@ -980,7 +980,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 356516
+              "duration": 195352
             }
           }
         ],
@@ -993,7 +993,7 @@
     "keyword": "Feature",
     "name": "Repository Contract",
     "tags": [],
-    "uri": "../common/test/features/repository.feature"
+    "uri": "../../packages/common/test/features/repository.feature"
   },
   {
     "description": "  As a database plugin developer\n  I want to implement the Searcher interface correctly\n  So that MeshQL can query data using Handlebars templates across any database",
@@ -1010,7 +1010,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 208236
+              "duration": 200280
             }
           },
           {
@@ -1019,11 +1019,11 @@
             "line": 7,
             "name": "a fresh repository and searcher instance",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:6"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:6"
             },
             "result": {
               "status": "passed",
-              "duration": 2234014
+              "duration": 1502191
             }
           },
           {
@@ -1114,11 +1114,11 @@
             "line": 8,
             "name": "I have created and saved the following test dataset:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:15"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:15"
             },
             "result": {
               "status": "passed",
-              "duration": 5157329
+              "duration": 4072705
             }
           },
           {
@@ -1127,11 +1127,11 @@
             "line": 20,
             "name": "I have removed envelope \"Gretchen\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:32"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:32"
             },
             "result": {
               "status": "passed",
-              "duration": 187934
+              "duration": 790684
             }
           },
           {
@@ -1140,11 +1140,11 @@
             "line": 21,
             "name": "I have updated envelope \"Casie\" to \"Cassie\" with count 10",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:38"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:38"
             },
             "result": {
               "status": "passed",
-              "duration": 151697
+              "duration": 760823
             }
           },
           {
@@ -1168,11 +1168,11 @@
             "line": 24,
             "name": "I search using template \"findById\" with parameters:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:52"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:52"
             },
             "result": {
               "status": "passed",
-              "duration": 11321159
+              "duration": 13486088
             }
           },
           {
@@ -1181,11 +1181,11 @@
             "line": 27,
             "name": "the search result should be empty",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:90"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:90"
             },
             "result": {
               "status": "passed",
-              "duration": 814613
+              "duration": 642977
             }
           },
           {
@@ -1193,7 +1193,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 101963
+              "duration": 85399
             }
           }
         ],
@@ -1212,7 +1212,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 61517
+              "duration": 53124
             }
           },
           {
@@ -1221,11 +1221,11 @@
             "line": 7,
             "name": "a fresh repository and searcher instance",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:6"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:6"
             },
             "result": {
               "status": "passed",
-              "duration": 371893
+              "duration": 314089
             }
           },
           {
@@ -1316,11 +1316,11 @@
             "line": 8,
             "name": "I have created and saved the following test dataset:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:15"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:15"
             },
             "result": {
               "status": "passed",
-              "duration": 1130341
+              "duration": 859922
             }
           },
           {
@@ -1329,11 +1329,11 @@
             "line": 20,
             "name": "I have removed envelope \"Gretchen\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:32"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:32"
             },
             "result": {
               "status": "passed",
-              "duration": 187581
+              "duration": 180785
             }
           },
           {
@@ -1342,11 +1342,11 @@
             "line": 21,
             "name": "I have updated envelope \"Casie\" to \"Cassie\" with count 10",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:38"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:38"
             },
             "result": {
               "status": "passed",
-              "duration": 2402615
+              "duration": 2342067
             }
           },
           {
@@ -1370,11 +1370,11 @@
             "line": 30,
             "name": "I search using template \"findById\" with parameters:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:52"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:52"
             },
             "result": {
               "status": "passed",
-              "duration": 1439654
+              "duration": 1118472
             }
           },
           {
@@ -1383,11 +1383,11 @@
             "line": 33,
             "name": "the search result should have name \"Bruce\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:94"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:94"
             },
             "result": {
               "status": "passed",
-              "duration": 72588
+              "duration": 60731
             }
           },
           {
@@ -1396,11 +1396,11 @@
             "line": 34,
             "name": "the search result should have count 1",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:98"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:98"
             },
             "result": {
               "status": "passed",
-              "duration": 43011
+              "duration": 35060
             }
           },
           {
@@ -1408,7 +1408,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 83844
+              "duration": 63326
             }
           }
         ],
@@ -1427,7 +1427,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 72326
+              "duration": 63050
             }
           },
           {
@@ -1436,11 +1436,11 @@
             "line": 7,
             "name": "a fresh repository and searcher instance",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:6"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:6"
             },
             "result": {
               "status": "passed",
-              "duration": 346688
+              "duration": 172297
             }
           },
           {
@@ -1531,11 +1531,11 @@
             "line": 8,
             "name": "I have created and saved the following test dataset:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:15"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:15"
             },
             "result": {
               "status": "passed",
-              "duration": 859509
+              "duration": 618933
             }
           },
           {
@@ -1544,11 +1544,11 @@
             "line": 20,
             "name": "I have removed envelope \"Gretchen\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:32"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:32"
             },
             "result": {
               "status": "passed",
-              "duration": 131162
+              "duration": 107996
             }
           },
           {
@@ -1557,11 +1557,11 @@
             "line": 21,
             "name": "I have updated envelope \"Casie\" to \"Cassie\" with count 10",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:38"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:38"
             },
             "result": {
               "status": "passed",
-              "duration": 2286980
+              "duration": 2233551
             }
           },
           {
@@ -1585,11 +1585,11 @@
             "line": 37,
             "name": "I search using template \"findByName\" with parameters:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:52"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:52"
             },
             "result": {
               "status": "passed",
-              "duration": 1204836
+              "duration": 767182
             }
           },
           {
@@ -1598,11 +1598,11 @@
             "line": 40,
             "name": "the search result should have name \"Ewan\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:94"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:94"
             },
             "result": {
               "status": "passed",
-              "duration": 65391
+              "duration": 33340
             }
           },
           {
@@ -1610,7 +1610,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 81174
+              "duration": 41580
             }
           }
         ],
@@ -1629,7 +1629,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 58904
+              "duration": 36799
             }
           },
           {
@@ -1638,11 +1638,11 @@
             "line": 7,
             "name": "a fresh repository and searcher instance",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:6"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:6"
             },
             "result": {
               "status": "passed",
-              "duration": 273725
+              "duration": 171529
             }
           },
           {
@@ -1733,11 +1733,11 @@
             "line": 8,
             "name": "I have created and saved the following test dataset:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:15"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:15"
             },
             "result": {
               "status": "passed",
-              "duration": 1047147
+              "duration": 600069
             }
           },
           {
@@ -1746,11 +1746,11 @@
             "line": 20,
             "name": "I have removed envelope \"Gretchen\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:32"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:32"
             },
             "result": {
               "status": "passed",
-              "duration": 260215
+              "duration": 159177
             }
           },
           {
@@ -1759,11 +1759,11 @@
             "line": 21,
             "name": "I have updated envelope \"Casie\" to \"Cassie\" with count 10",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:38"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:38"
             },
             "result": {
               "status": "passed",
-              "duration": 206760
+              "duration": 2206972
             }
           },
           {
@@ -1787,11 +1787,11 @@
             "line": 43,
             "name": "I search all using template \"findAllByType\" with parameters:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:71"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:71"
             },
             "result": {
               "status": "passed",
-              "duration": 2312414
+              "duration": 966206
             }
           },
           {
@@ -1800,11 +1800,11 @@
             "line": 46,
             "name": "I should receive exactly 5 results",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:102"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:102"
             },
             "result": {
               "status": "passed",
-              "duration": 110357
+              "duration": 45943
             }
           },
           {
@@ -1813,11 +1813,11 @@
             "line": 47,
             "name": "the results should include an envelope with name \"Charlie\" and count 2",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:106"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:106"
             },
             "result": {
               "status": "passed",
-              "duration": 147856
+              "duration": 53304
             }
           },
           {
@@ -1825,7 +1825,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 144882
+              "duration": 58161
             }
           }
         ],
@@ -1844,7 +1844,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 106770
+              "duration": 35397
             }
           },
           {
@@ -1853,11 +1853,11 @@
             "line": 7,
             "name": "a fresh repository and searcher instance",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:6"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:6"
             },
             "result": {
               "status": "passed",
-              "duration": 435989
+              "duration": 212254
             }
           },
           {
@@ -1948,11 +1948,11 @@
             "line": 8,
             "name": "I have created and saved the following test dataset:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:15"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:15"
             },
             "result": {
               "status": "passed",
-              "duration": 1725242
+              "duration": 861197
             }
           },
           {
@@ -1961,11 +1961,11 @@
             "line": 20,
             "name": "I have removed envelope \"Gretchen\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:32"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:32"
             },
             "result": {
               "status": "passed",
-              "duration": 266522
+              "duration": 123327
             }
           },
           {
@@ -1974,11 +1974,11 @@
             "line": 21,
             "name": "I have updated envelope \"Casie\" to \"Cassie\" with count 10",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:38"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:38"
             },
             "result": {
               "status": "passed",
-              "duration": 2465072
+              "duration": 2199023
             }
           },
           {
@@ -2004,11 +2004,11 @@
             "line": 50,
             "name": "I search all using template \"findByNameAndType\" with parameters:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:71"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:71"
             },
             "result": {
               "status": "passed",
-              "duration": 2607475
+              "duration": 929759
             }
           },
           {
@@ -2017,11 +2017,11 @@
             "line": 53,
             "name": "I should receive exactly 1 result",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:102"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:102"
             },
             "result": {
               "status": "passed",
-              "duration": 76012
+              "duration": 27792
             }
           },
           {
@@ -2030,11 +2030,11 @@
             "line": 54,
             "name": "the results should include an envelope with name \"Henry\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:111"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:111"
             },
             "result": {
               "status": "passed",
-              "duration": 147908
+              "duration": 56800
             }
           },
           {
@@ -2042,7 +2042,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 137037
+              "duration": 48586
             }
           }
         ],
@@ -2061,7 +2061,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 73167
+              "duration": 34243
             }
           },
           {
@@ -2070,11 +2070,11 @@
             "line": 7,
             "name": "a fresh repository and searcher instance",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:6"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:6"
             },
             "result": {
               "status": "passed",
-              "duration": 330566
+              "duration": 152134
             }
           },
           {
@@ -2165,11 +2165,11 @@
             "line": 8,
             "name": "I have created and saved the following test dataset:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:15"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:15"
             },
             "result": {
               "status": "passed",
-              "duration": 1170198
+              "duration": 542977
             }
           },
           {
@@ -2178,11 +2178,11 @@
             "line": 20,
             "name": "I have removed envelope \"Gretchen\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:32"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:32"
             },
             "result": {
               "status": "passed",
-              "duration": 168659
+              "duration": 98679
             }
           },
           {
@@ -2191,11 +2191,11 @@
             "line": 21,
             "name": "I have updated envelope \"Casie\" to \"Cassie\" with count 10",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:38"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:38"
             },
             "result": {
               "status": "passed",
-              "duration": 2362492
+              "duration": 126149
             }
           },
           {
@@ -2219,11 +2219,11 @@
             "line": 57,
             "name": "I search all using template \"findAllByType\" with parameters:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:71"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:71"
             },
             "result": {
               "status": "passed",
-              "duration": 1446942
+              "duration": 2340124
             }
           },
           {
@@ -2232,11 +2232,11 @@
             "line": 60,
             "name": "I should receive exactly 0 results",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:102"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:102"
             },
             "result": {
               "status": "passed",
-              "duration": 59150
+              "duration": 29850
             }
           },
           {
@@ -2244,7 +2244,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 83642
+              "duration": 40308
             }
           }
         ],
@@ -2263,7 +2263,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 63889
+              "duration": 28566
             }
           },
           {
@@ -2272,11 +2272,11 @@
             "line": 7,
             "name": "a fresh repository and searcher instance",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:6"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:6"
             },
             "result": {
               "status": "passed",
-              "duration": 248706
+              "duration": 111775
             }
           },
           {
@@ -2367,11 +2367,11 @@
             "line": 8,
             "name": "I have created and saved the following test dataset:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:15"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:15"
             },
             "result": {
               "status": "passed",
-              "duration": 1015675
+              "duration": 431745
             }
           },
           {
@@ -2380,11 +2380,11 @@
             "line": 20,
             "name": "I have removed envelope \"Gretchen\"",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:32"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:32"
             },
             "result": {
               "status": "passed",
-              "duration": 232883
+              "duration": 80920
             }
           },
           {
@@ -2393,11 +2393,11 @@
             "line": 21,
             "name": "I have updated envelope \"Casie\" to \"Cassie\" with count 10",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:38"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:38"
             },
             "result": {
               "status": "passed",
-              "duration": 2314009
+              "duration": 2192451
             }
           },
           {
@@ -2421,11 +2421,11 @@
             "line": 63,
             "name": "I search all using template \"findByNameAndType\" with parameters:",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:71"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:71"
             },
             "result": {
               "status": "passed",
-              "duration": 1351297
+              "duration": 689336
             }
           },
           {
@@ -2434,11 +2434,11 @@
             "line": 66,
             "name": "I should receive exactly 0 results",
             "match": {
-              "location": "../common/test/steps/searcher.steps.ts:102"
+              "location": "../../packages/common/test/steps/searcher.steps.ts:102"
             },
             "result": {
               "status": "passed",
-              "duration": 49807
+              "duration": 29558
             }
           },
           {
@@ -2446,7 +2446,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 73052
+              "duration": 35171
             }
           }
         ],
@@ -2459,6 +2459,6 @@
     "keyword": "Feature",
     "name": "Searcher Contract",
     "tags": [],
-    "uri": "../common/test/features/searcher.feature"
+    "uri": "../../packages/common/test/features/searcher.feature"
   }
 ]

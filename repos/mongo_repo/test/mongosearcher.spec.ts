@@ -1,5 +1,5 @@
 import { Searcher, Envelope, Repository } from '@meshobj/common';
-import { SearcherCertification, TestTemplates } from '../../common/test/certification/searcher.cert';
+import { SearcherCertification, TestTemplates } from '../../packages/common/test/certification/searcher.cert';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoRepository } from '../src/mongoRepo';
 import { Collection, MongoClient } from 'mongodb';

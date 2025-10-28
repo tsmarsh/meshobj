@@ -1276,9 +1276,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/mongo_repo@npm:^0.2.0, @meshobj/mongo_repo@workspace:packages/mongo_repo":
+"@meshobj/mongo_repo@npm:^0.2.0, @meshobj/mongo_repo@workspace:repos/mongo_repo":
   version: 0.0.0-use.local
-  resolution: "@meshobj/mongo_repo@workspace:packages/mongo_repo"
+  resolution: "@meshobj/mongo_repo@workspace:repos/mongo_repo"
   dependencies:
     "@cucumber/cucumber": "npm:^12.2.0"
     "@meshobj/auth": "npm:^0.2.0"
@@ -1297,9 +1297,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/mysql_repo@npm:^0.2.0, @meshobj/mysql_repo@workspace:packages/mysql_repo":
+"@meshobj/mysql_repo@npm:^0.2.0, @meshobj/mysql_repo@workspace:repos/mysql_repo":
   version: 0.0.0-use.local
-  resolution: "@meshobj/mysql_repo@workspace:packages/mysql_repo"
+  resolution: "@meshobj/mysql_repo@workspace:repos/mysql_repo"
   dependencies:
     "@cucumber/cucumber": "npm:^12.2.0"
     "@meshobj/auth": "npm:^0.2.0"
@@ -1320,9 +1320,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/postgres_repo@npm:^0.2.0, @meshobj/postgres_repo@workspace:packages/postgres_repo":
+"@meshobj/postgres_repo@npm:^0.2.0, @meshobj/postgres_repo@workspace:repos/postgres_repo":
   version: 0.0.0-use.local
-  resolution: "@meshobj/postgres_repo@workspace:packages/postgres_repo"
+  resolution: "@meshobj/postgres_repo@workspace:repos/postgres_repo"
   dependencies:
     "@cucumber/cucumber": "npm:^12.2.0"
     "@meshobj/auth": "npm:^0.2.0"
@@ -1411,9 +1411,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/sqlite_repo@npm:^0.2.0, @meshobj/sqlite_repo@workspace:packages/sqlite_repo":
+"@meshobj/sqlite_repo@npm:^0.2.0, @meshobj/sqlite_repo@workspace:repos/sqlite_repo":
   version: 0.0.0-use.local
-  resolution: "@meshobj/sqlite_repo@workspace:packages/sqlite_repo"
+  resolution: "@meshobj/sqlite_repo@workspace:repos/sqlite_repo"
   dependencies:
     "@cucumber/cucumber": "npm:^12.2.0"
     "@meshobj/auth": "npm:^0.2.0"

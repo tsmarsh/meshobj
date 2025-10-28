@@ -1,5 +1,5 @@
 import { Repository } from '@meshobj/common';
-import { RepositoryCertification } from '../../common/test/certification/repository.cert';
+import { RepositoryCertification } from '../../packages/common/test/certification/repository.cert';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoRepository } from '../src/mongoRepo';
 import { MongoClient } from 'mongodb';
