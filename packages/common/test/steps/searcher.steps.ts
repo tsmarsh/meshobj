@@ -44,7 +44,7 @@ Given('I have updated envelope {string} to {string} with count {int}', async fun
 
 When('I search using template {string} with parameters:', async function(this: TestWorld, templateName: string, dataTable: DataTable) {
     const rows = dataTable.hashes();
-    const params = rows[0];
+    const params = {...rows[0]};  // Copy to allow mutations
 
     if (!this.templates?.[templateName]) {
         throw new Error(`Template "${templateName}" not found`);
@@ -55,7 +55,7 @@ When('I search using template {string} with parameters:', async function(this: T
 
 When('I search all using template {string} with parameters:', async function(this: TestWorld, templateName: string, dataTable: DataTable) {
     const rows = dataTable.hashes();
-    const params = rows[0];
+    const params = {...rows[0]};  // Copy to allow mutations
 
     if (!this.templates?.[templateName]) {
         throw new Error(`Template "${templateName}" not found`);

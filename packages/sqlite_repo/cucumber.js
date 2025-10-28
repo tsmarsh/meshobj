@@ -2,6 +2,7 @@ module.exports = {
     default: {
         requireModule: ['ts-node/register'],
         require: [
+            '../common/test/support/**/*.ts',
             '../common/test/steps/**/*.ts',
             'test/support/**/*.ts'
         ],

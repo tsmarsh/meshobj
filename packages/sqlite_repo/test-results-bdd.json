@@ -14,7 +14,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 884461
+              "duration": 925557
             }
           },
           {
@@ -26,9 +26,8 @@
               "location": "../common/test/steps/repository.steps.ts:5"
             },
             "result": {
-              "status": "failed",
-              "duration": 604389,
-              "error_message": "Error: SQLITE_ERROR: near \".02973059719405824\": syntax error"
+              "status": "passed",
+              "duration": 864521
             }
           },
           {
@@ -53,9 +52,12 @@
             "keyword": "When ",
             "line": 10,
             "name": "I create envelopes:",
+            "match": {
+              "location": "../common/test/steps/repository.steps.ts:21"
+            },
             "result": {
-              "status": "ambiguous",
-              "duration": 0
+              "status": "passed",
+              "duration": 785446
             }
           },
           {
@@ -64,11 +66,11 @@
             "line": 13,
             "name": "the envelopes should have generated IDs",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:128"
+              "location": "../common/test/steps/repository.steps.ts:119"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 59796
             }
           },
           {
@@ -77,11 +79,11 @@
             "line": 14,
             "name": "the envelopes created_at should be greater than or equal to the test start time",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:135"
+              "location": "../common/test/steps/repository.steps.ts:126"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 43110
             }
           },
           {
@@ -90,11 +92,11 @@
             "line": 15,
             "name": "the envelopes deleted flag should be false",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:141"
+              "location": "../common/test/steps/repository.steps.ts:132"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 50304
             }
           },
           {
@@ -102,7 +104,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 178740
+              "duration": 1416727
             }
           }
         ],
@@ -121,7 +123,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 86454
+              "duration": 63020
             }
           },
           {
@@ -133,9 +135,8 @@
               "location": "../common/test/steps/repository.steps.ts:5"
             },
             "result": {
-              "status": "failed",
-              "duration": 243367,
-              "error_message": "Error: SQLITE_ERROR: near \".6954067503944843\": syntax error"
+              "status": "passed",
+              "duration": 437123
             }
           },
           {
@@ -164,8 +165,8 @@
               "location": "../common/test/steps/repository.steps.ts:12"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 493028
             }
           },
           {
@@ -173,9 +174,12 @@
             "keyword": "When ",
             "line": 21,
             "name": "I read envelopes [\"Read Test\"] by their IDs",
+            "match": {
+              "location": "../common/test/steps/repository.steps.ts:56"
+            },
             "result": {
-              "status": "undefined",
-              "duration": 0
+              "status": "passed",
+              "duration": 395745
             }
           },
           {
@@ -184,11 +188,11 @@
             "line": 22,
             "name": "I should receive 1 envelope",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:147"
+              "location": "../common/test/steps/repository.steps.ts:138"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 51195
             }
           },
           {
@@ -197,11 +201,12 @@
             "line": 23,
             "name": "the payload name should be \"Read Test\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:155"
+              "location": "../common/test/steps/repository.steps.ts:146"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "failed",
+              "duration": 1256636,
+              "error_message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'Read Test'\n    at TestWorld.<anonymous> (/tank/repos/meshobj/packages/common/test/steps/repository.steps.ts:147:12)"
             }
           },
           {
@@ -209,7 +214,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 65888
+              "duration": 150934
             }
           }
         ],
@@ -228,7 +233,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 79450
+              "duration": 83438
             }
           },
           {
@@ -240,9 +245,8 @@
               "location": "../common/test/steps/repository.steps.ts:5"
             },
             "result": {
-              "status": "failed",
-              "duration": 259846,
-              "error_message": "Error: SQLITE_ERROR: near \".5587272916797832\": syntax error"
+              "status": "passed",
+              "duration": 245065
             }
           },
           {
@@ -283,8 +287,8 @@
               "location": "../common/test/steps/repository.steps.ts:12"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 633840
             }
           },
           {
@@ -293,11 +297,11 @@
             "line": 31,
             "name": "I list all envelopes",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:96"
+              "location": "../common/test/steps/repository.steps.ts:87"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 277300
             }
           },
           {
@@ -306,11 +310,11 @@
             "line": 32,
             "name": "I should receive exactly 3 envelopes",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:151"
+              "location": "../common/test/steps/repository.steps.ts:142"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 71099
             }
           },
           {
@@ -318,7 +322,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 87377
+              "duration": 62285
             }
           }
         ],
@@ -337,7 +341,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 79606
+              "duration": 50568
             }
           },
           {
@@ -349,9 +353,8 @@
               "location": "../common/test/steps/repository.steps.ts:5"
             },
             "result": {
-              "status": "failed",
-              "duration": 220250,
-              "error_message": "Error: SQLITE_ERROR: near \".17498017184962356\": syntax error"
+              "status": "passed",
+              "duration": 151771
             }
           },
           {
@@ -380,8 +383,8 @@
               "location": "../common/test/steps/repository.steps.ts:12"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 137651
             }
           },
           {
@@ -389,9 +392,12 @@
             "keyword": "When ",
             "line": 38,
             "name": "I remove envelopes [\"Read Test\"] by their IDs",
+            "match": {
+              "location": "../common/test/steps/repository.steps.ts:72"
+            },
             "result": {
-              "status": "undefined",
-              "duration": 0
+              "status": "passed",
+              "duration": 147690
             }
           },
           {
@@ -400,11 +406,11 @@
             "line": 39,
             "name": "the remove operations should return true",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:164"
+              "location": "../common/test/steps/repository.steps.ts:155"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 29107
             }
           },
           {
@@ -412,9 +418,12 @@
             "keyword": "And ",
             "line": 40,
             "name": "reading envelopes [\"Read Test\"] by their IDs should return nothing",
+            "match": {
+              "location": "../common/test/steps/repository.steps.ts:102"
+            },
             "result": {
-              "status": "undefined",
-              "duration": 0
+              "status": "passed",
+              "duration": 111657
             }
           },
           {
@@ -422,7 +431,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 93630
+              "duration": 73012
             }
           }
         ],
@@ -441,7 +450,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 43272
+              "duration": 56729
             }
           },
           {
@@ -453,9 +462,8 @@
               "location": "../common/test/steps/repository.steps.ts:5"
             },
             "result": {
-              "status": "failed",
-              "duration": 132275,
-              "error_message": "Error: SQLITE_ERROR: near \".6145576529974601\": syntax error"
+              "status": "passed",
+              "duration": 141578
             }
           },
           {
@@ -496,8 +504,8 @@
               "location": "../common/test/steps/repository.steps.ts:12"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 214803
             }
           },
           {
@@ -505,9 +513,12 @@
             "keyword": "When ",
             "line": 48,
             "name": "I read envelopes [\"test1\", \"test2\"] by their IDs",
+            "match": {
+              "location": "../common/test/steps/repository.steps.ts:56"
+            },
             "result": {
-              "status": "undefined",
-              "duration": 0
+              "status": "passed",
+              "duration": 197477
             }
           },
           {
@@ -516,11 +527,11 @@
             "line": 49,
             "name": "I should receive exactly 2 envelopes",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:151"
+              "location": "../common/test/steps/repository.steps.ts:142"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 23312
             }
           },
           {
@@ -528,7 +539,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 84190
+              "duration": 71173
             }
           }
         ],
@@ -547,7 +558,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 39124
+              "duration": 30690
             }
           },
           {
@@ -559,9 +570,8 @@
               "location": "../common/test/steps/repository.steps.ts:5"
             },
             "result": {
-              "status": "failed",
-              "duration": 186106,
-              "error_message": "Error: SQLITE_ERROR: near \".04716703181359905\": syntax error"
+              "status": "passed",
+              "duration": 112115
             }
           },
           {
@@ -602,8 +612,8 @@
               "location": "../common/test/steps/repository.steps.ts:12"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 239917
             }
           },
           {
@@ -611,9 +621,12 @@
             "keyword": "When ",
             "line": 57,
             "name": "I remove envelopes [\"test1\", \"test2\"] by their IDs",
+            "match": {
+              "location": "../common/test/steps/repository.steps.ts:72"
+            },
             "result": {
-              "status": "undefined",
-              "duration": 0
+              "status": "passed",
+              "duration": 162788
             }
           },
           {
@@ -622,11 +635,11 @@
             "line": 58,
             "name": "the remove operations should return true for the removed IDs",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:168"
+              "location": "../common/test/steps/repository.steps.ts:159"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 37205
             }
           },
           {
@@ -635,11 +648,11 @@
             "line": 59,
             "name": "listing all envelopes should show exactly 1 envelope",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:178"
+              "location": "../common/test/steps/repository.steps.ts:169"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 85670
             }
           },
           {
@@ -647,7 +660,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 58657
+              "duration": 29208
             }
           }
         ],
@@ -666,7 +679,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 59428
+              "duration": 24636
             }
           },
           {
@@ -678,9 +691,8 @@
               "location": "../common/test/steps/repository.steps.ts:5"
             },
             "result": {
-              "status": "failed",
-              "duration": 115770,
-              "error_message": "Error: SQLITE_ERROR: near \".8479601481579322\": syntax error"
+              "status": "passed",
+              "duration": 143123
             }
           },
           {
@@ -707,9 +719,12 @@
             "keyword": "Given ",
             "line": 62,
             "name": "I create envelopes:",
+            "match": {
+              "location": "../common/test/steps/repository.steps.ts:21"
+            },
             "result": {
-              "status": "ambiguous",
-              "duration": 0
+              "status": "passed",
+              "duration": 99167
             }
           },
           {
@@ -721,8 +736,8 @@
               "location": "../common/test/steps/repository.steps.ts:30"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 37767
             }
           },
           {
@@ -734,8 +749,8 @@
               "location": "../common/test/steps/repository.steps.ts:34"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 51155033
             }
           },
           {
@@ -761,11 +776,11 @@
             "line": 67,
             "name": "I create a new version of envelope \"doc1\":",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:47"
+              "location": "../common/test/steps/repository.steps.ts:38"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 1155068
             }
           },
           {
@@ -777,8 +792,8 @@
               "location": "../common/test/steps/repository.steps.ts:30"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 140372
             }
           },
           {
@@ -787,11 +802,11 @@
             "line": 71,
             "name": "reading envelope \"doc1\" at timestamp \"t2\" should return version \"v2\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:100"
+              "location": "../common/test/steps/repository.steps.ts:91"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 618979
             }
           },
           {
@@ -800,11 +815,11 @@
             "line": 72,
             "name": "reading envelope \"doc1\" at timestamp \"t1\" should return version \"v1\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:100"
+              "location": "../common/test/steps/repository.steps.ts:91"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 592562
             }
           },
           {
@@ -812,7 +827,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 98930
+              "duration": 385113
             }
           }
         ],
@@ -831,7 +846,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 34987
+              "duration": 329243
             }
           },
           {
@@ -843,9 +858,8 @@
               "location": "../common/test/steps/repository.steps.ts:5"
             },
             "result": {
-              "status": "failed",
-              "duration": 161045,
-              "error_message": "Error: SQLITE_ERROR: near \".10935518843701253\": syntax error"
+              "status": "passed",
+              "duration": 706065
             }
           },
           {
@@ -872,9 +886,12 @@
             "keyword": "Given ",
             "line": 75,
             "name": "I create envelopes:",
+            "match": {
+              "location": "../common/test/steps/repository.steps.ts:21"
+            },
             "result": {
-              "status": "ambiguous",
-              "duration": 0
+              "status": "passed",
+              "duration": 526631
             }
           },
           {
@@ -886,8 +903,8 @@
               "location": "../common/test/steps/repository.steps.ts:34"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 50416592
             }
           },
           {
@@ -913,11 +930,11 @@
             "line": 79,
             "name": "I create a new version of envelope \"doc1\":",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:47"
+              "location": "../common/test/steps/repository.steps.ts:38"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 1444817
             }
           },
           {
@@ -926,11 +943,11 @@
             "line": 82,
             "name": "I list all envelopes",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:96"
+              "location": "../common/test/steps/repository.steps.ts:87"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 757053
             }
           },
           {
@@ -939,11 +956,11 @@
             "line": 83,
             "name": "I should receive exactly 1 envelope",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:151"
+              "location": "../common/test/steps/repository.steps.ts:142"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 124606
             }
           },
           {
@@ -952,11 +969,11 @@
             "line": 84,
             "name": "the payload version should be \"v2\"",
             "match": {
-              "location": "../common/test/steps/repository.steps.ts:159"
+              "location": "../common/test/steps/repository.steps.ts:150"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 180098
             }
           },
           {
@@ -964,7 +981,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 50432
+              "duration": 188975
             }
           }
         ],
@@ -994,7 +1011,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 30164
+              "duration": 127924
             }
           },
           {
@@ -1006,9 +1023,8 @@
               "location": "../common/test/steps/searcher.steps.ts:6"
             },
             "result": {
-              "status": "failed",
-              "duration": 182544,
-              "error_message": "Error: SQLITE_ERROR: near \".5947956268969306\": syntax error"
+              "status": "passed",
+              "duration": 1347771
             }
           },
           {
@@ -1102,8 +1118,8 @@
               "location": "../common/test/steps/searcher.steps.ts:15"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 4632310
             }
           },
           {
@@ -1115,8 +1131,8 @@
               "location": "../common/test/steps/searcher.steps.ts:25"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 719005
             }
           },
           {
@@ -1128,8 +1144,8 @@
               "location": "../common/test/steps/searcher.steps.ts:31"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 636060
             }
           },
           {
@@ -1152,8 +1168,9 @@
               "location": "../common/test/steps/searcher.steps.ts:45"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "failed",
+              "duration": 842472,
+              "error_message": "TypeError: Cannot set properties of undefined (setting '_created_at')\n    at SQLiteSearcher.find (/tank/repos/meshobj/packages/sqlite_repo/src/sqliteSearcher.ts:58:25)\n    at TestWorld.<anonymous> (/tank/repos/meshobj/packages/common/test/steps/searcher.steps.ts:53:46)"
             }
           },
           {
@@ -1174,7 +1191,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 75599
+              "duration": 213520
             }
           }
         ],
@@ -1193,7 +1210,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 49183
+              "duration": 272672
             }
           },
           {
@@ -1205,9 +1222,8 @@
               "location": "../common/test/steps/searcher.steps.ts:6"
             },
             "result": {
-              "status": "failed",
-              "duration": 122114,
-              "error_message": "Error: SQLITE_ERROR: near \".9598159147645491\": syntax error"
+              "status": "passed",
+              "duration": 688216
             }
           },
           {
@@ -1301,8 +1317,8 @@
               "location": "../common/test/steps/searcher.steps.ts:15"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 1816221
             }
           },
           {
@@ -1314,8 +1330,8 @@
               "location": "../common/test/steps/searcher.steps.ts:25"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 442283
             }
           },
           {
@@ -1327,8 +1343,8 @@
               "location": "../common/test/steps/searcher.steps.ts:31"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 571684
             }
           },
           {
@@ -1351,8 +1367,9 @@
               "location": "../common/test/steps/searcher.steps.ts:45"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "failed",
+              "duration": 273386,
+              "error_message": "TypeError: Cannot set properties of undefined (setting '_created_at')\n    at SQLiteSearcher.find (/tank/repos/meshobj/packages/sqlite_repo/src/sqliteSearcher.ts:58:25)\n    at TestWorld.<anonymous> (/tank/repos/meshobj/packages/common/test/steps/searcher.steps.ts:53:46)"
             }
           },
           {
@@ -1386,7 +1403,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 70365
+              "duration": 227476
             }
           }
         ],
@@ -1405,7 +1422,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 25757
+              "duration": 127868
             }
           },
           {
@@ -1417,9 +1434,8 @@
               "location": "../common/test/steps/searcher.steps.ts:6"
             },
             "result": {
-              "status": "failed",
-              "duration": 98341,
-              "error_message": "Error: SQLITE_ERROR: near \".11864965580227582\": syntax error"
+              "status": "passed",
+              "duration": 924943
             }
           },
           {
@@ -1513,8 +1529,8 @@
               "location": "../common/test/steps/searcher.steps.ts:15"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 2036464
             }
           },
           {
@@ -1526,8 +1542,8 @@
               "location": "../common/test/steps/searcher.steps.ts:25"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 551196
             }
           },
           {
@@ -1539,8 +1555,8 @@
               "location": "../common/test/steps/searcher.steps.ts:31"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 413102
             }
           },
           {
@@ -1563,8 +1579,9 @@
               "location": "../common/test/steps/searcher.steps.ts:45"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "failed",
+              "duration": 266108,
+              "error_message": "TypeError: Cannot set properties of undefined (setting '_created_at')\n    at SQLiteSearcher.find (/tank/repos/meshobj/packages/sqlite_repo/src/sqliteSearcher.ts:58:25)\n    at TestWorld.<anonymous> (/tank/repos/meshobj/packages/common/test/steps/searcher.steps.ts:53:46)"
             }
           },
           {
@@ -1585,7 +1602,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 61617
+              "duration": 207625
             }
           }
         ],
@@ -1604,7 +1621,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 21535
+              "duration": 94166
             }
           },
           {
@@ -1616,9 +1633,8 @@
               "location": "../common/test/steps/searcher.steps.ts:6"
             },
             "result": {
-              "status": "failed",
-              "duration": 98453,
-              "error_message": "Error: SQLITE_ERROR: near \".11095499599163405\": syntax error"
+              "status": "passed",
+              "duration": 511053
             }
           },
           {
@@ -1712,8 +1728,8 @@
               "location": "../common/test/steps/searcher.steps.ts:15"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 1812298
             }
           },
           {
@@ -1725,8 +1741,8 @@
               "location": "../common/test/steps/searcher.steps.ts:25"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 505710
             }
           },
           {
@@ -1738,8 +1754,8 @@
               "location": "../common/test/steps/searcher.steps.ts:31"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 425938
             }
           },
           {
@@ -1762,8 +1778,9 @@
               "location": "../common/test/steps/searcher.steps.ts:56"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "failed",
+              "duration": 584242,
+              "error_message": "TypeError: Cannot set properties of undefined (setting '_created_at')\n    at SQLiteSearcher.findAll (/tank/repos/meshobj/packages/sqlite_repo/src/sqliteSearcher.ts:84:25)\n    at TestWorld.<anonymous> (/tank/repos/meshobj/packages/common/test/steps/searcher.steps.ts:64:47)"
             }
           },
           {
@@ -1797,7 +1814,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 32093
+              "duration": 177220
             }
           }
         ],
@@ -1816,7 +1833,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 20502
+              "duration": 69457
             }
           },
           {
@@ -1828,9 +1845,8 @@
               "location": "../common/test/steps/searcher.steps.ts:6"
             },
             "result": {
-              "status": "failed",
-              "duration": 93698,
-              "error_message": "Error: SQLITE_ERROR: near \".9277632160696767\": syntax error"
+              "status": "passed",
+              "duration": 599032
             }
           },
           {
@@ -1924,8 +1940,8 @@
               "location": "../common/test/steps/searcher.steps.ts:15"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 1586409
             }
           },
           {
@@ -1937,8 +1953,8 @@
               "location": "../common/test/steps/searcher.steps.ts:25"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 324863
             }
           },
           {
@@ -1950,8 +1966,8 @@
               "location": "../common/test/steps/searcher.steps.ts:31"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 316799
             }
           },
           {
@@ -1980,8 +1996,8 @@
               "location": "../common/test/steps/searcher.steps.ts:56"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 6904802
             }
           },
           {
@@ -1993,8 +2009,9 @@
               "location": "../common/test/steps/searcher.steps.ts:79"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "failed",
+              "duration": 271120,
+              "error_message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n0 !== 1\n\n    + expected - actual\n\n    -0\n    +1\n\n    at TestWorld.<anonymous> (/tank/repos/meshobj/packages/common/test/steps/searcher.steps.ts:80:12)"
             }
           },
           {
@@ -2015,7 +2032,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 27025
+              "duration": 46073
             }
           }
         ],
@@ -2034,7 +2051,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 18148
+              "duration": 20344
             }
           },
           {
@@ -2046,9 +2063,8 @@
               "location": "../common/test/steps/searcher.steps.ts:6"
             },
             "result": {
-              "status": "failed",
-              "duration": 75631,
-              "error_message": "Error: SQLITE_ERROR: near \".36515780380599683\": syntax error"
+              "status": "passed",
+              "duration": 109519
             }
           },
           {
@@ -2142,8 +2158,8 @@
               "location": "../common/test/steps/searcher.steps.ts:15"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 409546
             }
           },
           {
@@ -2155,8 +2171,8 @@
               "location": "../common/test/steps/searcher.steps.ts:25"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 91824
             }
           },
           {
@@ -2168,8 +2184,8 @@
               "location": "../common/test/steps/searcher.steps.ts:31"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 2247435
             }
           },
           {
@@ -2192,8 +2208,9 @@
               "location": "../common/test/steps/searcher.steps.ts:56"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "failed",
+              "duration": 59187,
+              "error_message": "TypeError: Cannot set properties of undefined (setting '_created_at')\n    at SQLiteSearcher.findAll (/tank/repos/meshobj/packages/sqlite_repo/src/sqliteSearcher.ts:84:25)\n    at TestWorld.<anonymous> (/tank/repos/meshobj/packages/common/test/steps/searcher.steps.ts:64:47)"
             }
           },
           {
@@ -2214,7 +2231,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 61237
+              "duration": 41118
             }
           }
         ],
@@ -2233,7 +2250,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 19857
+              "duration": 21442
             }
           },
           {
@@ -2245,9 +2262,8 @@
               "location": "../common/test/steps/searcher.steps.ts:6"
             },
             "result": {
-              "status": "failed",
-              "duration": 88068,
-              "error_message": "Error: SQLITE_ERROR: near \".8247216212834314\": syntax error"
+              "status": "passed",
+              "duration": 125657
             }
           },
           {
@@ -2341,8 +2357,8 @@
               "location": "../common/test/steps/searcher.steps.ts:15"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 372654
             }
           },
           {
@@ -2354,8 +2370,8 @@
               "location": "../common/test/steps/searcher.steps.ts:25"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 67522
             }
           },
           {
@@ -2367,8 +2383,8 @@
               "location": "../common/test/steps/searcher.steps.ts:31"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "passed",
+              "duration": 79478
             }
           },
           {
@@ -2391,8 +2407,9 @@
               "location": "../common/test/steps/searcher.steps.ts:56"
             },
             "result": {
-              "status": "skipped",
-              "duration": 0
+              "status": "failed",
+              "duration": 44846,
+              "error_message": "TypeError: Cannot set properties of undefined (setting '_created_at')\n    at SQLiteSearcher.findAll (/tank/repos/meshobj/packages/sqlite_repo/src/sqliteSearcher.ts:84:25)\n    at TestWorld.<anonymous> (/tank/repos/meshobj/packages/common/test/steps/searcher.steps.ts:64:47)"
             }
           },
           {
@@ -2413,7 +2430,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 38571
+              "duration": 35356
             }
           }
         ],
