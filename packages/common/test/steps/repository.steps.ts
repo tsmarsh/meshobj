@@ -35,15 +35,6 @@ Given('I wait {int} milliseconds', async function(this: TestWorld, ms: number) {
     await new Promise(resolve => setTimeout(resolve, ms));
 });
 
-When('I create envelopes:', async function(this: TestWorld, dataTable: DataTable) {
-    const rows = dataTable.hashes();
-    for (const row of rows) {
-        const { name, ...payload } = row;
-        const envelope = await this.repository!.create({ payload });
-        this.envelopes.set(name, envelope);
-    }
-});
-
 When('I create a new version of envelope {string}:', async function(this: TestWorld, name: string, dataTable: DataTable) {
     const existingEnvelope = this.envelopes.get(name);
     if (!existingEnvelope) {
@@ -62,7 +53,7 @@ When('I create a new version of envelope {string}:', async function(this: TestWo
     this.envelopes.set(name, newVersion);
 });
 
-When('I read envelopes {string} by their IDs', async function(this: TestWorld, namesJson: string) {
+When(/^I read envelopes (\[.*\]) by their IDs$/, async function(this: TestWorld, namesJson: string) {
     const names = JSON.parse(namesJson);
     const ids = names.map((name: string) => {
         const envelope = this.envelopes.get(name);
@@ -78,7 +69,7 @@ When('I read envelopes {string} by their IDs', async function(this: TestWorld, n
     }
 });
 
-When('I remove envelopes {string} by their IDs', async function(this: TestWorld, namesJson: string) {
+When(/^I remove envelopes (\[.*\]) by their IDs$/, async function(this: TestWorld, namesJson: string) {
     const names = JSON.parse(namesJson);
     const ids = names.map((name: string) => {
         const envelope = this.envelopes.get(name);
@@ -108,7 +99,7 @@ Then('reading envelope {string} at timestamp {string} should return version {str
     assert.strictEqual(result?.payload.version, expectedVersion);
 });
 
-Then('reading envelopes {string} by their IDs should return nothing', async function(this: TestWorld, namesJson: string) {
+Then(/^reading envelopes (\[.*\]) by their IDs should return nothing$/, async function(this: TestWorld, namesJson: string) {
     const names = JSON.parse(namesJson);
     const ids = names.map((name: string) => {
         const envelope = this.envelopes.get(name);

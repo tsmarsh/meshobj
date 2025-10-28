@@ -18,7 +18,7 @@ Before(async function(this: TestWorld) {
         });
         dbs.push(db);
 
-        const repo = new SQLiteRepository(db, `test_${Date.now()}_${Math.random()}`);
+        const repo = new SQLiteRepository(db, `test_${Date.now()}_${Math.floor(Math.random() * 1000000)}`);
         await repo.initialize();
         return repo;
     };
@@ -30,7 +30,7 @@ Before(async function(this: TestWorld) {
         });
         dbs.push(db);
 
-        const tableName = `test_${Date.now()}_${Math.random()}`;
+        const tableName = `test_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
         const repo = new SQLiteRepository(db, tableName);
         await repo.initialize();
 
@@ -56,10 +56,6 @@ Before(async function(this: TestWorld) {
 });
 
 After(async function(this: TestWorld) {
-    // Per-scenario cleanup handled by tearDown
-});
-
-AfterAll(async function(this: TestWorld) {
     if (this.tearDown) {
         await this.tearDown();
     }
