@@ -8,7 +8,7 @@ const PLATFORM_URL = `http://localhost:${PORT}`;
 const PREFIX = 'farm';
 const ENV = 'test';
 
-const config_dir = `${__dirname}/../../server/test/config/`;
+const config_dir = `${__dirname}/../../../packages/server/test/config/`;
 
 const database = {
     type: 'sql',

@@ -6,7 +6,7 @@ const port = 4242;
 
 const url = `http://localhost:${port}`;
 
-let config_dir = `${__dirname}/../../server/test/config/`;
+let config_dir = `${__dirname}/../../../packages/server/test/config/`;
 
 const prefix = 'farm';
 const env = 'test';
