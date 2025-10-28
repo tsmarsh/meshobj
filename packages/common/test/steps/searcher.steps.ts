@@ -1,6 +1,6 @@
 import { Given, When, Then, DataTable } from '@cucumber/cucumber';
 import { TestWorld } from '../support/world';
-import { expect } from 'vitest';
+import assert from 'assert';
 import { Envelope } from '../../src';
 
 Given('a fresh repository and searcher instance', async function(this: TestWorld) {
@@ -65,27 +65,27 @@ When('I search all using template {string} with parameters:', async function(thi
 });
 
 Then('the search result should be empty', function(this: TestWorld) {
-    expect(this.searchResult).toEqual({});
+    assert.deepStrictEqual(this.searchResult, {});
 });
 
 Then('the search result should have name {string}', function(this: TestWorld, expectedName: string) {
-    expect(this.searchResult.name).toBe(expectedName);
+    assert.strictEqual(this.searchResult.name, expectedName);
 });
 
 Then('the search result should have count {int}', function(this: TestWorld, expectedCount: number) {
-    expect(this.searchResult.count).toBe(expectedCount);
+    assert.strictEqual(this.searchResult.count, expectedCount);
 });
 
 Then('I should receive exactly {int} result(s)', function(this: TestWorld, count: number) {
-    expect(this.searchResults?.length).toBe(count);
+    assert.strictEqual(this.searchResults?.length, count);
 });
 
 Then('the results should include an envelope with name {string} and count {int}', function(this: TestWorld, name: string, count: number) {
     const found = this.searchResults?.find(r => r.name === name && r.count === count);
-    expect(found).toBeDefined();
+    assert.ok(found !== undefined);
 });
 
 Then('the results should include an envelope with name {string}', function(this: TestWorld, name: string) {
     const found = this.searchResults?.find(r => r.name === name);
-    expect(found).toBeDefined();
+    assert.ok(found !== undefined);
 });

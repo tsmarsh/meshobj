@@ -1412,15 +1412,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@meshobj/sqlite_repo@workspace:packages/sqlite_repo"
   dependencies:
+    "@cucumber/cucumber": "npm:^12.2.0"
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/common": "npm:^0.2.0"
     "@meshobj/graphlette": "npm:^0.2.0"
     "@meshobj/server": "npm:^0.2.0"
+    "@types/node": "npm:^22.10.6"
     "@types/typescript": "npm:^2.0.0"
     handlebars: "npm:^4.7.8"
     log4js: "npm:^6.9.1"
     sqlite: "npm:^5.1.1"
     sqlite3: "npm:^5.1.7"
+    ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
     uuid: "npm:^11.0.5"
     vitest: "npm:^2.1.8"

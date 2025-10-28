@@ -1,6 +1,6 @@
 import { Given, When, Then, DataTable } from '@cucumber/cucumber';
 import { TestWorld } from '../support/world';
-import { expect } from 'vitest';
+import assert from 'assert';
 
 Given('a fresh repository instance', async function(this: TestWorld) {
     if (!this.createRepository) {
@@ -105,7 +105,7 @@ Then('reading envelope {string} at timestamp {string} should return version {str
     if (!timestamp) throw new Error(`Timestamp "${timestampLabel}" not found`);
 
     const result = await this.repository!.read(envelope.id, [], new Date(timestamp));
-    expect(result?.payload.version).toBe(expectedVersion);
+    assert.strictEqual(result?.payload.version, expectedVersion);
 });
 
 Then('reading envelopes {string} by their IDs should return nothing', async function(this: TestWorld, namesJson: string) {
@@ -118,64 +118,64 @@ Then('reading envelopes {string} by their IDs should return nothing', async func
 
     if (ids.length === 1) {
         const result = await this.repository!.read(ids[0]);
-        expect(result).toBeUndefined();
+        assert.ok(result === undefined);
     } else {
         const results = await this.repository!.readMany(ids);
-        expect(results).toEqual([]);
+        assert.deepStrictEqual(results, []);
     }
 });
 
 Then('the envelopes should have generated IDs', function(this: TestWorld) {
     for (const envelope of this.envelopes.values()) {
-        expect(envelope.id).toBeDefined();
-        expect(typeof envelope.id).toBe('string');
+        assert.ok(envelope.id !== undefined);
+        assert.strictEqual(typeof envelope.id, 'string');
     }
 });
 
 Then('the envelopes created_at should be greater than or equal to the test start time', function(this: TestWorld) {
     for (const envelope of this.envelopes.values()) {
-        expect(envelope.created_at?.getTime()).toBeGreaterThanOrEqual(this.testStartTime);
+        assert.ok(envelope.created_at!.getTime() >= this.testStartTime);
     }
 });
 
 Then('the envelopes deleted flag should be false', function(this: TestWorld) {
     for (const envelope of this.envelopes.values()) {
-        expect(envelope.deleted).toBeFalsy();
+        assert.ok(!envelope.deleted);
     }
 });
 
 Then('I should receive {int} envelope(s)', function(this: TestWorld, count: number) {
-    expect(this.searchResults?.length).toBe(count);
+    assert.strictEqual(this.searchResults?.length, count);
 });
 
 Then('I should receive exactly {int} envelope(s)', function(this: TestWorld, count: number) {
-    expect(this.searchResults?.length).toBe(count);
+    assert.strictEqual(this.searchResults?.length, count);
 });
 
 Then('the payload name should be {string}', function(this: TestWorld, expectedName: string) {
-    expect(this.searchResult?.payload?.name || this.searchResults?.[0]?.payload?.name).toBe(expectedName);
+    assert.strictEqual(this.searchResult?.payload?.name || this.searchResults?.[0]?.payload?.name, expectedName);
 });
 
 Then('the payload version should be {string}', function(this: TestWorld, expectedVersion: string) {
     const result = this.searchResults?.[0];
-    expect(result?.payload?.version || result?.version).toBe(expectedVersion);
+    assert.strictEqual(result?.payload?.version || result?.version, expectedVersion);
 });
 
 Then('the remove operations should return true', function(this: TestWorld) {
-    expect(this.removeResult).toBe(true);
+    assert.strictEqual(this.removeResult, true);
 });
 
 Then('the remove operations should return true for the removed IDs', function(this: TestWorld) {
     if (typeof this.removeResult === 'object') {
         for (const value of Object.values(this.removeResult)) {
-            expect(value).toBe(true);
+            assert.strictEqual(value, true);
         }
     } else {
-        expect(this.removeResult).toBe(true);
+        assert.strictEqual(this.removeResult, true);
     }
 });
 
 Then('listing all envelopes should show exactly {int} envelope(s)', async function(this: TestWorld, count: number) {
     const results = await this.repository!.list();
-    expect(results.length).toBe(count);
+    assert.strictEqual(results.length, count);
 });
