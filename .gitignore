@@ -24,6 +24,9 @@ bun.lockb
 *.iml
 
 test-report.junit.xml
+test-results.json
+test-results-bdd.json
+merged-lcov.info
 
 
 # IDE - IntelliJ IDEA
