@@ -12,18 +12,20 @@ Given('a fresh repository instance', async function(this: TestWorld) {
 Given('I have created envelopes:', async function(this: TestWorld, dataTable: DataTable) {
     const rows = dataTable.hashes();
     for (const row of rows) {
-        const { name, ...payload } = row;
+        const { name, ...rest } = row;
+        const payload = name ? { name, ...rest } : rest;  // Keep name in payload
         const envelope = await this.repository!.create({ payload });
-        this.envelopes.set(name, envelope);
+        this.envelopes.set(name || payload.name, envelope);
     }
 });
 
 Given('I create envelopes:', async function(this: TestWorld, dataTable: DataTable) {
     const rows = dataTable.hashes();
     for (const row of rows) {
-        const { name, ...payload } = row;
+        const { name, ...rest } = row;
+        const payload = name ? { name, ...rest } : rest;  // Keep name in payload
         const envelope = await this.repository!.create({ payload });
-        this.envelopes.set(name, envelope);
+        this.envelopes.set(name || payload.name, envelope);
     }
 });
 
@@ -144,12 +146,13 @@ Then('I should receive exactly {int} envelope(s)', function(this: TestWorld, cou
 });
 
 Then('the payload name should be {string}', function(this: TestWorld, expectedName: string) {
-    assert.strictEqual(this.searchResult?.payload?.name || this.searchResults?.[0]?.payload?.name, expectedName);
+    const result = this.searchResult || this.searchResults?.[0];
+    assert.strictEqual(result?.payload?.name, expectedName);
 });
 
 Then('the payload version should be {string}', function(this: TestWorld, expectedVersion: string) {
     const result = this.searchResults?.[0];
-    assert.strictEqual(result?.payload?.version || result?.version, expectedVersion);
+    assert.strictEqual(result?.payload?.version, expectedVersion);
 });
 
 Then('the remove operations should return true', function(this: TestWorld) {

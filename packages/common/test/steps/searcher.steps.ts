@@ -14,7 +14,14 @@ Given('a fresh repository and searcher instance', async function(this: TestWorld
 
 Given('I have created and saved the following test dataset:', async function(this: TestWorld, dataTable: DataTable) {
     const rows = dataTable.hashes();
-    const envelopes = rows.map(row => ({ payload: row }));
+    const envelopes = rows.map(row => {
+        // Convert numeric string values to numbers
+        const payload: any = {};
+        for (const [key, value] of Object.entries(row)) {
+            payload[key] = isNaN(Number(value)) ? value : Number(value);
+        }
+        return { payload };
+    });
     const saved = await this.repository!.createMany(envelopes, this.tokens);
 
     saved.forEach(envelope => {
@@ -46,6 +53,14 @@ When('I search using template {string} with parameters:', async function(this: T
     const rows = dataTable.hashes();
     const params = {...rows[0]};  // Copy to allow mutations
 
+    // Replace envelope names with actual IDs only for templates that search by ID
+    if (templateName === 'findById' && params.id && this.envelopes.has(params.id)) {
+        const envelope = this.envelopes.get(params.id);
+        if (envelope?.id) {
+            params.id = envelope.id;
+        }
+    }
+
     if (!this.templates?.[templateName]) {
         throw new Error(`Template "${templateName}" not found`);
     }
@@ -56,6 +71,14 @@ When('I search using template {string} with parameters:', async function(this: T
 When('I search all using template {string} with parameters:', async function(this: TestWorld, templateName: string, dataTable: DataTable) {
     const rows = dataTable.hashes();
     const params = {...rows[0]};  // Copy to allow mutations
+
+    // Replace envelope names with actual IDs only for templates that search by ID
+    if (templateName === 'findById' && params.id && this.envelopes.has(params.id)) {
+        const envelope = this.envelopes.get(params.id);
+        if (envelope?.id) {
+            params.id = envelope.id;
+        }
+    }
 
     if (!this.templates?.[templateName]) {
         throw new Error(`Template "${templateName}" not found`);

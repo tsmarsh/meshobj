@@ -22,39 +22,45 @@ Feature: Searcher Contract
 
   Scenario: Finding a singleton by ID with non-existent ID
     When I search using template "findById" with parameters:
-      | id | non-existent-id |
+      | id              |
+      | non-existent-id |
     Then the search result should be empty
 
   Scenario: Finding a singleton by ID
     When I search using template "findById" with parameters:
-      | id | Bruce |
+      | id    |
+      | Bruce |
     Then the search result should have name "Bruce"
     And the search result should have count 1
 
   Scenario: Finding a singleton by name
     When I search using template "findByName" with parameters:
-      | id | Ewan |
+      | id   |
+      | Ewan |
     Then the search result should have name "Ewan"
 
   Scenario: Finding all records by type
     When I search all using template "findAllByType" with parameters:
-      | id | A |
+      | id |
+      | A  |
     Then I should receive exactly 5 results
     And the results should include an envelope with name "Charlie" and count 2
 
   Scenario: Finding all records by type and name
     When I search all using template "findByNameAndType" with parameters:
-      | name | Henry |
-      | type | B     |
+      | name  | type |
+      | Henry | B    |
     Then I should receive exactly 1 result
     And the results should include an envelope with name "Henry"
 
   Scenario: Finding all with non-existent type
     When I search all using template "findAllByType" with parameters:
-      | id | C |
+      | id |
+      | C  |
     Then I should receive exactly 0 results
 
   Scenario: Handling empty query parameters
     When I search all using template "findByNameAndType" with parameters:
-      | id | foo |
+      | id  |
+      | foo |
     Then I should receive exactly 0 results
