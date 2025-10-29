@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Service } from './Service.js';
 import { Database } from './Database.js';
 import { DockerComposeConfig, Config, DeploymentStorageConfig } from './types.js';

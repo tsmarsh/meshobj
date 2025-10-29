@@ -14,6 +14,7 @@ export default [
             'vitest.workspace.ts',
             '**/vitest.config.ts',
             '**/test/**',
+            '**/generated/**', // Ignore auto-generated deployment files
         ],
     },
     {
@@ -23,7 +24,7 @@ export default [
             parserOptions: {
                 ecmaVersion: 'latest',
                 sourceType: 'module',
-                project: ['./tsconfig.json', './core/*/tsconfig.json'],
+                project: ['./tsconfig.json', './core/*/tsconfig.json', './repos/*/tsconfig.json', './examples/*/tsconfig.json'],
                 tsconfigRootDir: import.meta.dirname,
             },
             globals: {

@@ -1,30 +1,8 @@
 {
     "extends": "../../tsconfig.base.json",
-    "files": [],
-    "references": [
-        {
-            "path": "../../core/common"
-        },
-        {
-            "path": "../../core/server"
-        },
-        {
-            "path": "../../repos/mongo_repo"
-        },
-        {
-            "path": "../../repos/postgres_repo"
-        },
-        {
-            "path": "../../repos/sqlite_repo"
-        },
-        {
-            "path": "../../core/restlette"
-        },
-        {
-            "path": "../../core/graphlette"
-        },
-        {
-            "path": "../../core/casbin_auth"
-        }
-    ]
+    "compilerOptions": {
+        "rootDir": "."
+    },
+    "include": ["*.ts", "src/**/*.ts"],
+    "exclude": ["node_modules", "dist", "generated", "vitest.config.ts"]
 }

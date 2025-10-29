@@ -19,13 +19,6 @@ function extractAfter(val: DebeziumVal): any {
     return val?.after ?? val?.payload?.after ?? null;
 }
 
-function extractDb(val: DebeziumVal): string | undefined {
-    return val?.source?.db ?? val?.payload?.source?.db;
-}
-function extractColl(val: DebeziumVal): string | undefined {
-    return val?.source?.collection ?? val?.payload?.source?.collection;
-}
-
 // Very basic "processing" — enrich + echo some fields
 function buildProcessedEvent(after: any) {
     const raw_event_id = String(after?._id ?? after?.id ?? '').replace(/^ObjectId\((.+)\)$/, '$1');
@@ -68,7 +61,7 @@ export class RawToProcessedProcessor {
         await consumer.subscribe({ topic: RAW_TOPIC, fromBeginning: true });
 
         await consumer.run({
-            eachMessage: async ({ topic, message }) => {
+            eachMessage: async ({ message }: { message: any }) => {
                 if (!this.running) return;
                 try {
                     const text = message.value?.toString('utf8') ?? '{}';
@@ -108,7 +101,11 @@ export class RawToProcessedProcessor {
         this.running = false;
         const consumer = (this as any)._consumer;
         if (consumer) {
-            try { await consumer.disconnect(); } catch { }
+            try {
+                await consumer.disconnect();
+            } catch {
+                // Ignore disconnect errors during cleanup
+            }
             (this as any)._consumer = undefined;
         }
     }

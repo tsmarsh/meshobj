@@ -11,7 +11,8 @@
     "dependencies": {
         "@meshobj/cli": "workspace:*",
         "axios": "^1.6.7",
-        "js-yaml": "^4.1.0"
+        "js-yaml": "^4.1.0",
+        "kafkajs": "^2.2.4"
     },
     "devDependencies": {
         "@meshobj/graphlette": "workspace:^",

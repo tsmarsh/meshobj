@@ -3,7 +3,6 @@ import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import { Searcher } from '@meshobj/common';
 import Log4js from 'log4js';
-import HandleBars from 'handlebars';
 
 const logger = Log4js.getLogger('meshobj/graphlette');
 

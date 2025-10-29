@@ -1,5 +1,4 @@
 import { Config } from './configTypes';
-import { Plugin } from './plugin';
 
 interface ServiceStatus {
     status: 'ok' | 'error';

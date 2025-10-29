@@ -1,0 +1,9 @@
+node_modules/
+dist/
+**/generated/
+**/*.js
+**/*.d.ts
+.yarn/
+coverage/
+examples/
+repos/
