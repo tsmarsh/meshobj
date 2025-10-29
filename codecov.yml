@@ -4,47 +4,47 @@ coverage:
       default:
         target: 80%
       auth:
-        paths: ["packages/auth/**"]
+        paths: ["core/auth/**"]
         target: 80%
       common:
-        paths: ["packages/common/**"]
+        paths: ["core/common/**"]
         target: 80%
       graphlette:
-        paths: ["packages/graphlette/**"]
+        paths: ["core/graphlette/**"]
         target: 80%
       jwt_auth:
-        paths: ["packages/jwt_auth/**"]
+        paths: ["core/jwt_auth/**"]
         target: 80%
       meshql:
-        paths: ["packages/server/**"]
+        paths: ["core/server/**"]
         target: 80%
       mongo_repo:
-        paths: ["packages/mongo_repo/**"]
+        paths: ["repos/mongo_repo/**"]
         target: 80%
       mysql_repo:
-        paths: ["packages/mysql_repo/**"]
+        paths: ["repos/mysql_repo/**"]
         target: 80%
       postgres_repo:
-        paths: ["packages/postgres_repo/**"]
+        paths: ["repos/postgres_repo/**"]
         target: 80%
       restlette:
-        paths: ["packages/restlette/**"]
+        paths: ["core/restlette/**"]
         target: 80%
       sqlite_repo:
-        paths: ["packages/sqlite_repo/**"]
+        paths: ["repos/sqlite_repo/**"]
         target: 80%
     patch:
       default:
         target: 80%
 
 ignore:
-  - "**/index.packages"
-  - "**/cli.packages"
+  - "**/index.ts"
+  - "**/cli.ts"
   - "**/auth/**/*"
   - "examples/**/*"
   - "**/test/**/*"
-  - "**/*.test.packages"
-  - "**/*.spec.packages"
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
   - "**/*.js"
   - "**/*.jsx"
   - "**/*.mjs"
@@ -55,31 +55,31 @@ component_management:
   individual_components:
     - component_id: auth
       name: Auth
-      paths: ["packages/auth/**"]
+      paths: ["core/auth/**"]
     - component_id: common
       name: Common
-      paths: ["packages/common/**"]
+      paths: ["core/common/**"]
     - component_id: graphlette
       name: Graphlette
-      paths: ["packages/graphlette/**"]
+      paths: ["core/graphlette/**"]
     - component_id: jwt_auth
       name: JWT Auth
-      paths: ["packages/jwt_auth/**"]
+      paths: ["core/jwt_auth/**"]
     - component_id: server
       name: MeshQL
-      paths: ["packages/server/**"]
+      paths: ["core/server/**"]
     - component_id: mongo_repo
       name: MongoDB Repository
-      paths: ["packages/mongo_repo/**"]
+      paths: ["repos/mongo_repo/**"]
     - component_id: mysql_repo
       name: MySQL Repository
-      paths: ["packages/mysql_repo/**"]
+      paths: ["repos/mysql_repo/**"]
     - component_id: postgres_repo
       name: PostgreSQL Repository
-      paths: ["packages/postgres_repo/**"]
+      paths: ["repos/postgres_repo/**"]
     - component_id: restlette
       name: Restlette
-      paths: ["packages/restlette/**"]
+      paths: ["core/restlette/**"]
     - component_id: sqlite_repo
       name: SQLite Repository
-      paths: ["packages/sqlite_repo/**"]
+      paths: ["repos/sqlite_repo/**"]

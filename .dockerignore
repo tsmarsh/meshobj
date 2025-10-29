@@ -16,7 +16,7 @@ bun.lockb
 **/*.test.ts
 
 # Only exclude source dist folders, not the built ones
-packages/**/packages/
+core/**/core/
 
 # Java artifacts
 target/

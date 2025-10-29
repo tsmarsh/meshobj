@@ -5,7 +5,7 @@ const PORT = 3044;
 const ENV = 'test';
 const PREFIX = 'farm';
 const PLATFORM_URL = `http://localhost:${PORT}`;
-const config_dir = `${__dirname}/../../../packages/server/test/config/`;
+const config_dir = `${__dirname}/../../../core/server/test/config/`;
 
 const database = () => ({
     type: 'mongo',

@@ -11,19 +11,19 @@ export default [
             '**/node_modules/**',
             '**/*.js', // Ignore compiled output
             '**/coverage/**',
-            'vitest.workspace.packages',
-            '**/vitest.config.packages',
+            'vitest.workspace.ts',
+            '**/vitest.config.ts',
             '**/test/**',
         ],
     },
     {
-        files: ['**/*.packages'],
+        files: ['**/*.ts'],
         languageOptions: {
             parser: tsparser,
             parserOptions: {
                 ecmaVersion: 'latest',
                 sourceType: 'module',
-                project: ['./tsconfig.json', './packages/*/tsconfig.json'],
+                project: ['./tsconfig.json', './core/*/tsconfig.json'],
                 tsconfigRootDir: import.meta.dirname,
             },
             globals: {
@@ -47,7 +47,7 @@ export default [
     },
     // Test files specific configuration
     {
-        files: ['**/*.test.packages', '**/*.spec.packages'],
+        files: ['**/*.test.ts', '**/*.spec.ts'],
         languageOptions: {
             globals: {
                 ...globals.jest,

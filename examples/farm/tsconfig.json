@@ -3,10 +3,10 @@
     "files": [],
     "references": [
         {
-            "path": "../../packages/common"
+            "path": "../../core/common"
         },
         {
-            "path": "../../packages/server"
+            "path": "../../core/server"
         },
         {
             "path": "../../repos/mongo_repo"
@@ -18,13 +18,13 @@
             "path": "../../repos/sqlite_repo"
         },
         {
-            "path": "../../packages/restlette"
+            "path": "../../core/restlette"
         },
         {
-            "path": "../../packages/graphlette"
+            "path": "../../core/graphlette"
         },
         {
-            "path": "../../packages/casbin_auth"
+            "path": "../../core/casbin_auth"
         }
     ]
 }

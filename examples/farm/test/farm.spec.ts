@@ -23,7 +23,7 @@ describe.sequential('Farm Service Smoke Test', () => {
         // Start the docker-compose environment
         environment = await new DockerComposeEnvironment(path.resolve(__dirname, '..'), 'docker-compose.yml')
             .withBuild()
-            .withWaitStrategy('farm_1', Wait.forHttp('/ready', 3033).withStartupTimeout(30000))
+            .withWaitStrategy('farm', Wait.forHttp('/ready', 3033).withStartupTimeout(30000))
             .withWaitStrategy('mongodb', Wait.forLogMessage('Waiting for connections'))
             .up();
 

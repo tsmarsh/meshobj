@@ -87,7 +87,7 @@ BeforeAll(async function() {
             .start();
     }
 
-    const config = getFarmConfig();
+    const config = await getFarmConfig();
     // Override connection settings to use test container
     const pgSettings = {
         host: container.getHost(),

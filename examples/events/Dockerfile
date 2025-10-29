@@ -16,7 +16,7 @@ COPY .yarnrc.yml ./
 COPY .yarn ./.yarn
 
 # Copy the rest of the application
-COPY packages ./packages
+COPY core ./core
 COPY repos ./repos
 COPY examples ./examples
 

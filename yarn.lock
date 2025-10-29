@@ -1103,9 +1103,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@meshobj/auth@npm:^0.2.0, @meshobj/auth@workspace:packages/auth":
+"@meshobj/auth@npm:^0.2.0, @meshobj/auth@workspace:core/auth":
   version: 0.0.0-use.local
-  resolution: "@meshobj/auth@workspace:packages/auth"
+  resolution: "@meshobj/auth@workspace:core/auth"
   dependencies:
     "@meshobj/common": "npm:^0.2.0"
     "@types/express": "npm:^4.17.17"
@@ -1117,9 +1117,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/casbin_auth@npm:^0.2.0, @meshobj/casbin_auth@workspace:packages/casbin_auth":
+"@meshobj/casbin_auth@npm:^0.2.0, @meshobj/casbin_auth@workspace:core/casbin_auth":
   version: 0.0.0-use.local
-  resolution: "@meshobj/casbin_auth@workspace:packages/casbin_auth"
+  resolution: "@meshobj/casbin_auth@workspace:core/casbin_auth"
   dependencies:
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/common": "npm:^0.2.0"
@@ -1131,9 +1131,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/cli@workspace:*, @meshobj/cli@workspace:packages/cli":
+"@meshobj/cli@workspace:*, @meshobj/cli@workspace:core/cli":
   version: 0.0.0-use.local
-  resolution: "@meshobj/cli@workspace:packages/cli"
+  resolution: "@meshobj/cli@workspace:core/cli"
   dependencies:
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/casbin_auth": "npm:^0.2.0"
@@ -1181,9 +1181,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/common@npm:^0.2.0, @meshobj/common@workspace:packages/common":
+"@meshobj/common@npm:^0.2.0, @meshobj/common@workspace:core/common":
   version: 0.0.0-use.local
-  resolution: "@meshobj/common@workspace:packages/common"
+  resolution: "@meshobj/common@workspace:core/common"
   dependencies:
     "@cucumber/cucumber": "npm:^12.2.0"
     "@types/node": "npm:^22.10.6"
@@ -1214,9 +1214,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/graphlette@npm:^0.2.0, @meshobj/graphlette@workspace:^, @meshobj/graphlette@workspace:packages/graphlette":
+"@meshobj/graphlette@npm:^0.2.0, @meshobj/graphlette@workspace:^, @meshobj/graphlette@workspace:core/graphlette":
   version: 0.0.0-use.local
-  resolution: "@meshobj/graphlette@workspace:packages/graphlette"
+  resolution: "@meshobj/graphlette@workspace:core/graphlette"
   dependencies:
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/common": "npm:^0.2.0"
@@ -1235,9 +1235,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/jwt_auth@npm:^0.2.0, @meshobj/jwt_auth@workspace:packages/jwt_auth":
+"@meshobj/jwt_auth@npm:^0.2.0, @meshobj/jwt_auth@workspace:core/jwt_auth":
   version: 0.0.0-use.local
-  resolution: "@meshobj/jwt_auth@workspace:packages/jwt_auth"
+  resolution: "@meshobj/jwt_auth@workspace:core/jwt_auth"
   dependencies:
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/common": "npm:^0.2.0"
@@ -1253,9 +1253,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/merminator@workspace:packages/merminator":
+"@meshobj/merminator@workspace:core/merminator":
   version: 0.0.0-use.local
-  resolution: "@meshobj/merminator@workspace:packages/merminator"
+  resolution: "@meshobj/merminator@workspace:core/merminator"
   dependencies:
     "@meshobj/common": "npm:^0.2.0"
     "@meshobj/graphlette": "npm:^0.2.0"
@@ -1367,9 +1367,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/restlette@npm:^0.2.0, @meshobj/restlette@workspace:packages/restlette":
+"@meshobj/restlette@npm:^0.2.0, @meshobj/restlette@workspace:core/restlette":
   version: 0.0.0-use.local
-  resolution: "@meshobj/restlette@workspace:packages/restlette"
+  resolution: "@meshobj/restlette@workspace:core/restlette"
   dependencies:
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/common": "npm:^0.2.0"
@@ -1391,9 +1391,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/server@npm:^0.2.0, @meshobj/server@workspace:packages/server":
+"@meshobj/server@npm:^0.2.0, @meshobj/server@workspace:core/server":
   version: 0.0.0-use.local
-  resolution: "@meshobj/server@workspace:packages/server"
+  resolution: "@meshobj/server@workspace:core/server"
   dependencies:
     "@meshobj/auth": "npm:^0.2.0"
     "@meshobj/casbin_auth": "npm:^0.2.0"

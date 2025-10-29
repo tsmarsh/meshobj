@@ -5,7 +5,7 @@ import { MySQLConfig } from '../src';
 let port = 5043;
 
 let platformUrl = 'http://localhost:' + port;
-let config_dir = `${__dirname}/../../../packages/server/test/config/`;
+let config_dir = `${__dirname}/../../../core/server/test/config/`;
 
 let database = () => ({
     type: 'mysql',

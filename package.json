@@ -2,7 +2,7 @@
     "name": "meshobj",
     "private": true,
     "workspaces": [
-        "packages/*",
+        "core/*",
         "repos/*",
         "examples/*"
     ],
@@ -11,8 +11,8 @@
     },
     "version": "0.1.0",
     "scripts": {
-        "clean": "rimraf \\\"packages/*/dist\\\" && rimraf \\\"repos/*/dist\\\" && rimraf \\\"examples/*/dist\\\"",
-        "clean:all": "rimraf \\\"packages/*/dist\\\" && rimraf \\\"repos/*/dist\\\" && rimraf \\\"examples/*/dist\\\" && rimraf \\\"node_modules\\\" && rimraf \\\"packages/*/node_modules\\\" && rimraf \\\"repos/*/node_modules\\\" && rimraf \\\"examples/*/node_modules\\\"",
+        "clean": "rimraf \\\"core/*/dist\\\" && rimraf \\\"repos/*/dist\\\" && rimraf \\\"examples/*/dist\\\"",
+        "clean:all": "rimraf \\\"core/*/dist\\\" && rimraf \\\"repos/*/dist\\\" && rimraf \\\"examples/*/dist\\\" && rimraf \\\"node_modules\\\" && rimraf \\\"core/*/node_modules\\\" && rimraf \\\"repos/*/node_modules\\\" && rimraf \\\"examples/*/node_modules\\\"",
         "build": "lerna run build",
         "qb": "lerna run build --since main",
         "test": "yarn vitest --run --coverage --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --reporter=basic --reporter=junit --outputFile=test-report.junit.xml",
@@ -26,7 +26,7 @@
         "lint:fix": "eslint . --fix",
         "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
         "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-        "start": "node packages/cli/dist/cli.js --config config/config.conf",
+        "start": "node core/cli/dist/cli.js --config config/config.conf",
         "publish": "lerna publish --no-private"
     },
     "devDependencies": {
