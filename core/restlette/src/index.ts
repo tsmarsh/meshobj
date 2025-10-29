@@ -1,16 +1,10 @@
 import express, { RequestHandler, Router } from 'express';
-import rateLimit from 'express-rate-limit';
 import swaggerUi, { JsonObject } from 'swagger-ui-express';
 import { Crud } from './crud.js';
 import { paths } from './swagger';
 import { Repository, getLogger } from '@meshobj/common';
 
 const logger = getLogger('meshobj/restlette');
-
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-});
 
 const swaggerOptions = (apiPath: string, port: number, schema: Record<string, any>, host: string = 'localhost') => ({
     openapi: '3.0.0',
@@ -66,7 +60,6 @@ export function init(
     logger.debug("Swagger documentation generated", { swaggerDoc });
     const router = createRestletteRouter(apiPath, crud);
 
-    app.use(limiter);
     app.use(apiPath, router);
 
     // Add error handling for swagger.json
