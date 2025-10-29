@@ -1,0 +1,17 @@
+{
+    "name": "@farmql/farm-cqrs-example",
+    "version": "0.1.0",
+    "private": true,
+    "description": "CQRS example: separate read/write services with MongoDB replica set",
+    "scripts": {
+        "start": "docker-compose up -d",
+        "stop": "docker-compose down",
+        "logs": "docker-compose logs -f",
+        "build": "echo 'No build needed for farm-cqrs example'",
+        "perf": "performance/scripts/run-perf-tests.sh",
+        "perf:check": "performance/scripts/wait-for-services.sh"
+    },
+    "dependencies": {
+        "@meshobj/cli": "workspace:*"
+    }
+}

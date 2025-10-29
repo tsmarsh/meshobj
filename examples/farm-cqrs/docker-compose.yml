@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  # MongoDB Primary - handles all writes
+  mongodb-primary:
+    image: mongo:7
+    container_name: farm-cqrs-mongo-primary
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: farm_cqrs
+    volumes:
+      - mongodb-primary-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB Replica - handles all reads
+  mongodb-replica:
+    image: mongo:7
+    container_name: farm-cqrs-mongo-replica
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: farm_cqrs
+    volumes:
+      - mongodb-replica-data:/data/db
+    depends_on:
+      mongodb-primary:
+        condition: service_healthy
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Initialize MongoDB replica set
+  mongo-init:
+    image: mongo:7
+    container_name: farm-cqrs-mongo-init
+    depends_on:
+      mongodb-primary:
+        condition: service_healthy
+      mongodb-replica:
+        condition: service_healthy
+    command: >
+      bash -c "
+        echo 'Waiting for MongoDB to be ready...' &&
+        sleep 5 &&
+        mongosh --host mongodb-primary:27017 --eval '
+          rs.initiate({
+            _id: \"rs0\",
+            members: [
+              { _id: 0, host: \"mongodb-primary:27017\", priority: 2 },
+              { _id: 1, host: \"mongodb-replica:27017\", priority: 1 }
+            ]
+          })
+        ' &&
+        echo 'Waiting for replica set to be ready...' &&
+        sleep 10 &&
+        mongosh --host mongodb-primary:27017 --eval 'rs.status()' &&
+        echo 'Replica set initialized successfully!'
+      "
+
+  # Write Service - REST API only (commands to primary)
+  write-service:
+    build:
+      context: ../..
+      dockerfile: examples/farm/Dockerfile
+    container_name: farm-cqrs-write
+    ports:
+      - "3034:3034"
+    environment:
+      NODE_ENV: development
+      PORT: 3034
+      MONGO_URI: mongodb://mongodb-primary:27017/farm_cqrs?replicaSet=rs0
+      PREFIX: farm
+      ENV: dev
+    volumes:
+      - ./config:/app/examples/farm-cqrs/config
+    command: node packages/cli/dist/cli.js --config examples/farm-cqrs/config/write-service.conf
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3034/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Read Service - GraphQL only (queries from replica)
+  read-service:
+    build:
+      context: ../..
+      dockerfile: examples/farm/Dockerfile
+    container_name: farm-cqrs-read
+    ports:
+      - "3035:3035"
+    environment:
+      NODE_ENV: development
+      PORT: 3035
+      MONGO_URI: mongodb://mongodb-replica:27017/farm_cqrs?replicaSet=rs0&readPreference=secondary
+      PREFIX: farm
+      ENV: dev
+    volumes:
+      - ./config:/app/examples/farm-cqrs/config
+    command: node packages/cli/dist/cli.js --config examples/farm-cqrs/config/read-service.conf
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3035/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongodb-primary-data:
+  mongodb-replica-data:
