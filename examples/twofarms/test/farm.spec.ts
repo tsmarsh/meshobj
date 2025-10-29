@@ -39,10 +39,10 @@ describe.sequential('Two Farms Service Smoke Test', () => {
         }
     });
 
-    it('should build a server with multiple nodes', async () => {
+    it('should query farm with nested coops and hens via cross-service resolvers', async () => {
         const query = `{
             getById(id: "${farm_id}") {
-                name 
+                name
                 coops {
                     name
                     hens {
@@ -57,6 +57,101 @@ describe.sequential('Two Farms Service Smoke Test', () => {
 
         expect(json.name).toBe('Emerdale');
         expect(json.coops.length).toBe(3);
+        expect(json.coops.find((c: any) => c.name === 'purple')).toBeDefined();
+
+        // Verify hens were resolved from the equipment service
+        const purpleCoop = json.coops.find((c: any) => c.name === 'purple');
+        expect(purpleCoop.hens.length).toBe(2);
+        expect(purpleCoop.hens.map((h: any) => h.name)).toContain('chuck');
+    });
+
+    it('should query coop with nested farm and hens via resolvers', async () => {
+        const query = `{
+            getById(id: "${coop1_id}") {
+                name
+                farm {
+                    name
+                }
+                hens {
+                    name
+                    eggs
+                }
+            }
+        }`;
+
+        const json = await callSubgraph(new URL(`http://localhost:6066/coop/graph`), query, 'getById', null);
+
+        expect(json.name).toBe('purple');
+        expect(json.farm.name).toBe('Emerdale'); // Resolved from farm service
+        expect(json.hens.length).toBe(2);
+    });
+
+    it('should query hen with nested coop via resolver', async () => {
+        const query = `{
+            getByName(name: "chuck") {
+                name
+                eggs
+                coop {
+                    name
+                    farm {
+                        name
+                    }
+                }
+            }
+        }`;
+
+        const json = await callSubgraph(new URL(`http://localhost:6066/hen/graph`), query, 'getByName', null);
+
+        expect(json[0].name).toBe('chuck');
+        expect(json[0].eggs).toBe(2);
+        expect(json[0].coop.name).toBe('purple'); // Resolved from coop
+        expect(json[0].coop.farm.name).toBe('Emerdale'); // Nested resolution
+    });
+
+    it('should support REST API alongside GraphQL', async () => {
+        // Create a new hen via REST API
+        await hen_api.create(null, {
+            name: 'clucky',
+            eggs: 5,
+            coop_id: coop1_id
+        });
+
+        // Verify it appears in GraphQL queries
+        const query = `{
+            getByName(name: "clucky") {
+                name
+                eggs
+                coop {
+                    name
+                }
+            }
+        }`;
+
+        const json = await callSubgraph(new URL(`http://localhost:6066/hen/graph`), query, 'getByName', null);
+
+        expect(json.length).toBeGreaterThan(0);
+        const clucky = json.find((h: any) => h.name === 'clucky');
+        expect(clucky).toBeDefined();
+        expect(clucky.eggs).toBe(5);
+        expect(clucky.coop.name).toBe('purple'); // Resolved from coop service
+    });
+
+    it('should demonstrate vector queries (multiple results)', async () => {
+        const query = `{
+            getByFarm(id: "${farm_id}") {
+                name
+                hens {
+                    name
+                    eggs
+                }
+            }
+        }`;
+
+        const json = await callSubgraph(new URL(`http://localhost:6066/coop/graph`), query, 'getByFarm', null);
+
+        expect(json.length).toBe(3); // All coops for this farm
+        const totalHens = json.reduce((sum: number, coop: any) => sum + coop.hens.length, 0);
+        expect(totalHens).toBeGreaterThanOrEqual(4); // At least 4 hens (may be more if previous test created one)
     });
 }, 300000);
 
