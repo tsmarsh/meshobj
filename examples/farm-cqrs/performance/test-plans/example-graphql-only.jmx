@@ -59,7 +59,7 @@
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">3033</stringProp>
+          <stringProp name="HTTPSampler.port">3035</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/farm/graph</stringProp>
