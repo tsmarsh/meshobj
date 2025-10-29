@@ -1181,7 +1181,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/common@npm:^0.2.0, @meshobj/common@workspace:core/common":
+"@meshobj/common@npm:^0.2.0, @meshobj/common@workspace:*, @meshobj/common@workspace:core/common":
   version: 0.0.0-use.local
   resolution: "@meshobj/common@workspace:core/common"
   dependencies:
@@ -1198,10 +1198,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/deploy@workspace:core/deploy":
+"@meshobj/deploy@workspace:*, @meshobj/deploy@workspace:core/deploy":
   version: 0.0.0-use.local
   resolution: "@meshobj/deploy@workspace:core/deploy"
   dependencies:
+    "@meshobj/common": "workspace:*"
+    "@meshobj/server": "workspace:*"
     "@types/js-yaml": "npm:^4.0.5"
     "@types/node": "npm:^22.10.6"
     js-yaml: "npm:^4.1.0"
@@ -1403,7 +1405,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@meshobj/server@npm:^0.2.0, @meshobj/server@workspace:core/server":
+"@meshobj/server@npm:^0.2.0, @meshobj/server@workspace:*, @meshobj/server@workspace:core/server":
   version: 0.0.0-use.local
   resolution: "@meshobj/server@workspace:core/server"
   dependencies:
@@ -2321,6 +2323,7 @@ __metadata:
   resolution: "@twofarmql/farm-example@workspace:examples/twofarms"
   dependencies:
     "@meshobj/cli": "workspace:*"
+    "@meshobj/deploy": "workspace:*"
     "@meshobj/graphlette": "workspace:^"
     "@types/node": "npm:^20.0.0"
     axios: "npm:^1.6.7"
