@@ -18,41 +18,35 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-    entrypoint: [ "bash", "-lc" ]
-    # 1) wait for mongod to answer
-    # 2) rs.initiate if needed
-    # 3) wait until node is PRIMARY
     command: >
-      set -euo pipefail;
-      echo "Waiting for mongodb to accept connections...";
-      for i in {1..60}; do
-        if mongosh --host mongodb:27017 --quiet --eval "db.adminCommand('ping').ok" | grep -q 1; then
-          break;
+      bash -c "
+        echo 'Waiting for MongoDB to be ready...' &&
+        sleep 5 &&
+        echo 'Checking if replica set is already initialized...' &&
+        if mongosh --host mongodb:27017 --eval 'rs.status()' --quiet 2>&1 | grep -q 'no replset config has been received'; then
+          echo 'Initializing replica set...' &&
+          mongosh --host mongodb:27017 --eval '
+            rs.initiate({
+              _id: \"rs0\",
+              members: [
+                { _id: 0, host: \"mongodb:27017\" }
+              ]
+            })
+          ' &&
+          echo 'Waiting for PRIMARY status...' &&
+          for i in {1..30}; do
+            if mongosh --host mongodb:27017 --eval 'rs.status().myState' --quiet 2>&1 | grep -q '1'; then
+              echo 'Replica set initialized successfully'
+              exit 0
+            fi
+            sleep 1
+          done
+          echo 'Timeout waiting for PRIMARY'
+          exit 1
+        else
+          echo 'Replica set already initialized'
         fi
-        sleep 1;
-      done;
-      echo "Ensuring replica set rs0 is initiated...";
-      mongosh --host mongodb:27017 --quiet --eval '
-        try {
-          const s = rs.status(); print("Replica set already initiated: state="+s.myState);
-        } catch (e) {
-          print("Initiating replica set rs0...");
-          rs.initiate({_id:"rs0", members:[{_id:0, host:"mongodb:27017"}]});
-        }
-      ';
-      echo "Waiting for PRIMARY...";
-      mongosh --host mongodb:27017 --quiet --eval '
-        function isPrimary() {
-          const hello = db.hello ? db.hello() : db.isMaster();
-          return hello.isWritablePrimary === true || hello.ismaster === true;
-        }
-        let retries = 60;
-        while (retries-- > 0) {
-          if (isPrimary()) { print("PRIMARY ready"); quit(0); }
-          sleep(1000);
-        }
-        print("Timed out waiting for PRIMARY"); quit(1);
-      ';
+      "
     restart: "no"
 
   redpanda:

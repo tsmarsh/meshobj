@@ -24,6 +24,7 @@ services:
       - ENV=development
       - PREFIX=farm
       - PLATFORM_URL=http://localhost:3033
+      - UV_THREADPOOL_SIZE=10
     depends_on:
       mongodb:
         condition: service_healthy

@@ -1,12 +1,12 @@
 scalar Date
 
 type Event {
+  id: ID
   name: String!
   data: String!
   source: String
   version: String
-  timestamp: DateTime!
-  id: ID
+  timestamp: Date!
 }
 
 type Query {
@@ -20,9 +20,14 @@ type ProcessedEvent {
   raw_event: String!
   name: String!
   processed_data: String!
-  processed_timestamp: DateTime!
+  processed_timestamp: Date!
   processing_time_ms: Float
   status: ProcessingStatus!
   error_message: String
-  id: ID
+}
+
+enum ProcessingStatus {
+  SUCCESS
+  FAILED
+  PARTIAL
 }
