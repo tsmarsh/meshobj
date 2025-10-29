@@ -29,7 +29,7 @@
     "scripts": {
         "build": "tsc",
         "test": "vitest --run --coverage",
-        "test:bdd": "c8 --reporter=text --reporter=html --reporter=json-summary --reporter=lcov --include='src/**/*.ts' cucumber-js"
+        "test:bdd": "c8 --reporter=text --reporter=html --reporter=json-summary --reporter=lcov --all=false --exclude='cucumber.js' --exclude='test/**' cucumber-js"
     },
     "devDependencies": {
         "@cucumber/cucumber": "^12.2.0",
