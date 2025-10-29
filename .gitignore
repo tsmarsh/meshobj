@@ -89,3 +89,9 @@ coverage/
 # Debug files
 *.debug
 *.patch
+
+# Performance test results
+**/performance/results/
+**/performance/temp/
+*.jtl
+jmeter.log
