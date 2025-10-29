@@ -51,19 +51,25 @@ services:
       bash -c "
         echo 'Waiting for MongoDB to be ready...' &&
         sleep 5 &&
-        mongosh --host mongodb-primary:27017 --eval '
-          rs.initiate({
-            _id: \"rs0\",
-            members: [
-              { _id: 0, host: \"mongodb-primary:27017\", priority: 2 },
-              { _id: 1, host: \"mongodb-replica:27017\", priority: 1 }
-            ]
-          })
-        ' &&
-        echo 'Waiting for replica set to be ready...' &&
-        sleep 10 &&
+        echo 'Checking if replica set is already initialized...' &&
+        if mongosh --host mongodb-primary:27017 --eval 'rs.status()' --quiet 2>&1 | grep -q 'MongoServerError: no replset config has been received'; then
+          echo 'Initializing replica set...' &&
+          mongosh --host mongodb-primary:27017 --eval '
+            rs.initiate({
+              _id: \"rs0\",
+              members: [
+                { _id: 0, host: \"mongodb-primary:27017\", priority: 2 },
+                { _id: 1, host: \"mongodb-replica:27017\", priority: 1 }
+              ]
+            })
+          ' &&
+          echo 'Waiting for replica set to be ready...' &&
+          sleep 10
+        else
+          echo 'Replica set already initialized.'
+        fi &&
         mongosh --host mongodb-primary:27017 --eval 'rs.status()' &&
-        echo 'Replica set initialized successfully!'
+        echo 'Replica set is ready!'
       "
 
   # Write Service - REST API only (commands to primary)
@@ -82,7 +88,7 @@ services:
       ENV: dev
     volumes:
       - ./config:/app/examples/farm-cqrs/config
-    command: node packages/cli/dist/cli.js --config examples/farm-cqrs/config/write-service.conf
+    command: node core/cli/dist/cli.js --config examples/farm-cqrs/config/write-service.conf
     depends_on:
       mongo-init:
         condition: service_completed_successfully
@@ -108,7 +114,7 @@ services:
       ENV: dev
     volumes:
       - ./config:/app/examples/farm-cqrs/config
-    command: node packages/cli/dist/cli.js --config examples/farm-cqrs/config/read-service.conf
+    command: node core/cli/dist/cli.js --config examples/farm-cqrs/config/read-service.conf
     depends_on:
       mongo-init:
         condition: service_completed_successfully
