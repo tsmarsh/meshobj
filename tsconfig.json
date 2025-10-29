@@ -4,6 +4,7 @@
     "references": [
         { "path": "core/common"},
         { "path": "core/server"},
+        { "path": "core/deploy"},
         { "path": "repos/mongo_repo"},
         { "path": "repos/postgres_repo"},
         { "path": "repos/mysql_repo"},

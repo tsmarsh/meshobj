@@ -6,10 +6,16 @@
     "scripts": {
         "start": "node dist/index.js",
         "build": "tsc",
-        "test": "vitest --passWithNoTests --run --hookTimeout=300000"
+        "test": "vitest --passWithNoTests --run --hookTimeout=300000",
+        "generate": "ts-node deployment.ts",
+        "deploy": "npm run generate && cd generated && docker-compose up",
+        "deploy:build": "npm run generate && cd generated && docker-compose up --build",
+        "deploy:down": "cd generated && docker-compose down",
+        "deploy:clean": "cd generated && docker-compose down -v && cd .. && rm -rf generated"
     },
     "dependencies": {
         "@meshobj/cli": "workspace:*",
+        "@meshobj/deploy": "workspace:*",
         "axios": "^1.6.7",
         "js-yaml": "^4.1.0"
     },

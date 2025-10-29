@@ -1198,6 +1198,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@meshobj/deploy@workspace:core/deploy":
+  version: 0.0.0-use.local
+  resolution: "@meshobj/deploy@workspace:core/deploy"
+  dependencies:
+    "@types/js-yaml": "npm:^4.0.5"
+    "@types/node": "npm:^22.10.6"
+    js-yaml: "npm:^4.1.0"
+    typescript: "npm:^5.7.3"
+    vitest: "npm:^2.1.8"
+  languageName: unknown
+  linkType: soft
+
 "@meshobj/events-example@workspace:examples/events":
   version: 0.0.0-use.local
   resolution: "@meshobj/events-example@workspace:examples/events"
@@ -2452,6 +2464,13 @@ __metadata:
   version: 2.0.6
   resolution: "@types/istanbul-lib-coverage@npm:2.0.6"
   checksum: 10c0/3948088654f3eeb45363f1db158354fb013b362dba2a5c2c18c559484d5eb9f6fd85b23d66c0a7c2fcfab7308d0a585b14dadaca6cc8bf89ebfdc7f8f5102fb7
+  languageName: node
+  linkType: hard
+
+"@types/js-yaml@npm:^4.0.5":
+  version: 4.0.9
+  resolution: "@types/js-yaml@npm:4.0.9"
+  checksum: 10c0/24de857aa8d61526bbfbbaa383aa538283ad17363fcd5bb5148e2c7f604547db36646440e739d78241ed008702a8920665d1add5618687b6743858fae00da211
   languageName: node
   linkType: hard
 
