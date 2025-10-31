@@ -105,11 +105,12 @@ type Query {
   getByName(name: String, at: Float): [ProcessedEvent]
   getById(id: ID, at: Float): ProcessedEvent
   getByEvent(id: ID, at: Float): [ProcessedEvent]
+  getByRawEventId(raw_event_id: String, at: Float): [ProcessedEvent]
 }
 
 type ProcessedEvent {
   id: ID!
-  raw_event: String!
+  raw_event_id: String!
   name: String!
   processed_data: String!
   processed_timestamp: Date!
@@ -131,7 +132,8 @@ enum ProcessingStatus {
           vectors: [
             { name: 'getByName', query: 'find' },
             { name: 'getByEvent', query: 'find' },
-          ],
+            { name: 'getByRawEventId', query: 'find' },
+          ]
         }
       },
     ],

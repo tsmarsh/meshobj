@@ -1,35 +1,50 @@
 import { Kafka, logLevel } from 'kafkajs';
 import axios from 'axios';
+import { getLogger } from '@meshobj/common';
 
-type DebeziumVal = any; // Keep loose; we parse defensively
+const log = getLogger('events/processor');
 
 const KAFKA_BROKER = process.env.KAFKA_BROKER ?? 'localhost:9092';
 const RAW_TOPIC = process.env.RAW_TOPIC!;
 const PROCESSED_API_BASE = process.env.PROCESSED_API_BASE ?? 'http://localhost:4055/processedevent/api';
 
-function isInsert(val: DebeziumVal): boolean {
-    // Debezium Server for Mongo can present either:
-    // 1) envelope: { op: 'c'|'u'|'d', after: {...}, source:{...} }
-    // 2) flattened but still with op/after
-    const op = val?.op ?? val?.payload?.op;
-    return op === 'c' || op === 'create' || op === 'insert';
-}
-
-function extractAfter(val: DebeziumVal): any {
-    return val?.after ?? val?.payload?.after ?? null;
-}
-
 // Very basic "processing" — enrich + echo some fields
-function buildProcessedEvent(after: any) {
-    const raw_event_id = String(after?._id ?? after?.id ?? '').replace(/^ObjectId\((.+)\)$/, '$1');
-    const name = String(after?.name ?? 'unknown');
+// Expects plain document format from Debezium (publish.full.document.only=true)
+function buildProcessedEvent(doc: any, docId?: any, docUuid?: string) {
+    // Use the UUID from the document (API-created events have this)
+    // Fall back to MongoDB ObjectId for manually-inserted events
+    let raw_event_id = '';
+    if (docUuid) {
+        raw_event_id = docUuid;
+    } else if (doc?.id) {
+        raw_event_id = String(doc.id);
+    } else if (docId?.$oid) {
+        raw_event_id = docId.$oid;
+    } else if (typeof docId === 'string') {
+        raw_event_id = docId;
+    }
+    const name = String(doc?.name ?? 'unknown');
+
+    // Parse the data field if it's a JSON string
+    let dataObj: any = {};
+    try {
+        if (typeof doc?.data === 'string') {
+            dataObj = JSON.parse(doc.data);
+        } else {
+            dataObj = doc?.data ?? {};
+        }
+    } catch (e) {
+        // If parsing fails, use empty object
+        dataObj = {};
+    }
 
     // You declared processed_data as string; stringify here
     const processed_data = JSON.stringify({
-        user_id: after?.data?.user_id ?? null,
-        username: after?.data?.username ?? null,
-        source: after?.source ?? null,
-        original: after
+        user_id: dataObj?.user_id ?? null,
+        username: dataObj?.username ?? null,
+        source: doc?.source ?? null,
+        enriched: true,
+        processed_at: new Date().toISOString()
     });
 
     return {
@@ -56,39 +71,53 @@ export class RawToProcessedProcessor {
         if (this.running) return;
         this.running = true;
 
+        log.info(`Starting processor: KAFKA_BROKER=${KAFKA_BROKER}, RAW_TOPIC=${RAW_TOPIC}, PROCESSED_API_BASE=${PROCESSED_API_BASE}`);
+
         const consumer = this.kafka.consumer({ groupId: `events-e2e-processor-${Date.now()}` });
         await consumer.connect();
+        log.info(`Consumer connected, subscribing to topic: ${RAW_TOPIC}`);
         await consumer.subscribe({ topic: RAW_TOPIC, fromBeginning: true });
+        log.info(`Subscribed to ${RAW_TOPIC}, starting consumer...`);
 
         await consumer.run({
             eachMessage: async ({ message }: { message: any }) => {
                 if (!this.running) return;
                 try {
                     const text = message.value?.toString('utf8') ?? '{}';
-                    const val = JSON.parse(text);
+                    const value = JSON.parse(text);
 
-                    if (!isInsert(val)) return;
+                    log.info(`Received message from Kafka: ${text.substring(0, 200)}`);
 
-                    // Optional: filter to expected db/collection in case Debezium publishes multiple
-                    // const db = extractDb(val); const coll = extractColl(val);
-                    // if (db !== 'events_development' || coll !== 'events-development-event') return;
+                    // Handle Debezium message structure (even with publish.full.document.only=true)
+                    const afterString = value?.payload?.after || value?.after || value;
+                    const afterDoc = typeof afterString === 'string' ? JSON.parse(afterString) : afterString;
 
-                    const after = extractAfter(val);
-                    if (!after) return;
+                    // API-created events have structure: { _id, id, payload: {name, data, ...}, ... }
+                    // Manually-inserted events have structure: { _id, name, data, ... }
+                    // Extract the _id and id from the root document first
+                    const docId = afterDoc?._id;
+                    const docUuid = afterDoc?.id;
 
-                    // require some “name” to avoid noise
-                    if (!after.name) return;
+                    // Then get the event data (from payload if it exists, otherwise use the doc itself)
+                    const doc = afterDoc?.payload || afterDoc;
 
-                    const processed = buildProcessedEvent(after);
+                    // Require some "name" to avoid noise
+                    if (!doc.name) {
+                        log.info(`Skipping document without name field. Doc keys: ${Object.keys(doc || {}).join(', ')}`);
+                        return;
+                    }
 
-                    await axios.post(PROCESSED_API_BASE, processed, {
+                    const processed = buildProcessedEvent(doc, docId, docUuid);
+                    log.info(`Processing event: ${doc.name} (id: ${processed.raw_event_id})`);
+
+                    const response = await axios.post(PROCESSED_API_BASE, processed, {
                         headers: { 'Content-Type': 'application/json' },
-                        // retry-ish (keep it simple)
                         timeout: 5000
                     });
+
+                    log.info(`Successfully processed event: ${doc.name} (id: ${processed.raw_event_id}), API response status: ${response.status}`);
                 } catch (err) {
-                    // Swallow in test processor; log for debugging
-                    // console.error('processor error', err);
+                    log.error('Error processing message:', err);
                 }
             }
         });
