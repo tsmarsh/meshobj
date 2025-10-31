@@ -6,7 +6,9 @@
     "scripts": {
         "start": "node dist/index.js",
         "build": "tsc",
-        "test": "vitest --passWithNoTests --run --hookTimeout=120000"
+        "test": "vitest --passWithNoTests --run --hookTimeout=120000",
+        "perf": "performance/scripts/run-perf-tests.sh",
+        "perf:check": "performance/scripts/wait-for-services.sh"
     },
     "dependencies": {
         "@meshobj/cli": "workspace:*",

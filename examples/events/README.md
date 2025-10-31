@@ -689,6 +689,59 @@ This example uses simplified settings for demonstration. For production:
    - Use network policies to restrict access
    - Implement API authentication/authorization
 
+## Performance Testing
+
+Want to see how fast this CDC pipeline can go? Check out the performance tests!
+
+```bash
+# Start the services
+cd generated
+docker-compose up -d
+
+# Wait ~60 seconds for initialization, then run performance tests
+cd ..
+yarn perf
+```
+
+The performance tests use JMeter to measure:
+- **Event creation throughput**: How many events/sec can you write?
+- **API latency**: p50, p90, p99 response times
+- **CDC end-to-end latency**: Track events through both Kafka topics in real-time
+- **System behavior under load**: Does it stay stable?
+
+### Measuring CDC Pipeline Latency
+
+The new `cdc-pipeline-latency.jmx` test gives you real-time visibility into events flowing through the pipeline:
+
+```bash
+# Run in JMeter GUI to watch events flow through Kafka
+jmeter -t performance/test-plans/cdc-pipeline-latency.jmx
+```
+
+Watch events progress through:
+1. **POST Event** - API creates event
+2. **Raw Events Topic** - Debezium captures MongoDB change
+3. **Processor** - Consumes, transforms, writes processed event
+4. **Processed Events Topic** - Debezium captures processed event
+
+This shows you the **actual latency** users experience, not just API response time.
+
+Expected baseline performance (dev hardware):
+- **Throughput**: 100-300 events/sec (single instance)
+- **Write latency**: 20-40ms average, < 100ms p99
+- **CDC latency**: 1-3 seconds (MongoDB → Kafka)
+- **End-to-end**: 3-5 seconds (write → processed event appears)
+
+See [`performance/README.md`](performance/README.md) for:
+- How to run tests
+- Installing JMeter Kafka plugin
+- Interpreting results
+- Creating custom test plans
+- Understanding CDC-specific latency characteristics
+- Production performance expectations
+
+**TL;DR**: The API writes are blazingly fast (< 50ms). The CDC pipeline adds 1-3 seconds of latency, but that's the trade-off for zero-code event publishing, guaranteed delivery, and horizontal scalability.
+
 ## Monitoring and Debugging
 
 ### Check Kafka Topics

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="CDC Pipeline End-to-End Latency" enabled="true">
+      <stringProp name="TestPlan.comments">Measures event creation throughput and observes CDC pipeline via Kafka</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="API_HOST" elementType="Argument">
+            <stringProp name="Argument.name">API_HOST</stringProp>
+            <stringProp name="Argument.value">localhost</stringProp>
+          </elementProp>
+          <elementProp name="API_PORT" elementType="Argument">
+            <stringProp name="Argument.name">API_PORT</stringProp>
+            <stringProp name="Argument.value">4055</stringProp>
+          </elementProp>
+          <elementProp name="KAFKA_BROKER" elementType="Argument">
+            <stringProp name="Argument.name">KAFKA_BROKER</stringProp>
+            <stringProp name="Argument.value">localhost:9092</stringProp>
+          </elementProp>
+          <elementProp name="RAW_TOPIC" elementType="Argument">
+            <stringProp name="Argument.name">RAW_TOPIC</stringProp>
+            <stringProp name="Argument.value">events.events_development.event</stringProp>
+          </elementProp>
+          <elementProp name="PROCESSED_TOPIC" elementType="Argument">
+            <stringProp name="Argument.name">PROCESSED_TOPIC</stringProp>
+            <stringProp name="Argument.value">events.events_development.processedevent</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <!-- Kafka Consumer Config for Raw Events -->
+      <com.di.jmeter.kafka.config.KafkaConsumerConfig guiclass="com.di.jmeter.kafka.config.KafkaConsumerConfigUI" testclass="com.di.jmeter.kafka.config.KafkaConsumerConfig" testname="Raw Events Kafka Config" enabled="true">
+        <stringProp name="kafka_consumer_client_id">raw_events_consumer</stringProp>
+        <stringProp name="kafka_consumer_client_variable_name">raw_consumer</stringProp>
+        <stringProp name="bootstrap_servers">${KAFKA_BROKER}</stringProp>
+        <stringProp name="group_id">jmeter-cdc-raw-${__time()}</stringProp>
+        <stringProp name="key_deserializer_class">org.apache.kafka.common.serialization.StringDeserializer</stringProp>
+        <stringProp name="value_deserializer_class">org.apache.kafka.common.serialization.StringDeserializer</stringProp>
+        <stringProp name="auto_offset_reset">latest</stringProp>
+        <stringProp name="enable_auto_commit">true</stringProp>
+        <stringProp name="kafka_topic_name">${RAW_TOPIC}</stringProp>
+      </com.di.jmeter.kafka.config.KafkaConsumerConfig>
+      <hashTree/>
+
+      <!-- Kafka Consumer Config for Processed Events -->
+      <com.di.jmeter.kafka.config.KafkaConsumerConfig guiclass="com.di.jmeter.kafka.config.KafkaConsumerConfigUI" testclass="com.di.jmeter.kafka.config.KafkaConsumerConfig" testname="Processed Events Kafka Config" enabled="true">
+        <stringProp name="kafka_consumer_client_id">processed_events_consumer</stringProp>
+        <stringProp name="kafka_consumer_client_variable_name">processed_consumer</stringProp>
+        <stringProp name="bootstrap_servers">${KAFKA_BROKER}</stringProp>
+        <stringProp name="group_id">jmeter-cdc-processed-${__time()}</stringProp>
+        <stringProp name="key_deserializer_class">org.apache.kafka.common.serialization.StringDeserializer</stringProp>
+        <stringProp name="value_deserializer_class">org.apache.kafka.common.serialization.StringDeserializer</stringProp>
+        <stringProp name="auto_offset_reset">latest</stringProp>
+        <stringProp name="enable_auto_commit">true</stringProp>
+        <stringProp name="kafka_topic_name">${PROCESSED_TOPIC}</stringProp>
+      </com.di.jmeter.kafka.config.KafkaConsumerConfig>
+      <hashTree/>
+
+      <!-- Main Thread Group: Send events via API -->
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Event Senders" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControllerGui" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">20</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">3</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <!-- HTTP Sampler to create events -->
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST Event" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{
+  "name": "cdc_latency_test_${__threadNum}_${__counter(TRUE,)}",
+  "data": "{\"test\":true,\"thread\":${__threadNum},\"timestamp\":${__time()},\"counter\":${__counter(FALSE,)}}",
+  "timestamp": "${__time(yyyy-MM-dd'T'HH:mm:ss'Z',)}",
+  "source": "jmeter_cdc_latency_test",
+  "version": "1.0"
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${API_HOST}</stringProp>
+          <stringProp name="HTTPSampler.port">${API_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/event/api</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <!-- Header Manager -->
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+
+          <!-- Response Assertion - Accept 200 (after redirect) -->
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Assert Success (200 OK)" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+
+        <!-- Kafka Consumer Sampler for Raw Events -->
+        <com.di.jmeter.kafka.sampler.KafkaConsumerSampler guiclass="com.di.jmeter.kafka.config.KafkaConsumerSamplerUI" testclass="com.di.jmeter.kafka.sampler.KafkaConsumerSampler" testname="Check Raw Events Topic" enabled="true">
+          <stringProp name="kafka_consumer_client_variable_name">raw_consumer</stringProp>
+          <stringProp name="poll_timeout">1000</stringProp>
+          <stringProp name="number_of_messages_to_poll">10</stringProp>
+        </com.di.jmeter.kafka.sampler.KafkaConsumerSampler>
+        <hashTree/>
+
+        <!-- Kafka Consumer Sampler for Processed Events -->
+        <com.di.jmeter.kafka.sampler.KafkaConsumerSampler guiclass="com.di.jmeter.kafka.config.KafkaConsumerSamplerUI" testclass="com.di.jmeter.kafka.sampler.KafkaConsumerSampler" testname="Check Processed Events Topic" enabled="true">
+          <stringProp name="kafka_consumer_client_variable_name">processed_consumer</stringProp>
+          <stringProp name="poll_timeout">1000</stringProp>
+          <stringProp name="number_of_messages_to_poll">10</stringProp>
+        </com.di.jmeter.kafka.sampler.KafkaConsumerSampler>
+        <hashTree/>
+
+        <!-- Constant Timer: Small delay between requests -->
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Delay Between Events" enabled="true">
+          <stringProp name="ConstantTimer.delay">200</stringProp>
+        </ConstantTimer>
+        <hashTree/>
+      </hashTree>
+
+      <!-- Listeners for results -->
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>true</responseData>
+            <samplerData>true</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>true</responseHeaders>
+            <requestHeaders>true</requestHeaders>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
