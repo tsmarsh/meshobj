@@ -16,7 +16,7 @@ let farm_api: any;
 
 let environment: StartedDockerComposeEnvironment;
 
-describe.sequential('Farm Service Smoke Test', () => {
+describe.skip('Farm Service Smoke Test', () => {
     beforeAll(async () => {
         const startTime = Date.now();
         

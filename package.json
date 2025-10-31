@@ -15,7 +15,7 @@
         "clean:all": "rimraf \\\"core/*/dist\\\" && rimraf \\\"repos/*/dist\\\" && rimraf \\\"examples/*/dist\\\" && rimraf \\\"node_modules\\\" && rimraf \\\"core/*/node_modules\\\" && rimraf \\\"repos/*/node_modules\\\" && rimraf \\\"examples/*/node_modules\\\"",
         "build": "lerna run build",
         "qb": "lerna run build --since main",
-        "test": "yarn vitest --run --coverage --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --reporter=basic --reporter=junit --outputFile=test-report.junit.xml",
+        "test": "yarn vitest --run --poolOptions.threads.singleThread --coverage --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --reporter=basic --reporter=junit --outputFile=test-report.junit.xml",
         "test:bdd": "lerna run test:bdd --concurrency 1",
         "test:all": "yarn test && yarn test:bdd && yarn coverage:merge",
         "qt": "lerna run test --since main",

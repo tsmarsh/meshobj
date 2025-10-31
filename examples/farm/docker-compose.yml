@@ -1,8 +1,7 @@
 services:
   mongodb:
     image: mongo:latest
-    ports:
-      - "27017:27017"
+    # Port not exposed to host - only accessible via Docker network to avoid conflicts
     environment:
       - MONGO_INITDB_DATABASE=farm_db
     healthcheck:
