@@ -9,7 +9,9 @@ let raw_event_api: any;
 let processed_event_api: any;
 let kafka: Kafka;
 
-describe('Events Service BDD Tests', () => {
+// Skipped for CI - takes 60+ seconds to spin up full CDC stack (MongoDB, Kafka, Debezium)
+// Run manually with: yarn test test/events.bdd.ts
+describe.skip('Events Service BDD Tests', () => {
     beforeAll(async () => {
         // Start the docker-compose environment
         environment = await new DockerComposeEnvironment(path.resolve(__dirname, '../generated'), 'docker-compose.yml')
@@ -370,7 +372,7 @@ describe('Events Service BDD Tests', () => {
             console.log(`Scenario 4: SUCCESS - Full E2E flow completed in pipeline`);
         }, 45000);
     });
-});
+}).skip(); // TODO: Its pretty slow, way to slow for CI.
 
 async function getSwaggerDocs() {
     return await Promise.all(
