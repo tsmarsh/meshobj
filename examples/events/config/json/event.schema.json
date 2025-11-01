@@ -17,6 +17,9 @@
     "data": {
       "type": "string"
     },
+    "correlationId": {
+      "type": "string"
+    },
     "source": {
       "type": "string"
     },
@@ -24,12 +27,13 @@
       "type": "string"
     },
     "timestamp": {
-      "type": "datetime"
+      "type": "string",
+      "format": "date-time"
     },
     "processedEvent": {
       "type": "array",
       "items": {
-        "type": "processedevent"
+        "type": "string"
       }
     }
   }

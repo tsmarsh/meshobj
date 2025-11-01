@@ -11,229 +11,90 @@ import * as fs from 'fs';
 configureLogging('info');
 const log = getLogger('events/index');
 
-// Load the generated server config
-const configPath = path.join(__dirname, '../generated/events/server-config.json');
-let config: any;
+// Configuration from environment
+const port = parseInt(process.env.PORT || '4055');
+const mongoUri = process.env.MONGO_URI || 'mongodb://mongodb:27017/events_db?replicaSet=rs0';
+const prefix = process.env.PREFIX || 'events';
+const env = process.env.ENV || 'development';
+const db = `${prefix}_${env}`;
 
-if (fs.existsSync(configPath)) {
-  // If the deployment generated a JSON config, use it
-  config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-} else {
-  // Otherwise use inline config (for the generated server.ts case)
-  const port = parseInt(process.env.PORT || '4055');
-  const mongoUri = process.env.MONGO_URI || 'mongodb://mongodb:27017/events_db?replicaSet=rs0';
-  const prefix = process.env.PREFIX || 'events';
-  const env = process.env.ENV || 'development';
-  const db = `${prefix}_${env}`;
+// Load schemas from config files
+// __dirname will be dist/src, so go up two levels to get to the project root
+const configDir = path.join(__dirname, '../../config');
+const eventGraphQLSchema = fs.readFileSync(path.join(configDir, 'graph/event.graphql'), 'utf-8');
+const processedEventGraphQLSchema = fs.readFileSync(path.join(configDir, 'graph/processedevent.graphql'), 'utf-8');
+const eventJSONSchema = JSON.parse(fs.readFileSync(path.join(configDir, 'json/event.schema.json'), 'utf-8'));
+const processedEventJSONSchema = JSON.parse(fs.readFileSync(path.join(configDir, 'json/processedevent.schema.json'), 'utf-8'));
 
-  config = {
-    port,
-    graphlettes: [
-      {
-        path: '/event/graph',
-        storage: {
-          type: 'mongo',
-          uri: mongoUri,
-          db,
-          collection: 'event',
-          options: {}
-        },
-        schema: `scalar Date
-
-type Query {
-  getByName(name: String, at: Float): [Event]
-  getById(id: ID, at: Float): Event
-}
-
-type Event {
-  id: ID
-  name: String!
-  data: String!
-  source: String
-  version: String
-  timestamp: Date!
-  processedEvents: [ProcessedEvent]
-}
-
-type ProcessedEvent {
-  id: ID!
-  raw_event: String!
-  name: String!
-  processed_data: String!
-  processed_timestamp: Date!
-  processing_time_ms: Float
-  status: ProcessingStatus!
-  error_message: String
-}
-
-enum ProcessingStatus {
-  SUCCESS
-  FAILED
-  PARTIAL
-}
-`,
-        rootConfig: {
-          singletons: [
-            { name: 'getById', query: 'findOne', id: '_id' },
-          ],
-          vectors: [
-            { name: 'getByName', query: 'find' },
-          ],
-        }
+const config = {
+  port,
+  graphlettes: [
+    {
+      path: '/event/graph',
+      storage: {
+        type: 'mongo',
+        uri: mongoUri,
+        db,
+        collection: 'event',
+        options: {}
       },
-      {
-        path: '/processedevent/graph',
-        storage: {
-          type: 'mongo',
-          uri: mongoUri,
-          db,
-          collection: 'processedevent',
-          options: {}
-        },
-        schema: `scalar Date
-
-type Event {
-  id: ID
-  name: String!
-  data: String!
-  source: String
-  version: String
-  timestamp: Date!
-}
-
-type Query {
-  getByName(name: String, at: Float): [ProcessedEvent]
-  getById(id: ID, at: Float): ProcessedEvent
-  getByEvent(id: ID, at: Float): [ProcessedEvent]
-  getByRawEventId(raw_event_id: String, at: Float): [ProcessedEvent]
-}
-
-type ProcessedEvent {
-  id: ID!
-  raw_event_id: String!
-  name: String!
-  processed_data: String!
-  processed_timestamp: Date!
-  processing_time_ms: Float
-  status: ProcessingStatus!
-  error_message: String
-}
-
-enum ProcessingStatus {
-  SUCCESS
-  FAILED
-  PARTIAL
-}
-`,
-        rootConfig: {
-          singletons: [
-            { name: 'getById', query: 'findOne', id: '_id' },
-          ],
-          vectors: [
-            { name: 'getByName', query: 'find' },
-            { name: 'getByEvent', query: 'find' },
-            { name: 'getByRawEventId', query: 'find' },
-          ]
-        }
+      schema: eventGraphQLSchema,
+      rootConfig: {
+        singletons: [
+          { name: 'getById', query: 'findOne', id: '_id' },
+        ],
+        vectors: [
+          { name: 'getByName', query: 'find' },
+        ],
+      }
+    },
+    {
+      path: '/processedevent/graph',
+      storage: {
+        type: 'mongo',
+        uri: mongoUri,
+        db,
+        collection: 'processedevent',
+        options: {}
       },
-    ],
-    restlettes: [
-      {
-        path: '/event/api',
-        storage: {
-          type: 'mongo',
-          uri: mongoUri,
-          db,
-          collection: 'event',
-          options: {}
-        },
-        schema: {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "name",
-            "data",
-            "timestamp"
-          ],
-          "properties": {
-            "id": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "name": {
-              "type": "string"
-            },
-            "data": {
-              "type": "string"
-            },
-            "source": {
-              "type": "string"
-            },
-            "version": {
-              "type": "string"
-            },
-            "timestamp": {
-              "type": "string",
-              "format": "date-time"
-            }
-          }
-        }
+      schema: processedEventGraphQLSchema,
+      rootConfig: {
+        singletons: [
+          { name: 'getById', query: 'findOne', id: '_id' },
+        ],
+        vectors: [
+          { name: 'getByName', query: 'find' },
+          { name: 'getByEvent', query: 'find' },
+          { name: 'getByRawEventId', query: 'find' },
+        ]
+      }
+    },
+  ],
+  restlettes: [
+    {
+      path: '/event/api',
+      storage: {
+        type: 'mongo',
+        uri: mongoUri,
+        db,
+        collection: 'event',
+        options: {}
       },
-      {
-        path: '/processedevent/api',
-        storage: {
-          type: 'mongo',
-          uri: mongoUri,
-          db,
-          collection: 'processedevent',
-          options: {}
-        },
-        schema: {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "id",
-            "raw_event_id",
-            "name",
-            "processed_data",
-            "processed_timestamp",
-            "status"
-          ],
-          "properties": {
-            "id": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "raw_event_id": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "name": {
-              "type": "string"
-            },
-            "processed_data": {
-              "type": "string"
-            },
-            "processed_timestamp": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "processing_time_ms": {
-              "type": "number"
-            },
-            "status": {
-              "type": "string",
-              "enum": ["SUCCESS", "FAILED", "PARTIAL"]
-            },
-            "error_message": {
-              "type": "string"
-            }
-          }
-        }
+      schema: eventJSONSchema
+    },
+    {
+      path: '/processedevent/api',
+      storage: {
+        type: 'mongo',
+        uri: mongoUri,
+        db,
+        collection: 'processedevent',
+        options: {}
       },
-    ]
-  };
-}
+      schema: processedEventJSONSchema
+    },
+  ]
+};
 
 const plugins = {
   mongo: new MongoPlugin(),

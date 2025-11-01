@@ -68,7 +68,7 @@ try:
                 payload = after.get('payload', {})
                 name = payload.get('name', after.get('name'))
 
-                if event_id and created_at and name and ('cdc_latency_test' in str(name) or 'perf_test_event' in str(name)):
+                if event_id and created_at and name and ('cdc_latency_test' in str(name) or 'perf_test_event' in str(name) or 'k6_test' in str(name)):
                     raw_events[event_id] = {
                         'name': name,
                         'created_at': created_at

@@ -57,30 +57,13 @@ const MAX_WAIT_MS = 15000;
 // Kafka consumers (initialized once per VU)
 let rawReader, processedReader;
 
-export function setup() {
-  console.log('Setting up Kafka consumers...');
-
-  // Create Kafka readers (consumers)
-  const rawConnection = new Connection({
-    address: KAFKA_BROKERS[0],
-  });
-
-  const processedConnection = new Connection({
-    address: KAFKA_BROKERS[0],
-  });
-
-  return {
-    rawConnection,
-    processedConnection,
-  };
-}
-
-export default function (data) {
-  // Initialize readers if not already done
+export default function () {
+  // Initialize readers if not already done (once per VU)
   if (!rawReader) {
+    console.log(`[VU ${__VU}] Initializing Kafka consumers...`);
     rawReader = new Reader({
       brokers: KAFKA_BROKERS,
-      topic: RAW_TOPIC,
+      groupTopics: [RAW_TOPIC],
       groupID: `k6-raw-${__VU}-${Date.now()}`,
       maxWait: '1s',
     });
@@ -89,7 +72,7 @@ export default function (data) {
   if (!processedReader) {
     processedReader = new Reader({
       brokers: KAFKA_BROKERS,
-      topic: PROCESSED_TOPIC,
+      groupTopics: [PROCESSED_TOPIC],
       groupID: `k6-processed-${__VU}-${Date.now()}`,
       maxWait: '1s',
     });
@@ -102,7 +85,7 @@ export default function (data) {
   const payload = JSON.stringify({
     name: `k6_test_${correlationId}`,
     correlationId: correlationId,
-    data: { test: true, vu: __VU, iter: __ITER, timestamp: t0 },
+    data: JSON.stringify({ test: true, vu: __VU, iter: __ITER, timestamp: t0 }),
     timestamp: new Date(t0).toISOString(),
     source: 'k6_cdc_latency_test',
     version: '1.0',
@@ -182,11 +165,6 @@ export default function (data) {
   endToEnd.add(latEndToEnd);
 
   console.log(`✓ ${correlationId}: HTTP→Raw=${latHttpToRaw}ms, Raw→Processed=${latRawToProcessed}ms, E2E=${latEndToEnd}ms`);
-}
-
-export function teardown(data) {
-  console.log('Cleaning up Kafka connections...');
-  // Consumers are automatically closed
 }
 
 // Helper: Generate UUID v4

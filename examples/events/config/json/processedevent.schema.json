@@ -21,17 +21,22 @@
     "name": {
       "type": "string"
     },
+    "correlationId": {
+      "type": "string"
+    },
     "processed_data": {
       "type": "string"
     },
     "processed_timestamp": {
-      "type": "datetime"
+      "type": "string",
+      "format": "date-time"
     },
     "processing_time_ms": {
       "type": "number"
     },
     "status": {
-      "type": "processingstatus"
+      "type": "string",
+      "enum": ["SUCCESS", "FAILED", "PARTIAL"]
     },
     "error_message": {
       "type": "string"

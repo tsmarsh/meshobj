@@ -51,6 +51,7 @@ function buildProcessedEvent(doc: any, docId?: any, docUuid?: string) {
         id: crypto.randomUUID(),
         raw_event_id,
         name,
+        correlationId: doc?.correlationId,
         processed_data,
         processed_timestamp: new Date().toISOString(),
         processing_time_ms: Math.round(Math.random() * 10) + 5,
