@@ -38,6 +38,8 @@ const processedEventsFound = new Counter('processed_events_found');
 export const options = {
   vus: 1,
   iterations: 10,
+  maxDuration: '5m',  // Allow up to 5 minutes for test completion
+  noVUConnectionReuse: false,
   thresholds: {
     // Stage 1: API response time (should be fast - just DB insert)
     'cdc_api_response_ms': ['p(95)<50'],  // API should respond in <50ms

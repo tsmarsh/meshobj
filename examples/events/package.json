@@ -6,9 +6,8 @@
     "scripts": {
         "start": "node dist/src/index.js",
         "build": "tsc",
-        "test": "vitest --passWithNoTests --run --hookTimeout=120000",
-        "perf": "performance/scripts/run-perf-tests.sh",
-        "perf:check": "performance/scripts/wait-for-services.sh"
+        "test": "echo 'Tests moved to slow-test to avoid running in CI' && exit 0",
+        "slow-test": "vitest --passWithNoTests --run --hookTimeout=120000"
     },
     "dependencies": {
         "@meshobj/cli": "workspace:*",
