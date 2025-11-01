@@ -1,431 +1,266 @@
-# Events CDC Pipeline Performance Tests
+# Events CDC Performance Testing
 
-Performance testing suite for the Events CDC pipeline, measuring throughput and latency of event processing.
+Performance testing suite for the MeshQL Events CDC pipeline using k6.
 
-## What We're Measuring
+## Overview
 
-This CDC pipeline has several interesting performance characteristics worth benchmarking:
+This directory contains k6-based performance tests that measure end-to-end latency of the CDC (Change Data Capture) pipeline:
 
-1. **Event Creation Throughput**: How fast can we write events via REST API?
-2. **MongoDB Write Performance**: Database insert latency
-3. **CDC Latency**: How long does it take for Debezium to capture changes and publish to Kafka?
-4. **End-to-End Latency**: Total time from API write → MongoDB → Debezium → Kafka → Processor → Processed Event
+```
+HTTP POST → MongoDB → Debezium → Kafka (raw) → Processor → Kafka (processed)
+```
 
-The key insight: **CDC adds latency but enables massive scale**. You trade ~1-3 seconds of CDC latency for:
-- Zero-code event publishing
-- Guaranteed delivery
-- Built-in ordering
-- Horizontal scalability
-- Backpressure handling
+See [../PERFORMANCE.md](../PERFORMANCE.md) for detailed results and analysis.
 
 ## Prerequisites
 
-1. **JMeter** - Download from https://jmeter.apache.org/download_jmeter.cgi
-   - Arch Linux: `sudo pacman -S jmeter`
-   - Either set `JMETER_HOME` environment variable
-   - Or add `jmeter` to your PATH
+### k6 with Kafka Extension
 
-2. **JMeter Kafka Plugin** (for CDC latency tests):
-   ```bash
-   # Option 1: Via JMeter Plugin Manager (recommended)
-   # Open JMeter GUI, go to Options → Plugins Manager
-   # Install "DI Kafka" or "Pepper-Box - Kafka Load Generator"
+**Important**: The CDC latency tests require a custom k6 binary with the [xk6-kafka](https://github.com/mostafa/xk6-kafka) extension. This extension is **not included** in the standard k6 package available via package managers (pacman, apt, brew, etc.).
 
-   # Option 2: Manual installation
-   cd /usr/share/jmeter/lib/ext  # or $JMETER_HOME/lib/ext
-   sudo wget https://github.com/rollno748/di-kafkameter/releases/download/v0.2.0/di-kafkameter-0.2.0.jar
-   ```
+#### Why Custom Build?
 
-3. **Running services** - Start the events CDC stack:
-   ```bash
-   cd examples/events/generated
-   docker-compose up -d
+The standard system k6 (`/usr/bin/k6`) can only make HTTP requests. Our CDC tests need to:
+- Consume messages from Kafka topics
+- Measure end-to-end latency by reading from both raw and processed topics
+- Validate message delivery through the entire pipeline
 
-   # Wait ~60 seconds for all services to initialize
-   # You should see "Snapshot completed" and "Streaming started" in logs
-   ```
+#### Building k6 with Kafka Support
+
+```bash
+# 1. Install xk6 builder (requires Go)
+go install go.k6.io/xk6/cmd/xk6@latest
+
+# 2. Build k6 with Kafka extension (in this directory)
+cd examples/events/performance
+xk6 build --with github.com/mostafa/xk6-kafka@latest
+
+# This creates ./k6 binary (~51MB)
+```
+
+**Note**: The k6 binary is gitignored because:
+1. It's 51MB (too large for git)
+2. Binary builds are platform-specific (Linux/Mac/Windows)
+3. Users need to build it locally anyway
+
+### Infrastructure
+
+Start the CDC stack before running tests:
+
+```bash
+cd examples/events/generated
+docker-compose up -d
+
+# Wait ~30 seconds for services to initialize
+```
+
+## Test Files
+
+| File | Purpose | Status |
+|------|---------|--------|
+| [cdc-latency-batch.k6.js](cdc-latency-batch.k6.js) | **Main CDC test** - Batch submission with count-based polling | ✅ Active |
+| [cdc-latency-kafka.k6.js](cdc-latency-kafka.k6.js) | Legacy correlationId-based approach | ⚠️ Reference only |
+| [cleanup-and-restart.sh](cleanup-and-restart.sh) | Clean MongoDB/Kafka volumes and restart | ✅ Active |
 
 ## Running Tests
 
-### Check if services are ready
-```bash
-yarn perf:check
-```
+### 1. Clean Environment (Recommended)
 
-### Run all performance tests
-```bash
-yarn perf
-```
-
-### Run a specific test plan
-```bash
-yarn perf event-creation-throughput.jmx
-```
-
-## Test Scenarios
-
-### 1. Event Creation Throughput
-**Test Plan**: `event-creation-throughput.jmx`
-
-**What it tests**:
-- REST API write throughput (POST /event/api)
-- MongoDB insert performance
-- Connection pooling effectiveness
-
-**Configuration**:
-- 10 concurrent threads (simulated users)
-- 100 iterations per thread = 1,000 total events
-- 5-second ramp-up time
-
-**Expected Results**:
-- Throughput: 100-500 requests/sec (depends on hardware)
-- Average latency: 10-50ms
-- p99 latency: < 100ms
-
-**What this tells you**: How fast you can write events to the system. This is your **ingestion capacity**.
-
-### 2. CDC Pipeline End-to-End Latency
-**Test Plan**: `cdc-pipeline-latency.jmx`
-
-**What it tests**:
-- API event creation throughput and latency
-- Full CDC pipeline can be observed separately via Kafka console
-
-**Configuration**:
-- 10 concurrent threads sending events
-- 100 iterations per thread = 1,000 total events
-- 5-second ramp-up time
-
-**How to run (single command)**:
-```bash
-# Run test and automatically measure CDC latency
-yarn perf cdc-pipeline-latency.jmx && sleep 5 && ./performance/scripts/measure-cdc-latency.sh
-```
-
-This will:
-1. Post 1,000 events via the REST API
-2. Wait 5 seconds for CDC pipeline to process
-3. Analyze Kafka topics to measure end-to-end latency
-
-**Expected API Results**:
-- Throughput: 100-500 requests/sec
-- Average latency: 8-10ms
-- p99 latency: < 100ms
-- Success rate: 100%
-
-**Observing CDC Pipeline in Real-Time** (optional):
-
-To watch events flow through Kafka while the test runs, open two terminal windows:
-
-Terminal 1 - Watch raw events:
-```bash
-docker exec -it generated-kafka-1 kafka-console-consumer \
-  --bootstrap-server localhost:9093 \
-  --topic events.events_development.event \
-  --from-beginning
-```
-
-Terminal 2 - Watch processed events:
-```bash
-docker exec -it generated-kafka-1 kafka-console-consumer \
-  --bootstrap-server localhost:9093 \
-  --topic events.events_development.processedevent \
-  --from-beginning
-```
-
-You'll see events appearing in real-time as they flow through the CDC pipeline!
-
-**Measuring CDC Latency**:
-
-After running the test, measure end-to-end latency:
-```bash
-./performance/scripts/measure-cdc-latency.sh
-```
-
-This script analyzes timestamps from both Kafka topics to calculate:
-- Min/Average/Max latency
-- p90/p95/p99 percentiles
-- Latency distribution
-
-**Expected CDC Results**:
-- API write latency: 8-10ms (MongoDB insert)
-- CDC pipeline latency: 200-600ms (MongoDB → Kafka → Processor → MongoDB → Kafka)
-- Total end-to-end: < 1 second
-
-**What this tells you**: The actual end-to-end latency users experience from writing an event to seeing it processed. Under optimal conditions, the CDC pipeline achieves sub-second latency!
-
-## Understanding the Results
-
-After running tests, open the HTML report:
-```bash
-# Find the latest report
-ls -lt performance/results/
-
-# Open in browser
-open performance/results/<test-name>_<timestamp>_report/index.html
-```
-
-### Key Metrics
-
-#### 1. Throughput (Requests/sec)
-- **What it means**: How many events/sec the system can handle
-- **Good**: > 100 req/sec for single-instance setup
-- **Great**: > 500 req/sec
-- **Bottlenecks**: MongoDB, network I/O, Docker overhead
-
-#### 2. Response Time
-- **Average**: Typical case performance
-- **p90**: 90% of requests complete within this time
-- **p95**: 95% of requests (catching slowdowns)
-- **p99**: 99% of requests (catching outliers)
-
-**For event creation**:
-- Average: 10-30ms is normal (MongoDB insert time)
-- p99: < 100ms is good (includes occasional GC pauses)
-
-#### 3. Error Rate
-- **Should be**: 0%
-- **If > 0%**: Check logs for connection errors, timeout issues, or schema validation failures
-
-#### 4. Latency Breakdown
-JMeter reports show:
-- **Connect Time**: TCP connection establishment (should be ~1ms with keepalive)
-- **Latency**: Time to first byte (TTFB)
-- **Response Time**: Total time
-
-## CDC-Specific Performance Characteristics
-
-### The CDC Latency Tax
-
-Writing an event to the API is fast (10-50ms), but seeing it processed takes longer:
-
-```
-User writes event → 10ms (REST API → MongoDB)
-                  ↓
-MongoDB change stream → 1-3 seconds (Debezium polling interval)
-                  ↓
-Kafka publish → 10-50ms
-                  ↓
-Processor consumes → 100-500ms (includes API call to write processed event)
-                  ↓
-Total end-to-end: 3-5 seconds
-```
-
-**Why the delay?**
-- Debezium polls MongoDB's change stream every 500ms-1s
-- Kafka batching (configurable)
-- Consumer group rebalancing (if multiple instances)
-
-### When This Matters vs Doesn't Matter
-
-**CDC is perfect when**:
-- You need reliable, ordered event processing
-- You can tolerate 3-5 second latency
-- You want zero custom code for event publishing
-- You need to support multiple consumers
-- Examples: Analytics, notifications, audit logs, ETL
-
-**CDC is NOT ideal when**:
-- You need sub-second latency
-- Events must be processed synchronously
-- You can't afford any delays
-- Examples: Real-time pricing, fraud detection, high-frequency trading
-
-For those cases, consider:
-- Direct Kafka publishing (skip CDC)
-- In-memory event buses (Redis Streams)
-- Synchronous processing in the API handler
-
-## Monitoring During Tests
-
-While tests are running, monitor the system:
+Always clean volumes before testing to ensure consistent results:
 
 ```bash
-# Docker resource usage
-docker stats
-
-# Kafka lag (should stay low)
-docker exec -it kafka kafka-consumer-groups \
-  --bootstrap-server localhost:9093 \
-  --group events-e2e-processor \
-  --describe
-
-# MongoDB operations
-docker exec -it mongodb mongosh events_development --eval 'db.serverStatus().opcounters'
-
-# Processor logs
-docker logs events -f
+cd examples/events
+./performance/cleanup-and-restart.sh
 ```
 
-## Creating Custom Test Plans
+This script:
+- Stops docker-compose
+- Removes MongoDB and Kafka volumes
+- Restarts all services
+- Waits for services to be ready
 
-1. Open JMeter GUI:
-   ```bash
-   jmeter
-   ```
+### 2. Run CDC Latency Test
 
-2. Create your test plan with:
-   - **Thread Group**: Define load (users, ramp-up, iterations)
-   - **HTTP Request Sampler**: Configure API calls
-   - **Header Manager**: Set Content-Type: application/json
-   - **Listeners**: Summary Report, Aggregate Report, Graph Results
-
-3. Test locally in GUI mode first
-
-4. Save to `test-plans/*.jmx`
-
-5. Run via script for CI/automated testing
-
-### Example: Testing GraphQL Queries
-
-Create a sampler for:
-```
-POST /event/graph
-Content-Type: application/json
-
-{
-  "query": "{ getByName(name: \"perf_test\") { id name timestamp } }"
-}
+```bash
+cd performance
+./k6 run cdc-latency-batch.k6.js
 ```
 
-## Advanced Test Scenarios
+**Important**: Use `./k6` (local binary with Kafka), not `k6` (system binary without Kafka).
 
-### Spike Test
-- Simulate sudden load increase
-- Ramp from 10 to 100 users in 10 seconds
-- Tests system behavior under stress
+### 3. View Results
 
-### Endurance Test
-- Run at moderate load for extended period (30+ minutes)
-- Checks for memory leaks, connection pool exhaustion
-- Use 20 threads, 10,000 iterations
+Results are printed to stdout. Key metrics:
 
-### Mixed Workload
-- 70% reads (GraphQL queries)
-- 30% writes (event creation)
-- Simulates realistic usage
+```
+📊 CDC Pipeline Metrics:
+   Batch Submit Time:  489ms
+   Debezium Lag:       3,095ms (HTTP → Raw Topic)
+   Processor Lag:      3,075ms (Raw → Processed Topic)
+   End-to-End:         6,660ms (HTTP → Processed Topic)
+```
 
-## Tips for Accurate Results
+## What the Test Does
 
-1. **Warm up the system**:
-   ```bash
-   # Send 100 events first to warm caches
-   for i in {1..100}; do
-     curl -X POST http://localhost:4055/event/api \
-       -H "Content-Type: application/json" \
-       -d '{"name":"warmup","data":"{}","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","source":"warmup","version":"1.0"}'
-   done
-   ```
+The batch CDC latency test ([cdc-latency-batch.k6.js](cdc-latency-batch.k6.js)):
 
-2. **Run tests multiple times**: First run is often slower (cold start)
+1. **Submits 100 events** via HTTP POST to `/event/api`
+2. **Polls raw Kafka topic** until 100 messages appear (or 2-minute timeout)
+3. **Polls processed Kafka topic** until 100 messages appear (or 2-minute timeout)
+4. **Calculates metrics**:
+   - API response time
+   - Debezium lag (HTTP → raw topic)
+   - Processor lag (raw → processed topic)
+   - End-to-end latency (HTTP → processed topic)
 
-3. **Monitor resources**: Use `docker stats` to check if you're CPU/memory bound
+**Why batch + count-based?**
+- More reliable than searching for individual correlationIds
+- Avoids Debezium envelope parsing complexity
+- Measures realistic batch ingestion scenarios
+- Simpler and faster than per-message tracking
 
-4. **Clear data between tests**:
-   ```bash
-   docker exec mongodb mongosh events_development --eval 'db.event.deleteMany({})'
-   ```
+## Test Configuration
 
-5. **Increase Docker resources**: Give Docker more CPU/RAM if bottlenecked
+Default settings in [cdc-latency-batch.k6.js](cdc-latency-batch.k6.js):
 
-## Interpreting Results for CDC Pipelines
+```javascript
+const BATCH_SIZE = 100;                  // Number of events to submit
+const RAW_TOPIC_TIMEOUT_MS = 120000;     // 2 minutes
+const PROCESSED_TOPIC_TIMEOUT_MS = 120000; // 2 minutes
+const KAFKA_BROKERS = ['localhost:9092'];
+```
 
-### Good Performance Indicators
-
-✓ **API writes are fast (< 50ms)**: Shows the REST layer and MongoDB are performant
-✓ **Zero errors**: System is stable under load
-✓ **Linear scaling**: 2x threads ≈ 2x throughput (up to resource limits)
-✓ **Consistent latency**: p99 not much higher than average (predictable performance)
-
-### Red Flags
-
-✗ **High error rate**: Connection pool exhaustion, timeouts
-✗ **Increasing latency over time**: Memory leak, connection leak
-✗ **Throughput plateau**: Hit system limit (DB, CPU, network)
-✗ **High p99 latency**: GC pauses, disk I/O blocking
-
-## Baseline Performance Expectations
-
-On a typical development machine (4 CPU, 8GB RAM, Docker Desktop):
-
-| Metric | Value | Notes |
-|--------|-------|-------|
-| Event creation throughput | 100-300 req/sec | Single API instance |
-| Average write latency | 20-40ms | MongoDB insert time |
-| p99 write latency | 80-150ms | Includes GC pauses |
-| CDC latency | 1-3 seconds | Debezium → Kafka |
-| Processing latency | 200-500ms | Processor consumes & writes |
-| End-to-end latency | 3-5 seconds | Write → processed event visible |
-
-**Production expectations** (proper hardware, k8s cluster):
-- 10x throughput (1,000-3,000 req/sec with horizontal scaling)
-- Lower latency (faster disk, more CPU)
-- CDC latency stays similar (inherent to change stream polling)
-
-## Next Steps
-
-After running performance tests:
-
-1. **Establish baseline**: Record current performance numbers
-2. **Identify bottlenecks**: CPU, memory, disk, network?
-3. **Optimize**: Connection pooling, indexes, batching
-4. **Re-test**: Measure improvement
-5. **Document**: Update this README with your findings
+You can modify these values in the script or create variants for different scenarios (e.g., larger batches, different timeouts).
 
 ## Troubleshooting
 
-### "Services are not ready"
-- Check `docker-compose ps` - are all services running?
-- Check `docker logs` for errors
-- Wait longer - CDC stack takes ~60 seconds to fully initialize
+### "GoError: Unable to read messages"
 
-### "Connection refused"
-- Verify port 4055 is exposed: `curl http://localhost:4055/ready`
-- Check firewall settings
-- Ensure Docker networking is correct
+**Cause**: Using system k6 without Kafka extension
 
-### "Out of memory" errors
-- Increase Docker memory limit (Docker Desktop → Preferences → Resources)
-- Reduce thread count in test plan
-- Check for memory leaks in processor
+**Fix**: Use `./k6` (local binary), not `k6` (system binary)
 
-### JMeter crashes
-- Increase JMeter heap: `export JVM_ARGS="-Xms512m -Xmx2048m"`
-- Reduce number of concurrent threads
-- Disable unnecessary listeners
+```bash
+# Wrong
+k6 run cdc-latency-batch.k6.js
 
-## Directory Structure
-
-```
-performance/
-├── test-plans/               # JMeter test plan files (.jmx)
-│   └── event-creation-throughput.jmx
-├── scripts/
-│   ├── wait-for-services.sh # Health check script
-│   └── run-perf-tests.sh    # Test orchestration
-└── results/                  # Test results (gitignored)
-    ├── *.jtl                # Raw results
-    ├── *_report/            # HTML reports
-    └── *.log                # JMeter logs
+# Correct
+./k6 run cdc-latency-batch.k6.js
 ```
 
-## Contributing Results
+### "./k6: No such file or directory"
 
-If you run performance tests on interesting hardware, please share:
-- Hardware specs (CPU, RAM, disk type)
-- Test plan used
-- Results summary (throughput, latencies)
-- Any bottlenecks discovered
+**Cause**: Haven't built the custom k6 binary yet
 
-Add to a PERFORMANCE.md file in this directory with the pattern:
-```markdown
-## Test Run: YYYY-MM-DD
+**Fix**: Build k6 with Kafka extension (see Prerequisites above)
 
-**Hardware**: Mac M1, 8 CPU, 16GB RAM, SSD
-**Test**: event-creation-throughput.jmx
-**Results**: 450 req/sec, avg 22ms, p99 85ms
-**Bottleneck**: MongoDB CPU (80% utilization)
-**Notes**: Linear scaling up to 20 threads, plateaus after
+### "Connection refused" on port 9092
+
+**Cause**: Kafka not running or not ready
+
+**Fix**:
+```bash
+# Check if Kafka is running
+docker-compose ps kafka
+
+# Restart if needed
+docker-compose restart kafka
+
+# Or run cleanup script
+./performance/cleanup-and-restart.sh
 ```
 
-This helps others understand what performance to expect!
+### Test times out waiting for messages
+
+**Cause**: CDC pipeline may be slow on first run, or services not fully initialized
+
+**Fix**:
+1. Ensure all services are healthy: `docker-compose ps`
+2. Check Debezium logs: `docker-compose logs debezium | tail -50`
+3. Verify processor is running: `docker-compose logs events | tail -50`
+4. Try running cleanup script and waiting 60 seconds before testing
+
+### High latency (>10 seconds)
+
+**Cause**: Normal for first run or after restart
+
+**Fix**:
+- First test run is always slower (cold start, consumer group rebalancing)
+- Run test 2-3 times to get accurate results
+- See [../PERFORMANCE.md](../PERFORMANCE.md) for optimization recommendations
+
+## Understanding the Results
+
+See the comprehensive analysis in [../PERFORMANCE.md](../PERFORMANCE.md), including:
+
+- Architecture diagrams
+- Detailed metrics breakdown
+- Performance bottleneck analysis
+- Optimization recommendations
+- Production deployment considerations
+
+**TL;DR**:
+- ✅ API performance is excellent (~2ms avg)
+- ⚠️ CDC pipeline adds ~3s Debezium lag + ~3s processor lag = ~6s total
+- 🎯 Good for eventual consistency, needs tuning for near-realtime
+
+## For Developers
+
+### Creating New Tests
+
+1. Copy an existing test as a template
+2. Modify the test logic
+3. Use `./k6 run --vus 1 --iterations 1` for quick validation
+4. Document expected results in comments
+
+### Test Design Principles
+
+- **Use count-based polling** for batch tests (not correlationId search)
+- **Add timeouts** to prevent infinite loops
+- **Log progress** with console.log() for debugging
+- **Fail fast** if prerequisites aren't met (return early)
+- **Measure each stage** separately for bottleneck analysis
+
+### Why Not JMeter?
+
+Previous versions used JMeter, but we switched to k6 because:
+- ✅ Native Kafka consumer support (xk6-kafka extension)
+- ✅ JavaScript-based (easier to maintain)
+- ✅ Better Docker/container integration
+- ✅ More modern CLI/automation workflow
+- ❌ JMeter Kafka plugins are complex and poorly documented
+
+## CI/CD Integration
+
+These tests are **not run in CI** because:
+1. They require Docker with significant resources (MongoDB, Kafka, Zookeeper, Debezium)
+2. Tests take ~7-10 seconds per run (too slow for PR checks)
+3. CDC latency is environment-dependent (meaningless in CI)
+
+To run locally as part of development:
+```bash
+# Full test cycle
+./performance/cleanup-and-restart.sh
+cd performance && ./k6 run cdc-latency-batch.k6.js
+```
+
+For functional validation (not performance), use BDD tests:
+```bash
+yarn slow-test  # Runs test/events.bdd.ts with testcontainers
+```
+
+## Contributing
+
+When adding new performance tests:
+
+1. **Document expected results** in comments
+2. **Update this README** with test descriptions
+3. **Update [../PERFORMANCE.md](../PERFORMANCE.md)** with analysis if results change significantly
+4. **Commit test scripts** but not k6 binary or results
+
+## Further Reading
+
+- [k6 Documentation](https://k6.io/docs/)
+- [xk6-kafka Extension](https://github.com/mostafa/xk6-kafka)
+- [../PERFORMANCE.md](../PERFORMANCE.md) - Detailed performance analysis
+- [Debezium MongoDB Connector](https://debezium.io/documentation/reference/stable/connectors/mongodb.html)

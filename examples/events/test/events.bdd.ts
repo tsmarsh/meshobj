@@ -135,8 +135,10 @@ describe('Events Service BDD Tests', () => {
 
             // WHEN: I post an event to the event service
             const eventName = 'bdd_test_1';
+            const correlationId = crypto.randomUUID();
             const response = await raw_event_api.create(null, {
                 name: eventName,
+                correlationId: correlationId,
                 data: JSON.stringify({ test: 'scenario_1', timestamp: Date.now() }),
                 timestamp: new Date().toISOString(),
                 source: 'bdd_test',
@@ -151,6 +153,7 @@ describe('Events Service BDD Tests', () => {
 
             expect(receivedEvent).toBeDefined();
             expect(receivedEvent.name).toBe(eventName);
+            expect(receivedEvent.correlationId).toBe(correlationId);
             expect(receivedEvent.source).toBe('bdd_test');
         }, 60000); // Keep 60s for Scenario 1 as it's the first test
     });
@@ -199,11 +202,13 @@ describe('Events Service BDD Tests', () => {
             // WHEN: I post a processed event directly to the API
             const processedEventName = 'bdd_test_2';
             const rawEventId = crypto.randomUUID();
+            const correlationId = crypto.randomUUID();
 
             await processed_event_api.create(null, {
                 id: crypto.randomUUID(),
                 raw_event_id: rawEventId,
                 name: processedEventName,
+                correlationId: correlationId,
                 processed_data: JSON.stringify({ test: 'scenario_2', enriched: true }),
                 processed_timestamp: new Date().toISOString(),
                 processing_time_ms: 42,
@@ -217,6 +222,7 @@ describe('Events Service BDD Tests', () => {
 
             expect(receivedEvent).toBeDefined();
             expect(receivedEvent.name).toBe(processedEventName);
+            expect(receivedEvent.correlationId).toBe(correlationId);
             expect(receivedEvent.status).toBe('SUCCESS');
         }, 45000);
     });
@@ -268,8 +274,10 @@ describe('Events Service BDD Tests', () => {
 
             // WHEN: I post a raw event (which the processor should pick up)
             const eventName = 'bdd_test_3';
+            const correlationId = crypto.randomUUID();
             const response = await raw_event_api.create(null, {
                 name: eventName,
+                correlationId: correlationId,
                 data: JSON.stringify({ test: 'scenario_3', user_id: 'user999' }),
                 timestamp: new Date().toISOString(),
                 source: 'bdd_test',
@@ -284,6 +292,7 @@ describe('Events Service BDD Tests', () => {
 
             expect(receivedProcessedEvent).toBeDefined();
             expect(receivedProcessedEvent.name).toBe(eventName);
+            expect(receivedProcessedEvent.correlationId).toBe(correlationId);
             expect(receivedProcessedEvent.status).toBe('SUCCESS');
             expect(receivedProcessedEvent.raw_event_id).toBeDefined();
         }, 45000);
@@ -338,8 +347,10 @@ describe('Events Service BDD Tests', () => {
 
             // WHEN: I post a raw event
             const eventName = 'bdd_test_4';
+            const correlationId = crypto.randomUUID();
             const response = await raw_event_api.create(null, {
                 name: eventName,
+                correlationId: correlationId,
                 data: JSON.stringify({
                     test: 'scenario_4_full_e2e',
                     user_id: 'user_e2e',
@@ -359,6 +370,7 @@ describe('Events Service BDD Tests', () => {
 
             expect(processedEvent).toBeDefined();
             expect(processedEvent.name).toBe(eventName);
+            expect(processedEvent.correlationId).toBe(correlationId);
             expect(processedEvent.status).toBe('SUCCESS');
             expect(processedEvent.raw_event_id).toBe(rawEventId);
             expect(processedEvent.processing_time_ms).toBeGreaterThan(0);

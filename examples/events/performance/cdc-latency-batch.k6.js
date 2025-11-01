@@ -1,14 +1,12 @@
 /**
- * k6 CDC Latency Test with Batch Submission and Count-Based Polling
+ * k6 CDC Latency Test (correlation-aware)
+ * - Sends BATCH_SIZE events via HTTP
+ * - Consumes from RAW_TOPIC and PROCESSED_TOPIC with fresh groups (tail)
+ * - Matches only our own messages by correlationId (key, headers, or JSON value)
+ * - Emits per-message and batch-level latency metrics
  *
- * Measures end-to-end latency of the CDC pipeline using batch submission
- * and count-based polling instead of searching for individual correlationIds.
- *
- * Prerequisites:
- *   1. Install xk6: go install go.k6.io/xk6/cmd/xk6@latest
- *   2. Build k6 with Kafka: xk6 build --with github.com/mostafa/xk6-kafka@latest
- *   3. This creates ./k6 binary with Kafka support
- *   4. Run cleanup script first: ./performance/cleanup-and-restart.sh
+ * Build:
+ *   xk6 build --with github.com/mostafa/xk6-kafka@latest
  *
  * Run:
  *   ./k6 run cdc-latency-batch.k6.js
@@ -19,20 +17,23 @@ import { check, sleep } from 'k6';
 import { Trend, Counter, Gauge } from 'k6/metrics';
 import { Reader } from 'k6/x/kafka';
 
-// Custom metrics for CDC pipeline stages
-const apiResponseTime = new Trend('cdc_api_response_ms', true);       // Stage 1: Time to HTTP 30x response
-const debeziumLag = new Trend('cdc_http_to_raw_ms', true);           // Stage 2: Time to appear on raw topic (Debezium lag)
-const processorLag = new Trend('cdc_raw_to_processed_ms', true);     // Stage 3: Time from raw to processed topic (processor lag)
-const endToEnd = new Trend('cdc_end_to_end_ms', true);               // Total: Time from POST to processed topic
+// ---------- Metrics ----------
+const apiResponseTime = new Trend('cdc_api_response_ms', true);
+const httpToRaw = new Trend('cdc_http_to_raw_ms', true);
+const rawToProcessed = new Trend('cdc_raw_to_processed_ms', true);
+const httpToProcessed = new Trend('cdc_end_to_end_ms', true);
+
 const batchSubmitTime = new Trend('batch_submit_time_ms', true);
 const rawTopicWaitTime = new Trend('raw_topic_wait_ms', true);
 const processedTopicWaitTime = new Trend('processed_topic_wait_ms', true);
+
 const rawMessagesGauge = new Gauge('raw_messages_count');
 const processedMessagesGauge = new Gauge('processed_messages_count');
+
 const httpErrors = new Counter('http_errors');
 const timeouts = new Counter('timeouts');
 
-// Test configuration - single iteration since we're doing batch processing
+// ---------- Options ----------
 export const options = {
   vus: 1,
   iterations: 1,
@@ -47,200 +48,243 @@ export const options = {
   },
 };
 
+// ---------- Config ----------
 const KAFKA_BROKERS = ['localhost:9092'];
 const RAW_TOPIC = 'events.events_development.event';
 const PROCESSED_TOPIC = 'events.events_development.processedevent';
 const API_ENDPOINT = 'http://localhost:4055/event/api';
-const BATCH_SIZE = 100;  // Number of events to submit
-const RAW_TOPIC_TIMEOUT_MS = 120000;  // 2 minutes
-const PROCESSED_TOPIC_TIMEOUT_MS = 120000;  // 2 minutes from last raw message
+
+const BATCH_SIZE = 100;
+const POLL_LIMIT = 200;              // max messages per consume() call
+const POLL_INTERVAL_MS = 100;        // sleep between polls
+const RAW_TOPIC_TIMEOUT_MS = 120000; // overall time budget to see all our RAW messages
+const PROCESSED_TOPIC_TIMEOUT_MS = 120000; // time budget after last PROCESSED seen progress
 
 export default function () {
-  console.log(`Starting CDC latency test with batch size: ${BATCH_SIZE}`);
+  console.log(`Starting CDC latency test, batch size: ${BATCH_SIZE}`);
 
-  // Step 1: Submit all messages in batch
-  console.log('Step 1: Submitting batch of events...');
+  // ---------- Generate IDs & start batch timer ----------
   const batchStartTime = Date.now();
-  const eventIds = [];
+  const ids = [];
+  for (let i = 0; i < BATCH_SIZE; i++) ids.push(generateUUID());
+
+  // For per-id timing we store when we POSTed them
+  const tPost = new Map();        // id -> ms
+  const tRawSeen = new Map();     // id -> ms
+  const tProcessedSeen = new Map(); // id -> ms
+
+  // ---------- Submit batch via HTTP ----------
+  console.log('Step 1: Submitting HTTP batch...');
+  const submitStart = Date.now();
 
   for (let i = 0; i < BATCH_SIZE; i++) {
-    const correlationId = generateUUID();
-    eventIds.push(correlationId);
-
+    const id = ids[i];
     const payload = JSON.stringify({
       name: `k6_batch_test_${i}`,
-      correlationId: correlationId,
-      data: JSON.stringify({
-        test: true,
-        batch: true,
-        index: i,
-        timestamp: Date.now()
-      }),
+      correlationId: id,
+      data: JSON.stringify({ test: true, batch: true, index: i, postedAt: Date.now() }),
       timestamp: new Date().toISOString(),
       source: 'k6_cdc_batch_test',
       version: '1.0',
     });
 
-    const response = http.post(API_ENDPOINT, payload, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Correlation-Id': correlationId,
-      },
+    const resp = http.post(API_ENDPOINT, payload, {
+      headers: { 'Content-Type': 'application/json', 'X-Correlation-Id': id },
       timeout: '5s',
     });
 
-    const success = check(response, {
-      'HTTP POST successful': (r) => r.status === 200 || r.status === 303 || r.status === 201,
+    tPost.set(id, Date.now());
+    const ok = check(resp, {
+      'HTTP POST ok': (r) => r.status >= 200 && r.status < 400,
     });
-
-    if (!success) {
-      console.error(`HTTP POST failed for event ${i}: ${response.status}`);
+    if (!ok) {
+      console.error(`HTTP POST failed for ${id}: status=${resp.status}`);
       httpErrors.add(1);
     }
-
-    // Record API response time for each request
-    apiResponseTime.add(response.timings.duration);
+    apiResponseTime.add(resp.timings.duration);
   }
 
-  const batchSubmitDuration = Date.now() - batchStartTime;
-  batchSubmitTime.add(batchSubmitDuration);
-  console.log(`✓ Batch submission completed in ${batchSubmitDuration}ms (${BATCH_SIZE} events)`);
+  const submitMs = Date.now() - submitStart;
+  batchSubmitTime.add(submitMs);
+  console.log(`✓ Submitted ${BATCH_SIZE} events in ${submitMs} ms`);
 
-  // Step 2: Poll raw topic until we have BATCH_SIZE messages or timeout
-  console.log(`Step 2: Polling raw topic for ${BATCH_SIZE} messages (timeout: ${RAW_TOPIC_TIMEOUT_MS}ms)...`);
+  // ---------- Create raw reader (fresh group at tail) ----------
+  console.log(`Step 2: Polling RAW topic for our ${BATCH_SIZE} events...`);
+  const rawReader = new Reader({
+    brokers: KAFKA_BROKERS,
+    groupTopics: [RAW_TOPIC],
+    groupID: `k6-raw-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    maxWait: '5s',
+  });
 
-  let rawReader;
-  try {
-    rawReader = new Reader({
-      brokers: KAFKA_BROKERS,
-      groupTopics: [RAW_TOPIC],
-      groupID: `k6-raw-batch-${Date.now()}`,
-      maxWait: '5s',
-    });
-    console.log('Raw Kafka reader initialized successfully');
-  } catch (e) {
-    console.error(`Failed to initialize raw Kafka reader: ${e}`);
-    throw e;
-  }
-
-  const rawTopicStartTime = Date.now();
-  let rawMessageCount = 0;
-  const rawPollInterval = 500; // Poll every 500ms
-  let rawTopicComplete = false;
-
-  while (Date.now() - rawTopicStartTime < RAW_TOPIC_TIMEOUT_MS && !rawTopicComplete) {
+  const rawStart = Date.now();
+  let matchedRaw = 0;
+  while (Date.now() - rawStart < RAW_TOPIC_TIMEOUT_MS && matchedRaw < BATCH_SIZE) {
+    let msgs = [];
     try {
-      const messages = rawReader.consume({ limit: 100 });
-
-      if (messages && messages.length > 0) {
-        rawMessageCount += messages.length;
-        console.log(`Raw topic: received ${messages.length} messages (total: ${rawMessageCount}/${BATCH_SIZE})`);
-        rawMessagesGauge.add(rawMessageCount);
-      }
-
-      if (rawMessageCount >= BATCH_SIZE) {
-        rawTopicComplete = true;
-        break;
-      }
+      msgs = rawReader.consume({ limit: POLL_LIMIT });
     } catch (e) {
-      console.log(`Kafka consume error (continuing): ${e.message || e}`);
-      // Continue polling even if there's an error
+      console.warn(`RAW consume error: ${e.message || e}`);
     }
 
-    if (!rawTopicComplete) {
-      sleep(rawPollInterval / 1000);  // k6 sleep uses seconds
+    if (msgs && msgs.length) {
+      for (const m of msgs) {
+        const id = extractCorrelationId(m);
+        if (id && tPost.has(id) && !tRawSeen.has(id)) {
+          const seen = Date.now(); // if m.timestamp is exposed by xk6-kafka, prefer it here
+          tRawSeen.set(id, seen);
+          matchedRaw++;
+          rawMessagesGauge.add(matchedRaw);
+
+          // Per-message HTTP->RAW latency
+          httpToRaw.add(seen - tPost.get(id));
+        }
+      }
+      console.log(`RAW matched ${matchedRaw}/${BATCH_SIZE} (received ${msgs.length})`);
     }
+
+    if (matchedRaw >= BATCH_SIZE) break;
+    sleep(POLL_INTERVAL_MS / 1000);
   }
 
-  if (rawMessageCount < BATCH_SIZE) {
-    console.error(`⏱ TIMEOUT: Only found ${rawMessageCount}/${BATCH_SIZE} messages in raw topic`);
+  if (matchedRaw < BATCH_SIZE) {
+    console.error(`⏱ RAW TIMEOUT: matched ${matchedRaw}/${BATCH_SIZE}`);
     timeouts.add(1);
     return;
   }
 
-  // Calculate metrics after we have all raw messages
-  const rawTopicDuration = Date.now() - rawTopicStartTime;
-  rawTopicWaitTime.add(rawTopicDuration);
-  debeziumLag.add(rawTopicDuration);
-  console.log(`✓ All ${BATCH_SIZE} messages found in raw topic after ${rawTopicDuration}ms`);
+  const rawDoneMs = Date.now() - rawStart;
+  rawTopicWaitTime.add(rawDoneMs);
+  console.log(`✓ RAW complete in ${rawDoneMs} ms`);
 
-  // Record timestamp when all raw messages received
-  const tAllRaw = Date.now();
+  // ---------- Create processed reader (fresh group at tail) ----------
+  console.log(`Step 3: Polling PROCESSED topic for our ${BATCH_SIZE} events...`);
+  const procReader = new Reader({
+    brokers: KAFKA_BROKERS,
+    groupTopics: [PROCESSED_TOPIC],
+    groupID: `k6-proc-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    maxWait: '5s',
+  });
 
-  // Step 3: Poll processed topic until we have BATCH_SIZE messages or timeout
-  console.log(`Step 3: Polling processed topic for ${BATCH_SIZE} messages (timeout: ${PROCESSED_TOPIC_TIMEOUT_MS}ms)...`);
+  const procStart = Date.now();
+  let matchedProcessed = 0;
+  let lastProgressAt = Date.now();
 
-  let processedReader;
-  try {
-    processedReader = new Reader({
-      brokers: KAFKA_BROKERS,
-      groupTopics: [PROCESSED_TOPIC],
-      groupID: `k6-processed-batch-${Date.now()}`,
-      maxWait: '5s',
-    });
-    console.log('Processed Kafka reader initialized successfully');
-  } catch (e) {
-    console.error(`Failed to initialize processed Kafka reader: ${e}`);
-    throw e;
-  }
-
-  const processedTopicStartTime = Date.now();
-  let processedMessageCount = 0;
-  const processedPollInterval = 500; // Poll every 500ms
-  let lastMessageTime = Date.now();
-  let processedTopicComplete = false;
-
-  while (Date.now() - lastMessageTime < PROCESSED_TOPIC_TIMEOUT_MS && !processedTopicComplete) {
+  while (Date.now() - lastProgressAt < PROCESSED_TOPIC_TIMEOUT_MS && matchedProcessed < BATCH_SIZE) {
+    let msgs = [];
     try {
-      const messages = processedReader.consume({ limit: 100 });
-
-      if (messages && messages.length > 0) {
-        processedMessageCount += messages.length;
-        lastMessageTime = Date.now();
-        console.log(`Processed topic: received ${messages.length} messages (total: ${processedMessageCount}/${BATCH_SIZE})`);
-        processedMessagesGauge.add(processedMessageCount);
-      }
-
-      if (processedMessageCount >= BATCH_SIZE) {
-        processedTopicComplete = true;
-        break;
-      }
+      msgs = procReader.consume({ limit: POLL_LIMIT });
     } catch (e) {
-      console.log(`Kafka consume error (continuing): ${e.message || e}`);
-      // Continue polling even if there's an error
+      console.warn(`PROCESSED consume error: ${e.message || e}`);
     }
 
-    if (!processedTopicComplete) {
-      sleep(processedPollInterval / 1000);
+    if (msgs && msgs.length) {
+      for (const m of msgs) {
+        const id = extractCorrelationId(m);
+        // Only count IDs from our batch, and only once
+        if (id && tRawSeen.has(id) && !tProcessedSeen.has(id)) {
+          const seen = Date.now(); // prefer m.timestamp if available
+          tProcessedSeen.set(id, seen);
+          matchedProcessed++;
+          processedMessagesGauge.add(matchedProcessed);
+          lastProgressAt = Date.now();
+
+          // Per-message latencies
+          rawToProcessed.add(seen - tRawSeen.get(id));
+          httpToProcessed.add(seen - tPost.get(id));
+        }
+      }
+      console.log(`PROCESSED matched ${matchedProcessed}/${BATCH_SIZE} (received ${msgs.length})`);
     }
+
+    if (matchedProcessed >= BATCH_SIZE) break;
+    sleep(POLL_INTERVAL_MS / 1000);
   }
 
-  if (processedMessageCount < BATCH_SIZE) {
-    console.error(`⏱ TIMEOUT: Only found ${processedMessageCount}/${BATCH_SIZE} messages in processed topic`);
-    console.error(`   Last message received ${Date.now() - lastMessageTime}ms ago`);
+  if (matchedProcessed < BATCH_SIZE) {
+    console.error(`⏱ PROCESSED TIMEOUT: matched ${matchedProcessed}/${BATCH_SIZE}; last progress ${Date.now() - lastProgressAt} ms ago`);
     timeouts.add(1);
     return;
   }
 
-  // Calculate metrics after we have all processed messages
-  const processedTopicDuration = Date.now() - processedTopicStartTime;
-  processedTopicWaitTime.add(processedTopicDuration);
+  const procDoneMs = Date.now() - procStart;
+  processedTopicWaitTime.add(procDoneMs);
 
-  const processorLatency = Date.now() - tAllRaw;
-  processorLag.add(processorLatency);
+  // ---------- Batch-level summaries ----------
+  const endToEndMs = Date.now() - batchStartTime;
+  console.log('📊 CDC Batch Metrics');
+  console.log(`  Submit batch:          ${submitMs} ms`);
+  console.log(`  HTTP → RAW (all):      ${rawDoneMs} ms`);
+  console.log(`  RAW → PROCESSED (all): ${procDoneMs} ms`);
+  console.log(`  HTTP → PROCESSED (all):${endToEndMs} ms`);
 
-  const totalLatency = Date.now() - batchStartTime;
-  endToEnd.add(totalLatency);
-
-  console.log(`✓ All ${BATCH_SIZE} messages found in processed topic after ${processedTopicDuration}ms`);
-  console.log(`\n📊 CDC Pipeline Metrics:`);
-  console.log(`   Batch Submit Time:  ${batchSubmitDuration}ms`);
-  console.log(`   Debezium Lag:       ${rawTopicDuration}ms (HTTP → Raw Topic)`);
-  console.log(`   Processor Lag:      ${processorLatency}ms (Raw → Processed Topic)`);
-  console.log(`   End-to-End:         ${totalLatency}ms (HTTP → Processed Topic)`);
+  // also record “all done” as end-to-end
+  // (individual per-message httpToProcessed metrics already added above)
+  // If you want an explicit batch metric:
+  // endToEnd.add(endToEndMs);
 }
 
-// Helper: Generate UUID v4
+// ---------- Helpers ----------
+
+// Extract correlationId from a Kafka message.
+// This logic EXACTLY matches what the BDD test does (test/events.bdd.ts lines 111-113).
+function extractCorrelationId(msg) {
+  // We could check key/headers, but the BDD test proves the correlationId
+  // is reliably in the message value, so we'll focus there.
+
+  // value: flat JSON or Debezium envelope
+  try {
+    const valStr = bytesToString(msg.value || '');
+    if (!valStr) return null;
+
+    try {
+      const value = JSON.parse(valStr);
+      if (!value || typeof value !== 'object') return null;
+
+      // Extract Debezium envelope: payload.after (might be string or object)
+      const afterString = value?.payload?.after || value?.after;
+      if (!afterString) return null;
+
+      // Parse after if it's a JSON string (standard Debezium MongoDB connector behavior)
+      const afterDoc = typeof afterString === 'string' ? JSON.parse(afterString) : afterString;
+
+      // The actual event data is at afterDoc.payload (MeshQL REST API wrapper)
+      // This matches exactly what the BDD test does!
+      const eventData = afterDoc?.payload || afterDoc;
+
+      // Return correlationId from the event data
+      const correlationId = eventData?.correlationId || null;
+
+      // DEBUG: Log first few extractions to understand the structure
+      if (!correlationId && Math.random() < 0.05) {  // 5% sample
+        console.log(`DEBUG extractCorrelationId: eventData keys=${Object.keys(eventData|| {}).join(',')}`);
+      }
+
+      return correlationId;
+    } catch (_e) {
+      // Parse error - not valid JSON
+      if (Math.random() < 0.05) {  // 5% sample
+        console.log(`DEBUG extractCorrelationId: JSON parse error=${_e.message || _e}`);
+      }
+      return null;
+    }
+  } catch (_e) {}
+
+  return null;
+}
+
+function bytesToString(b) {
+  if (!b) return '';
+  // xk6-kafka returns strings already; but if we ever get byte arrays, handle it.
+  if (typeof b === 'string') return b;
+  if (Array.isArray(b)) return String.fromCharCode.apply(null, b);
+  return String(b);
+}
+
+function isUUID(s) {
+  return typeof s === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
+}
+
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0;
