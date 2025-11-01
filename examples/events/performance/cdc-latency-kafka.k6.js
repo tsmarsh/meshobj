@@ -24,10 +24,11 @@ import {
   SCHEMA_TYPE_STRING,
 } from 'k6/x/kafka';
 
-// Custom metrics
-const httpToRaw = new Trend('cdc_http_to_raw_ms', true);
-const rawToProcessed = new Trend('cdc_raw_to_processed_ms', true);
-const endToEnd = new Trend('cdc_end_to_end_ms', true);
+// Custom metrics for CDC pipeline stages
+const apiResponseTime = new Trend('cdc_api_response_ms', true);       // Stage 1: Time to HTTP 30x response
+const httpToRaw = new Trend('cdc_http_to_raw_ms', true);             // Stage 2: Time to appear on raw topic (Debezium lag)
+const rawToProcessed = new Trend('cdc_raw_to_processed_ms', true);   // Stage 3: Time from raw to processed topic (processor lag)
+const endToEnd = new Trend('cdc_end_to_end_ms', true);               // Total: Time from POST to processed topic
 const timeouts = new Counter('cdc_timeouts');
 const eventsPosted = new Counter('events_posted');
 const rawEventsFound = new Counter('raw_events_found');
@@ -38,11 +39,22 @@ export const options = {
   vus: 1,
   iterations: 10,
   thresholds: {
+    // Stage 1: API response time (should be fast - just DB insert)
+    'cdc_api_response_ms': ['p(95)<50'],  // API should respond in <50ms
+
+    // Stage 2: Debezium lag (MongoDB → Kafka)
+    'cdc_http_to_raw_ms': ['p(95)<500'],  // Raw event should appear in <500ms
+
+    // Stage 3: Processor lag (Raw topic → Processed topic)
+    'cdc_raw_to_processed_ms': ['p(95)<500'],  // Processing should take <500ms
+
+    // End-to-end: Total CDC pipeline latency
     'cdc_end_to_end_ms': [
       'p(50)<500',   // Median under 500ms
       'p(95)<1000',  // 95th percentile under 1 second
       'p(99)<2000',  // 99th percentile under 2 seconds
     ],
+
     'cdc_timeouts': ['count==0'], // Zero timeouts
     'http_req_failed': ['rate<0.01'], // Less than 1% HTTP errors
   },
@@ -99,10 +111,15 @@ export default function () {
     timeout: '5s',
   });
 
+  const tApiResponse = Date.now();
+  const apiLatency = tApiResponse - t0;
+
   check(response, {
     'HTTP POST successful': (r) => r.status === 200 || r.status === 303 || r.status === 201,
   }) || console.error(`HTTP POST failed: ${response.status} ${response.body}`);
 
+  // Stage 1: API response time
+  apiResponseTime.add(apiLatency);
   eventsPosted.add(1);
 
   // Step 2: Wait for event in raw Kafka topic
