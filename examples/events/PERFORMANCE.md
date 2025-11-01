@@ -365,12 +365,19 @@ The MeshQL CDC pipeline demonstrates:
 
 ### Prerequisites
 
-1. Install k6 with Kafka support:
+1. **Install k6 with Kafka support** (required for CDC latency tests):
    ```bash
+   # Install xk6 builder
    go install go.k6.io/xk6/cmd/xk6@latest
+
+   # Build k6 with Kafka extension
+   cd examples/events/performance
    xk6 build --with github.com/mostafa/xk6-kafka@latest
-   mv k6 examples/events/performance/
+
+   # This creates ./k6 binary (not tracked in git due to size)
    ```
+
+   **Note**: The k6 binary (~51MB) is gitignored and must be built locally.
 
 2. Start the infrastructure:
    ```bash
