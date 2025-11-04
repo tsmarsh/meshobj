@@ -63,6 +63,28 @@ const PROCESSED_TOPIC_TIMEOUT_MS = 120000; // time budget after last PROCESSED s
 export default function () {
   console.log(`Starting CDC latency test, batch size: ${BATCH_SIZE}`);
 
+  // ---------- Step 1: Create Kafka consumers FIRST ----------
+  console.log('Step 1: Creating Kafka consumers and joining groups...');
+  const rawReader = new Reader({
+    brokers: KAFKA_BROKERS,
+    groupTopics: [RAW_TOPIC],
+    groupID: `k6-raw-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    maxWait: '5s',
+    startOffset: 'earliest',  // Like BDD test's fromBeginning: true
+  });
+  const procReader = new Reader({
+    brokers: KAFKA_BROKERS,
+    groupTopics: [PROCESSED_TOPIC],
+    groupID: `k6-proc-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    maxWait: '5s',
+    startOffset: 'earliest',  // Like BDD test's fromBeginning: true
+  });
+
+  // Do a dummy consume to force group join and get positioned
+  try { rawReader.consume({ limit: 1 }); } catch (e) { /* ignore */ }
+  try { procReader.consume({ limit: 1 }); } catch (e) { /* ignore */ }
+  console.log('✓ Consumers ready');
+
   // ---------- Generate IDs & start batch timer ----------
   const batchStartTime = Date.now();
   const ids = [];
@@ -74,7 +96,7 @@ export default function () {
   const tProcessedSeen = new Map(); // id -> ms
 
   // ---------- Submit batch via HTTP ----------
-  console.log('Step 1: Submitting HTTP batch...');
+  console.log('Step 2: Submitting HTTP batch...');
   const submitStart = Date.now();
 
   for (let i = 0; i < BATCH_SIZE; i++) {
@@ -108,15 +130,8 @@ export default function () {
   batchSubmitTime.add(submitMs);
   console.log(`✓ Submitted ${BATCH_SIZE} events in ${submitMs} ms`);
 
-  // ---------- Create raw reader (fresh group at tail) ----------
-  console.log(`Step 2: Polling RAW topic for our ${BATCH_SIZE} events...`);
-  const rawReader = new Reader({
-    brokers: KAFKA_BROKERS,
-    groupTopics: [RAW_TOPIC],
-    groupID: `k6-raw-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    maxWait: '5s',
-  });
-
+  // ---------- Consume from RAW topic ----------
+  console.log(`Step 3: Polling RAW topic for our ${BATCH_SIZE} events...`);
   const rawStart = Date.now();
   let matchedRaw = 0;
   while (Date.now() - rawStart < RAW_TOPIC_TIMEOUT_MS && matchedRaw < BATCH_SIZE) {
@@ -130,6 +145,10 @@ export default function () {
     if (msgs && msgs.length) {
       for (const m of msgs) {
         const id = extractCorrelationId(m);
+        // Debug: log first few messages to see structure
+        if (matchedRaw === 0 && Math.random() < 0.05) {
+          console.log(`DEBUG RAW: id=${id}, msgKeys=${Object.keys(m || {}).join(',')}, valueType=${typeof m?.value}`);
+        }
         if (id && tPost.has(id) && !tRawSeen.has(id)) {
           const seen = Date.now(); // if m.timestamp is exposed by xk6-kafka, prefer it here
           tRawSeen.set(id, seen);
@@ -157,15 +176,8 @@ export default function () {
   rawTopicWaitTime.add(rawDoneMs);
   console.log(`✓ RAW complete in ${rawDoneMs} ms`);
 
-  // ---------- Create processed reader (fresh group at tail) ----------
-  console.log(`Step 3: Polling PROCESSED topic for our ${BATCH_SIZE} events...`);
-  const procReader = new Reader({
-    brokers: KAFKA_BROKERS,
-    groupTopics: [PROCESSED_TOPIC],
-    groupID: `k6-proc-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    maxWait: '5s',
-  });
-
+  // ---------- Consume from PROCESSED topic ----------
+  console.log(`Step 4: Polling PROCESSED topic for our ${BATCH_SIZE} events...`);
   const procStart = Date.now();
   let matchedProcessed = 0;
   let lastProgressAt = Date.now();

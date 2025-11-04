@@ -11,7 +11,8 @@ let kafka: Kafka;
 
 // Skipped for CI - takes 60+ seconds to spin up full CDC stack (MongoDB, Kafka, Debezium)
 // Run manually with: yarn test test/events.bdd.ts
-describe('Events Service BDD Tests', () => {
+// Automatically skipped in CI environments (when CI=true)
+describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
     beforeAll(async () => {
         // Start the docker-compose environment
         environment = await new DockerComposeEnvironment(path.resolve(__dirname, '../generated'), 'docker-compose.yml')

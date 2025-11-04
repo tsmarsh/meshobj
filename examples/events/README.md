@@ -244,6 +244,13 @@ yarn test
 - Subsequent scenarios are faster (~3-5 seconds each)
 - Uses testcontainers for complete isolation and reproducibility
 
+**CI Behavior**:
+- Integration tests are automatically skipped in CI environments (when `CI=true`)
+- This prevents failures on systems without Docker and speeds up CI pipelines
+- To run locally: `yarn test` (tests will run normally)
+- To force-skip locally: `CI=true yarn test`
+- To force-run in CI: `CI=false yarn test` (requires Docker setup in CI)
+
 ## Implementation Details & Lessons Learned
 
 This section documents key implementation details and solutions to common issues encountered when building this CDC pipeline.

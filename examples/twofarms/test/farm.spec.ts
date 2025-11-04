@@ -16,7 +16,8 @@ let farm_api: any;
 
 let environment: StartedDockerComposeEnvironment;
 
-describe.sequential('Two Farms Service Smoke Test', () => {
+// Skip in CI - requires Docker and takes 100+ seconds
+describe.skipIf(process.env.CI === 'true').sequential('Two Farms Service Smoke Test', () => {
     beforeAll(async () => {
         const startTime = Date.now();
         
