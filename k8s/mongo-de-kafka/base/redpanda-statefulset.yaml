@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redpanda
+spec:
+  serviceName: redpanda-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redpanda
+  template:
+    metadata:
+      labels:
+        app: redpanda
+    spec:
+      containers:
+      - name: redpanda
+        image: docker.redpanda.com/redpandadata/redpanda:v24.3.1
+        args:
+        - redpanda
+        - start
+        - --mode=dev-container
+        - --smp=1
+        ports:
+        - containerPort: 9092
+          name: kafka
+        - containerPort: 8081
+          name: schema-registry
+        - containerPort: 8082
+          name: pandaproxy
+        - containerPort: 9644
+          name: admin
+        - containerPort: 33145
+          name: rpc
+        volumeMounts:
+        - name: redpanda-data
+          mountPath: /var/lib/redpanda/data
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+  volumeClaimTemplates:
+  - metadata:
+      name: redpanda-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi

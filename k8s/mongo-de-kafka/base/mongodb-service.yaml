@@ -1,0 +1,44 @@
+---
+# Headless service for StatefulSet DNS
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-headless
+spec:
+  clusterIP: None
+  selector:
+    app: mongodb
+  ports:
+  - port: 27017
+    targetPort: 27017
+    name: mongodb
+---
+# Service for external access to primary
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-primary
+spec:
+  type: NodePort
+  selector:
+    app: mongodb
+    statefulset.kubernetes.io/pod-name: mongodb-0
+  ports:
+  - port: 27017
+    targetPort: 27017
+    nodePort: 30017
+    name: mongodb
+---
+# Service for read access (any replica)
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-read
+spec:
+  type: ClusterIP
+  selector:
+    app: mongodb
+  ports:
+  - port: 27017
+    targetPort: 27017
+    name: mongodb

@@ -1,0 +1,69 @@
+---
+# Headless service for StatefulSet DNS
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda-headless
+spec:
+  clusterIP: None
+  selector:
+    app: redpanda
+  ports:
+  - port: 9092
+    targetPort: 9092
+    name: kafka
+  - port: 8081
+    targetPort: 8081
+    name: schema-registry
+  - port: 8082
+    targetPort: 8082
+    name: pandaproxy
+  - port: 9644
+    targetPort: 9644
+    name: admin
+  - port: 33145
+    targetPort: 33145
+    name: rpc
+---
+# External access to Kafka
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda-kafka
+spec:
+  type: NodePort
+  selector:
+    app: redpanda
+  ports:
+  - port: 9092
+    targetPort: 9092
+    nodePort: 30092
+    name: kafka
+---
+# External access to Schema Registry
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda-schema-registry
+spec:
+  type: ClusterIP
+  selector:
+    app: redpanda
+  ports:
+  - port: 8081
+    targetPort: 8081
+    name: schema-registry
+---
+# External access to Admin API
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda-admin
+spec:
+  type: ClusterIP
+  selector:
+    app: redpanda
+  ports:
+  - port: 9644
+    targetPort: 9644
+    name: admin

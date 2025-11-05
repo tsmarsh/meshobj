@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: mongo-de-kafka
+
+commonLabels:
+  app.kubernetes.io/part-of: mongo-de-kafka
+
+resources:
+- namespace.yaml
+- mongodb-statefulset.yaml
+- mongodb-service.yaml
+- mongodb-init-job.yaml
+- redpanda-configmap.yaml
+- redpanda-statefulset.yaml
+- redpanda-service.yaml
