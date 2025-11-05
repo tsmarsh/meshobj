@@ -16,3 +16,5 @@ resources:
 - redpanda-configmap.yaml
 - redpanda-statefulset.yaml
 - redpanda-service.yaml
+- debezium-configmap.yaml
+- debezium-deployment.yaml

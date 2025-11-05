@@ -19,8 +19,13 @@ spec:
         args:
         - redpanda
         - start
-        - --mode=dev-container
         - --smp=1
+        - --memory=1G
+        - --reserve-memory=0M
+        - --overprovisioned
+        - --node-id=0
+        - --kafka-addr=internal://0.0.0.0:9092
+        - --advertise-kafka-addr=internal://redpanda-0.redpanda-headless.mongo-de-kafka.svc.cluster.local:9092
         ports:
         - containerPort: 9092
           name: kafka

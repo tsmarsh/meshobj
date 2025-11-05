@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debezium
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debezium
+  template:
+    metadata:
+      labels:
+        app: debezium
+    spec:
+      initContainers:
+      - name: wait-for-prerequisites
+        image: mongo:7.0
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Waiting for MongoDB PRIMARY..."
+          MONGO_HOST="mongodb-0.mongodb-headless.mongo-de-kafka.svc.cluster.local:27017"
+
+          for i in {1..60}; do
+            if mongosh --host "$MONGO_HOST" --quiet --eval "rs.status().members.find(m => m.stateStr === 'PRIMARY')" 2>/dev/null | grep -q "PRIMARY"; then
+              echo "MongoDB PRIMARY is ready"
+              break
+            fi
+            echo "Waiting for MongoDB PRIMARY... ($i/60)"
+            sleep 2
+          done
+
+          echo "Verifying collections exist..."
+          if mongosh --host "$MONGO_HOST" --quiet events_development --eval "db.getCollectionNames()" | grep -q "event"; then
+            echo "Collections verified"
+          else
+            echo "ERROR: Collections not found"
+            exit 1
+          fi
+
+          echo "Waiting for Redpanda..."
+          REDPANDA_HOST="redpanda-0.redpanda-headless.mongo-de-kafka.svc.cluster.local"
+          until timeout 2 bash -c "echo > /dev/tcp/$REDPANDA_HOST/9092" 2>/dev/null; do
+            echo "Waiting for Redpanda..."
+            sleep 2
+          done
+          echo "Redpanda is ready"
+
+          echo "All prerequisites met"
+      containers:
+      - name: debezium
+        image: quay.io/debezium/server:2.6
+        ports:
+        - containerPort: 8080
+          name: http
+        volumeMounts:
+        - name: config
+          mountPath: /debezium/conf
+          readOnly: true
+        - name: data
+          mountPath: /debezium/data
+        env:
+        - name: QUARKUS_LOG_LEVEL
+          value: "INFO"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /q/health/live
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /q/health/ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: config
+        configMap:
+          name: debezium-config
+      - name: data
+        emptyDir: {}
