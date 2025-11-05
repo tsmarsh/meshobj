@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-init-collections
+data:
+  init-collections.js: |
+    // MongoDB Collection Pre-creation for Debezium CDC
+    // Collections must exist before Debezium starts monitoring
+
+    const db = db.getSiblingDB('events_development');
+
+    const collections = [
+      {
+        name: 'event',
+        initDoc: {
+          name: '_init',
+          data: '{}',
+          timestamp: new Date(),
+          source: 'init',
+          version: '1.0'
+        }
+      },
+      {
+        name: 'processedevent',
+        initDoc: {
+          id: '00000000-0000-0000-0000-000000000000',
+          raw_event_id: '00000000-0000-0000-0000-000000000000',
+          name: '_init',
+          processed_data: '{}',
+          processed_timestamp: new Date(),
+          processing_time_ms: 0,
+          status: 'SUCCESS'
+        }
+      }
+    ];
+
+    print('Initializing collections for Debezium monitoring...');
+
+    const existingCollections = db.getCollectionNames();
+
+    collections.forEach(({ name, initDoc }) => {
+      if (existingCollections.includes(name)) {
+        print(`Collection '${name}' already exists, skipping...`);
+      } else {
+        db[name].insertOne(initDoc);
+        print(`Created collection '${name}' with init document`);
+      }
+    });
+
+    print('Collection initialization complete');
+    print('Available collections: ' + db.getCollectionNames().join(', '));

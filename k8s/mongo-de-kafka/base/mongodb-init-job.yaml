@@ -13,15 +13,45 @@ spec:
         - /bin/bash
         - -c
         - |
-          sleep 30
-          mongosh --host mongodb-0.mongodb-headless.mongo-de-kafka.svc.cluster.local:27017 \
-            -u admin -p password --authenticationDatabase admin <<EOF
-          rs.initiate({
-            _id: "rs0",
-            members: [
-              { _id: 0, host: "mongodb-0.mongodb-headless.mongo-de-kafka.svc.cluster.local:27017", priority: 2 },
-              { _id: 1, host: "mongodb-1.mongodb-headless.mongo-de-kafka.svc.cluster.local:27017", priority: 1 }
-            ]
-          });
-          EOF
-          echo "Replica set initialized"
+          set -e
+          echo "Waiting for MongoDB to be ready..."
+
+          # Wait for MongoDB to accept connections
+          MONGO_HOST="mongodb-0.mongodb-headless.mongo-de-kafka.svc.cluster.local:27017"
+          until mongosh --host "$MONGO_HOST" --quiet --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
+            echo "MongoDB not ready, waiting..."
+            sleep 2
+          done
+
+          echo "MongoDB is ready, checking replica set status..."
+
+          # Check if replica set is already initialized
+          if mongosh --host "$MONGO_HOST" --quiet --eval "rs.status()" 2>&1 | grep -q "MongoServerError: no replset config"; then
+            echo "Initializing replica set..."
+            mongosh --host "$MONGO_HOST" --quiet --eval '
+              rs.initiate({
+                _id: "rs0",
+                members: [
+                  { _id: 0, host: "mongodb-0.mongodb-headless.mongo-de-kafka.svc.cluster.local:27017", priority: 2 },
+                  { _id: 1, host: "mongodb-1.mongodb-headless.mongo-de-kafka.svc.cluster.local:27017", priority: 1 }
+                ]
+              });
+            '
+
+            # Wait for PRIMARY election
+            echo "Waiting for PRIMARY election..."
+            for i in {1..30}; do
+              if mongosh --host "$MONGO_HOST" --quiet --eval "rs.status().members.find(m => m.stateStr === 'PRIMARY')" | grep -q "PRIMARY"; then
+                echo "PRIMARY elected successfully"
+                exit 0
+              fi
+              echo "Waiting for PRIMARY... ($i/30)"
+              sleep 2
+            done
+
+            echo "ERROR: PRIMARY not elected after 60 seconds"
+            exit 1
+          else
+            echo "Replica set already initialized"
+            exit 0
+          fi

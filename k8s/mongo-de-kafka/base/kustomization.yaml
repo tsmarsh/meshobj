@@ -11,6 +11,8 @@ resources:
 - mongodb-statefulset.yaml
 - mongodb-service.yaml
 - mongodb-init-job.yaml
+- mongodb-init-collections-configmap.yaml
+- mongodb-init-collections-job.yaml
 - redpanda-configmap.yaml
 - redpanda-statefulset.yaml
 - redpanda-service.yaml

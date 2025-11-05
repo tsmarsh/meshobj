@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-init-collections
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+      - name: wait-for-primary
+        image: mongo:7.0
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Waiting for MongoDB replica set PRIMARY..."
+          MONGO_HOST="mongodb-0.mongodb-headless.mongo-de-kafka.svc.cluster.local:27017"
+
+          for i in {1..60}; do
+            if mongosh --host "$MONGO_HOST" --quiet --eval "rs.status().members.find(m => m.stateStr === 'PRIMARY')" 2>/dev/null | grep -q "PRIMARY"; then
+              echo "PRIMARY is available"
+              exit 0
+            fi
+            echo "Waiting for PRIMARY... ($i/60)"
+            sleep 2
+          done
+
+          echo "ERROR: PRIMARY not available after 120 seconds"
+          exit 1
+      containers:
+      - name: mongo-init-collections
+        image: mongo:7.0
+        command:
+        - mongosh
+        - mongodb://mongodb-0.mongodb-headless.mongo-de-kafka.svc.cluster.local:27017/events_development
+        - /scripts/init-collections.js
+        volumeMounts:
+        - name: init-script
+          mountPath: /scripts
+          readOnly: true
+      volumes:
+      - name: init-script
+        configMap:
+          name: mongodb-init-collections
