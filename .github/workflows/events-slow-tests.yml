@@ -1,0 +1,107 @@
+name: Events Slow Tests (CDC Pipeline)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'examples/events/**'
+      - 'k8s/mongo-de-kafka/**'
+      - '.github/workflows/events-slow-tests.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'examples/events/**'
+      - 'k8s/mongo-de-kafka/**'
+      - '.github/workflows/events-slow-tests.yml'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  events-bdd-tests:
+    # ubuntu-latest has Docker pre-installed and works well with kind
+    # For faster builds, consider ubuntu-latest-4-cores or ubuntu-latest-8-cores (paid)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Build packages
+      run: yarn build
+
+    - name: Set up kind cluster
+      uses: helm/kind-action@v1
+      with:
+        version: v0.24.0
+        cluster_name: meshobj-examples-events
+        config: examples/events/k8s/meshobj-examples-events-cluster.yaml
+
+    - name: Verify kind cluster
+      run: |
+        kubectl cluster-info --context kind-meshobj-examples-events
+        kubectl get nodes
+
+    - name: Build and load events Docker image
+      working-directory: .
+      run: |
+        docker build -t meshobj/events:latest -f examples/events/generated/events/Dockerfile .
+        kind load docker-image meshobj/events:latest --name meshobj-examples-events
+
+    - name: Deploy services to kind
+      working-directory: examples/events
+      run: |
+        kubectl apply -k k8s/overlays/ci
+
+    - name: Wait for services to be ready
+      working-directory: examples/events
+      run: |
+        echo "Waiting for namespace..."
+        kubectl wait --for=jsonpath='{.status.phase}'=Active namespace/meshobj-examples-events --timeout=30s
+
+        echo "Waiting for MongoDB and Redpanda (parallel)..."
+        kubectl wait --for=condition=ready pod -l app=mongodb -n meshobj-examples-events --timeout=120s &
+        MONGO_PID=$!
+        kubectl wait --for=condition=ready pod -l app=redpanda -n meshobj-examples-events --timeout=120s &
+        REDPANDA_PID=$!
+
+        wait $MONGO_PID || { echo "MongoDB failed to start"; exit 1; }
+        wait $REDPANDA_PID || { echo "Redpanda failed to start"; exit 1; }
+        echo "✓ MongoDB and Redpanda ready"
+
+        echo "Waiting for Debezium..."
+        kubectl wait --for=condition=available deployment/debezium -n meshobj-examples-events --timeout=120s
+
+        echo "Waiting for Events service..."
+        kubectl wait --for=condition=available deployment/events -n meshobj-examples-events --timeout=300s
+
+    - name: Show pod status
+      if: always()
+      run: |
+        echo "=== Pod Status ==="
+        kubectl get pods -n meshobj-examples-events
+        echo ""
+        echo "=== Events Logs ==="
+        kubectl logs -n meshobj-examples-events -l app=events --tail=50 || true
+        echo ""
+        echo "=== Debezium Logs ==="
+        kubectl logs -n meshobj-examples-events -l app=debezium --tail=50 || true
+
+    - name: Run BDD tests
+      working-directory: examples/events
+      run: yarn slow-test test/events.bdd.ts
+
+    - name: Cleanup
+      if: always()
+      run: |
+        kubectl delete namespace meshobj-examples-events --wait=false || true
