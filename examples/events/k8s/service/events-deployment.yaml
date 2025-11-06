@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: events
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: events
+  template:
+    metadata:
+      labels:
+        app: events
+    spec:
+      containers:
+      - name: events
+        image: meshobj/events:latest
+        imagePullPolicy: Never
+        ports:
+        - name: http
+          containerPort: 4055
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: events-config
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: 4055
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 4055
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          timeoutSeconds: 3
+          failureThreshold: 3

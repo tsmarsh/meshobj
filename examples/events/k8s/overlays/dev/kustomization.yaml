@@ -1,0 +1,46 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: meshobj-examples-events
+
+resources:
+- ../../base
+- ../../service
+
+commonLabels:
+  environment: dev
+
+# Use PVCs for persistent storage in development
+patches:
+- target:
+    kind: StatefulSet
+    name: mongodb
+  patch: |-
+    - op: remove
+      path: /spec/template/spec/volumes
+    - op: add
+      path: /spec/volumeClaimTemplates
+      value:
+      - metadata:
+          name: mongodb-data
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+- target:
+    kind: StatefulSet
+    name: redpanda
+  patch: |-
+    - op: remove
+      path: /spec/template/spec/volumes
+    - op: add
+      path: /spec/volumeClaimTemplates
+      value:
+      - metadata:
+          name: redpanda-data
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi

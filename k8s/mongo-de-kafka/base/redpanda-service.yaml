@@ -36,7 +36,7 @@ spec:
     app: redpanda
   ports:
   - port: 9092
-    targetPort: 9092
+    targetPort: 19092
     nodePort: 30092
     name: kafka
 ---

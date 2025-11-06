@@ -1,26 +1,33 @@
-import { DockerComposeEnvironment, StartedDockerComposeEnvironment, Wait } from 'testcontainers';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import path from 'path';
 import { Kafka } from 'kafkajs';
 import { Document, OpenAPIClient, OpenAPIClientAxios } from 'openapi-client-axios';
+import { execSync } from 'child_process';
 
-let environment: StartedDockerComposeEnvironment;
 let raw_event_api: any;
 let processed_event_api: any;
 let kafka: Kafka;
+const CLUSTER_NAME = 'meshobj-examples-events';
 
 // Skipped for CI - takes 60+ seconds to spin up full CDC stack (MongoDB, Kafka, Debezium)
 // Run manually with: yarn test test/events.bdd.ts
 // Automatically skipped in CI environments (when CI=true)
 describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
     beforeAll(async () => {
-        // Start the docker-compose environment
-        environment = await new DockerComposeEnvironment(path.resolve(__dirname, '../generated'), 'docker-compose.yml')
-            .withBuild()
-            .withWaitStrategy('events-1', Wait.forHttp('/ready', 4055).withStartupTimeout(120000))
-            .up();
+        // Setup kind cluster with all services
+        console.log('Setting up kind cluster...');
+        const setupScript = path.resolve(__dirname, '../k8s/setup-kind.sh');
+        try {
+            execSync(`bash ${setupScript}`, {
+                stdio: 'inherit',
+                cwd: path.resolve(__dirname, '../k8s')
+            });
+        } catch (error) {
+            console.error('Failed to setup kind cluster:', error);
+            throw error;
+        }
 
-        console.log('Docker Compose environment started successfully');
+        console.log('Kind cluster started successfully');
 
         // Initialize Kafka client (use host listener)
         kafka = new Kafka({
@@ -79,8 +86,15 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
     }, 300000);
 
     afterAll(async () => {
-        if (environment) {
-            await environment.down();
+        console.log('Tearing down kind cluster...');
+        const teardownScript = path.resolve(__dirname, '../k8s/teardown-kind.sh');
+        try {
+            execSync(`bash ${teardownScript}`, {
+                stdio: 'inherit',
+                cwd: path.resolve(__dirname, '../k8s')
+            });
+        } catch (error) {
+            console.error('Failed to teardown kind cluster:', error);
         }
     });
 
@@ -390,7 +404,8 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
 async function getSwaggerDocs() {
     return await Promise.all(
         ['/event', '/processedevent'].map(async (restlette) => {
-            let url = `http://localhost:4055${restlette}/api/api-docs/swagger.json`;
+            // Events service is exposed on NodePort 30033, mapped to host port 3033
+            let url = `http://localhost:3033${restlette}/api/api-docs/swagger.json`;
             const response = await fetch(url);
             return await response.json();
         }),
@@ -404,8 +419,10 @@ async function buildApi(swagger_docs: Document[]) {
                 throw new Error(`Swagger document for ${doc.info.title} has no paths defined`);
             }
 
+            // Override baseURL to use NodePort mapping instead of internal cluster URL
             const api = new OpenAPIClientAxios({
                 definition: doc,
+                withServer: { url: 'http://localhost:3033' }
             });
 
             return api.init();

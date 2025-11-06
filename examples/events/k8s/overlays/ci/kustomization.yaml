@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: meshobj-examples-events
+
+resources:
+- ../../base
+- ../../service
+
+commonLabels:
+  environment: ci
+
+# Base already uses emptyDir for fast, ephemeral storage (perfect for CI)

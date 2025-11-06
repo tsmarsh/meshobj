@@ -1,21 +1,17 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
-name: mongo-de-kafka
 nodes:
 - role: control-plane
   extraPortMappings:
-  # MongoDB
+  # MongoDB NodePort (30017) → localhost:27017
   - containerPort: 30017
     hostPort: 27017
     protocol: TCP
-  # Kafka
+  # Kafka NodePort (30092) → localhost:9092
   - containerPort: 30092
     hostPort: 9092
     protocol: TCP
-  # MeshQL/Web services
-  - containerPort: 30080
-    hostPort: 9080
-    protocol: TCP
+  # Events API NodePort (30033) → localhost:3033
   - containerPort: 30033
     hostPort: 3033
     protocol: TCP

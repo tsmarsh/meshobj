@@ -1,4 +1,4 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: mongo-de-kafka
+  name: meshobj-examples-events

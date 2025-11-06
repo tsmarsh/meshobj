@@ -39,11 +39,6 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "500m"
-  volumeClaimTemplates:
-  - metadata:
-      name: mongodb-data
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 5Gi
+      volumes:
+      - name: mongodb-data
+        emptyDir: {}
