@@ -1,33 +1,22 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import path from 'path';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { Kafka } from 'kafkajs';
 import { Document, OpenAPIClient, OpenAPIClientAxios } from 'openapi-client-axios';
-import { execSync } from 'child_process';
 
 let raw_event_api: any;
 let processed_event_api: any;
 let kafka: Kafka;
-const CLUSTER_NAME = 'meshobj-examples-events';
 
-// Skipped for CI - takes 60+ seconds to spin up full CDC stack (MongoDB, Kafka, Debezium)
-// Run manually with: yarn test test/events.bdd.ts
-// Automatically skipped in CI environments (when CI=true)
+// Generate a unique test run ID to avoid conflicts with previous test data
+const TEST_RUN_ID = Date.now();
+
+// NOTE: These tests expect a running Kubernetes cluster with all services deployed.
+// Run: bash k8s/setup-kind.sh ci
+// The tests are idempotent and can be run multiple times without cluster restart.
+//
+// Skipped in CI environments (when CI=true) - run manually for development
 describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
     beforeAll(async () => {
-        // Setup kind cluster with all services
-        console.log('Setting up kind cluster...');
-        const setupScript = path.resolve(__dirname, '../k8s/setup-kind.sh');
-        try {
-            execSync(`bash ${setupScript}`, {
-                stdio: 'inherit',
-                cwd: path.resolve(__dirname, '../k8s')
-            });
-        } catch (error) {
-            console.error('Failed to setup kind cluster:', error);
-            throw error;
-        }
-
-        console.log('Kind cluster started successfully');
+        console.log(`Test run ID: ${TEST_RUN_ID}`);
 
         // Initialize Kafka client (use host listener)
         kafka = new Kafka({
@@ -35,107 +24,47 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
             brokers: ['localhost:9092']
         });
 
-        // Test Kafka connection
-        const admin = kafka.admin();
-        try {
-            await admin.connect();
-            console.log('Kafka admin connected successfully');
-            const topics = await admin.listTopics();
-            console.log(`Existing Kafka topics: ${topics.join(', ')}`);
-            await admin.disconnect();
-        } catch (err) {
-            console.error('Failed to connect to Kafka admin:', err);
-        }
-
-        // Test producer
-        const producer = kafka.producer();
-        try {
-            await producer.connect();
-            console.log('Kafka producer connected successfully');
-            await producer.send({
-                topic: 'test-topic',
-                messages: [{ value: 'test message' }]
-            });
-            console.log('Successfully sent test message to Kafka');
-            await producer.disconnect();
-        } catch (err) {
-            console.error('Failed to produce to Kafka:', err);
-        }
-
-        // Test consumer
-        const testConsumer = kafka.consumer({ groupId: 'connection-test' });
-        try {
-            await testConsumer.connect();
-            console.log('Kafka consumer connected successfully');
-            await testConsumer.subscribe({ topic: 'test-topic' });
-            console.log('Consumer subscribed to test-topic');
-           await testConsumer.disconnect();
-        } catch (err) {
-            console.error('Failed to consume from Kafka:', err);
-        }
-
         // Build API clients
         const swagger_docs: Document[] = await getSwaggerDocs();
         await buildApi(swagger_docs);
 
-        console.log('APIs initialized, waiting for Debezium and processor to be ready...');
-        // Collections and topics are pre-created by docker-compose init containers
-        // Wait for Debezium to complete snapshot and processor to start consuming
-        await new Promise(resolve => setTimeout(resolve, 20000));
         console.log('Setup complete, starting tests!');
-    }, 300000);
-
-    afterAll(async () => {
-        console.log('Tearing down kind cluster...');
-        const teardownScript = path.resolve(__dirname, '../k8s/teardown-kind.sh');
-        try {
-            execSync(`bash ${teardownScript}`, {
-                stdio: 'inherit',
-                cwd: path.resolve(__dirname, '../k8s')
-            });
-        } catch (error) {
-            console.error('Failed to teardown kind cluster:', error);
-        }
-    });
+    }, 30000);
 
     describe('Scenario 1: Event Service produces to Kafka', () => {
         it('Given an event service, when I send a message, then I consume an event from Kafka', async () => {
-            // GIVEN: A Kafka consumer listening to the raw events topic
+            // Use unique event name for this test run
+            const eventName = `bdd_test_1_${TEST_RUN_ID}`;
+            const correlationId = crypto.randomUUID();
+
+            // GIVEN: A Kafka consumer listening to the raw events topic (only new messages)
             const consumer = kafka.consumer({ groupId: `bdd-test-1-${Date.now()}` });
             await consumer.connect();
             await consumer.subscribe({
                 topic: 'events.events_development.event',
-                fromBeginning: true  // Read from beginning to catch all messages
+                fromBeginning: false  // Only read new messages from this test run
             });
 
             let receivedEvent: any = null;
             const eventPromise = new Promise<void>((resolve, reject) => {
-                const timeout = setTimeout(() => reject(new Error('Timeout waiting for event in Kafka')), 45000);
+                const timeout = setTimeout(() => reject(new Error('Timeout waiting for event in Kafka')), 30000);
 
                 consumer.run({
                     eachMessage: async ({ topic, partition, message }) => {
                         try {
                             const value = JSON.parse(message.value?.toString('utf8') || '{}');
-                            // Debezium wraps the document: payload.after is a JSON string
                             const afterString = value?.payload?.after || value?.after;
-                            if (!afterString) {
-                                console.log(`Scenario 1: Skipping message from ${topic}, no after field`);
-                                return;
-                            }
+                            if (!afterString) return;
 
                             const afterDoc = typeof afterString === 'string' ? JSON.parse(afterString) : afterString;
-                            // The actual event data is in afterDoc.payload
                             const eventData = afterDoc?.payload || afterDoc;
 
-                            console.log(`Scenario 1: Received event from ${topic} - name: ${eventData?.name}, full eventData:`, JSON.stringify(eventData).substring(0, 200));
+                            console.log(`Scenario 1: Received event - name: ${eventData?.name}`);
 
-                            if (eventData?.name === 'bdd_test_1') {
-                                console.log('Scenario 1: MATCH FOUND! Resolving...');
-
+                            if (eventData?.name === eventName) {
                                 receivedEvent = eventData;
                                 clearTimeout(timeout);
                                 resolve();
-                                // Disconnect after resolving (don't await)
                                 consumer.disconnect().catch(() => {});
                             }
                         } catch (err) {
@@ -149,8 +78,6 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             // WHEN: I post an event to the event service
-            const eventName = 'bdd_test_1';
-            const correlationId = crypto.randomUUID();
             const response = await raw_event_api.create(null, {
                 name: eventName,
                 correlationId: correlationId,
@@ -170,17 +97,22 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
             expect(receivedEvent.name).toBe(eventName);
             expect(receivedEvent.correlationId).toBe(correlationId);
             expect(receivedEvent.source).toBe('bdd_test');
-        }, 60000); // Keep 60s for Scenario 1 as it's the first test
+        }, 45000);
     });
 
     describe('Scenario 2: Processed Event Service receives messages', () => {
         it('Given a processed event service, when I send a message, then it appears in Kafka', async () => {
-            // GIVEN: A Kafka consumer listening to processed events
+            // Use unique event name for this test run
+            const processedEventName = `bdd_test_2_${TEST_RUN_ID}`;
+            const rawEventId = crypto.randomUUID();
+            const correlationId = crypto.randomUUID();
+
+            // GIVEN: A Kafka consumer listening to processed events (only new messages)
             const consumer = kafka.consumer({ groupId: `bdd-test-2-${Date.now()}` });
             await consumer.connect();
             await consumer.subscribe({
                 topic: 'events.events_development.processedevent',
-                fromBeginning: true  // Read from beginning to catch all messages
+                fromBeginning: false  // Only read new messages from this test run
             });
 
             let receivedEvent: any = null;
@@ -197,11 +129,12 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
                             const afterDoc = typeof afterString === 'string' ? JSON.parse(afterString) : afterString;
                             const eventData = afterDoc?.payload || afterDoc;
 
-                            if (eventData?.name === 'bdd_test_2') {
+                            console.log(`Scenario 2: Received event - name: ${eventData?.name}`);
+
+                            if (eventData?.name === processedEventName) {
                                 receivedEvent = eventData;
                                 clearTimeout(timeout);
                                 resolve();
-                                // Disconnect after resolving (don't await)
                                 consumer.disconnect().catch(() => {});
                             }
                         } catch (err) {
@@ -215,10 +148,6 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             // WHEN: I post a processed event directly to the API
-            const processedEventName = 'bdd_test_2';
-            const rawEventId = crypto.randomUUID();
-            const correlationId = crypto.randomUUID();
-
             await processed_event_api.create(null, {
                 id: crypto.randomUUID(),
                 raw_event_id: rawEventId,
@@ -244,12 +173,16 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
 
     describe('Scenario 3: Processor consumes from Kafka and calls API', () => {
         it('Given a processor, when an event appears in Kafka, then it creates a processed event', async () => {
-            // GIVEN: A Kafka consumer listening to processed events topic
+            // Use unique event name for this test run
+            const eventName = `bdd_test_3_${TEST_RUN_ID}`;
+            const correlationId = crypto.randomUUID();
+
+            // GIVEN: A Kafka consumer listening to processed events topic (only new messages)
             const consumer = kafka.consumer({ groupId: `bdd-test-3-${Date.now()}` });
             await consumer.connect();
             await consumer.subscribe({
                 topic: 'events.events_development.processedevent',
-                fromBeginning: true  // Read from beginning to catch all messages
+                fromBeginning: false  // Only read new messages from this test run
             });
 
             let receivedProcessedEvent: any = null;
@@ -268,13 +201,12 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
                             const afterDoc = typeof afterString === 'string' ? JSON.parse(afterString) : afterString;
                             const eventData = afterDoc?.payload || afterDoc;
 
-                            console.log(`Scenario 3: Received processed event - name: ${eventData?.name}, raw_event_id: ${eventData?.raw_event_id}`);
+                            console.log(`Scenario 3: Received processed event - name: ${eventData?.name}`);
 
-                            if (eventData?.name === 'bdd_test_3') {
+                            if (eventData?.name === eventName) {
                                 receivedProcessedEvent = eventData;
                                 clearTimeout(timeout);
                                 resolve();
-                                // Disconnect after resolving (don't await)
                                 consumer.disconnect().catch(() => {});
                             }
                         } catch (err) {
@@ -288,8 +220,6 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             // WHEN: I post a raw event (which the processor should pick up)
-            const eventName = 'bdd_test_3';
-            const correlationId = crypto.randomUUID();
             const response = await raw_event_api.create(null, {
                 name: eventName,
                 correlationId: correlationId,
@@ -315,12 +245,16 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
 
     describe('Scenario 4: Full End-to-End Flow', () => {
         it('Given event service AND processed event service AND processor, when I post an event, then I receive a processed event', async () => {
-            // GIVEN: All services are running and a consumer is listening
+            // Use unique event name for this test run
+            const eventName = `bdd_test_4_${TEST_RUN_ID}`;
+            const correlationId = crypto.randomUUID();
+
+            // GIVEN: All services are running and a consumer is listening (only new messages)
             const consumer = kafka.consumer({ groupId: `bdd-test-4-${Date.now()}` });
             await consumer.connect();
             await consumer.subscribe({
                 topic: 'events.events_development.processedevent',
-                fromBeginning: true  // Read from beginning to catch all messages
+                fromBeginning: false  // Only read new messages from this test run
             });
 
             let rawEventId = '';
@@ -343,11 +277,10 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
 
                             console.log(`Scenario 4: Received event - name: ${eventData?.name}, raw_event_id: ${eventData?.raw_event_id}, looking for: ${rawEventId}`);
 
-                            if (eventData?.raw_event_id === rawEventId && eventData?.name === 'bdd_test_4') {
+                            if (eventData?.raw_event_id === rawEventId && eventData?.name === eventName) {
                                 processedEvent = eventData;
                                 clearTimeout(timeout);
                                 resolve();
-                                // Disconnect after resolving (don't await)
                                 consumer.disconnect().catch(() => {});
                             }
                         } catch (err) {
@@ -361,8 +294,6 @@ describe.skipIf(process.env.CI === 'true')('Events Service BDD Tests', () => {
             await new Promise(resolve => setTimeout(resolve, 3000));
 
             // WHEN: I post a raw event
-            const eventName = 'bdd_test_4';
-            const correlationId = crypto.randomUUID();
             const response = await raw_event_api.create(null, {
                 name: eventName,
                 correlationId: correlationId,
