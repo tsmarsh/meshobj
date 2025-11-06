@@ -40,6 +40,10 @@ jobs:
     - name: Build packages
       run: yarn build
 
+    - name: Generate deployment files
+      working-directory: examples/events
+      run: tsx deploy.ts
+
     - name: Set up kind cluster
       uses: helm/kind-action@v1
       with:
