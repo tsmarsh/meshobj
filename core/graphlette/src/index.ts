@@ -39,7 +39,7 @@ export function init(app: Application, schema: string, path: string, rootValue: 
 
     app.use(
         path,
-        graphqlHTTP((_request, _response, _params) => ({
+        graphqlHTTP(() => ({
             schema: graphqlSchema,
             rootValue,
             graphiql: true,
