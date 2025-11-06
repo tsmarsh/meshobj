@@ -42,7 +42,7 @@ jobs:
 
     - name: Generate deployment files
       working-directory: examples/events
-      run: tsx deploy.ts
+      run: node dist/deploy.js
 
     - name: Set up kind cluster
       uses: helm/kind-action@v1
