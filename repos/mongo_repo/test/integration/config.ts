@@ -1,5 +1,5 @@
 import { Config } from '@meshobj/server';
-import { MongoConfig } from '../src';
+import { MongoConfig } from '../../src';
 import fs from 'fs';
 const PORT = 3044;
 const ENV = 'test';

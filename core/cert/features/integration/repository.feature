@@ -12,7 +12,7 @@ Feature: Repository Contract
       | Create Test | 3     |
     Then the envelopes should have generated IDs
     And the envelopes created_at should be greater than or equal to the test start time
-    And the envelopes deleted flag should be false
+    And the envelopes deleted flag should be disabled
 
   Scenario: Reading an envelope by ID
     Given I have created envelopes:
@@ -20,7 +20,7 @@ Feature: Repository Contract
       | Read Test | 51    |
     When I read envelopes ["Read Test"] by their IDs
     Then I should receive 1 envelope
-    And the payload name should be "Read Test"
+    And the payload "name" should be "Read Test"
 
   Scenario: Listing all envelopes
     Given I have created envelopes:
@@ -35,8 +35,8 @@ Feature: Repository Contract
     Given I have created envelopes:
       | name      | count |
       | Read Test | 51    |
-    When I remove envelopes ["Read Test"] by their IDs
-    Then the remove operations should return true
+    When I remove envelope "Read Test"
+    Then the remove operation should return true
     And reading envelopes ["Read Test"] by their IDs should return nothing
 
   Scenario: Reading multiple envelopes by IDs
@@ -55,7 +55,7 @@ Feature: Repository Contract
       | test2 | 45    |
       | test3 | 2     |
     When I remove envelopes ["test1", "test2"] by their IDs
-    Then the remove operations should return true for the removed IDs
+    Then the remove operations should return true
     And listing all envelopes should show exactly 1 envelope
 
   Scenario: Temporal versioning - multiple versions of the same ID
@@ -81,4 +81,4 @@ Feature: Repository Contract
       | v2      | Second version |
     And I list all envelopes
     Then I should receive exactly 1 envelope
-    And the payload version should be "v2"
+    And the payload "version" should be "v2"

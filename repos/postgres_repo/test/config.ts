@@ -20,20 +20,20 @@ const database = () => ({
     password: `password`,
 });
 
-const henDB = (): PostgresConfig => ({
-    ...database(),
-    table: `${prefix}_${env}_hen`,
-});
+const henDB = (db: PostgresConfig): PostgresConfig => {
+    db.table = `${prefix}_${env}_hen`;
+    return db;
+};
 
-const coopDB = (): PostgresConfig => ({
-    ...database(),
-    table: `${prefix}_${env}_coop`,
-});
+const coopDB = (db: PostgresConfig): PostgresConfig => {
+    db.table = `${prefix}_${env}_coop`;
+    return db;
+};
 
-const farmDB = (): PostgresConfig => ({
-    ...database(),
-    table: `${prefix}_${env}_farm`,
-});
+const farmDB = (db: PostgresConfig): PostgresConfig => {
+    db.table = `${prefix}_${env}_farm`;
+    return db;
+};
 
 const farmGraph = fs.readFileSync(`${config_dir}graph/farm.graphql`, 'utf8');
 const coopGraph = fs.readFileSync(`${config_dir}graph/coop.graphql`, 'utf8');
@@ -43,13 +43,18 @@ const farmJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/farm.schema
 const coopJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/coop.schema.json`, 'utf8'));
 const henJSONSchema = JSON.parse(fs.readFileSync(`${config_dir}json/hen.schema.json`, 'utf8'));
 
-export const config = (): Config => ({
+export const config = (db: PostgresConfig): Config => {
+    const fDb = farmDB(db);
+    const cDb = coopDB(db);
+    const hDb = henDB(db);
+
+    return {
     port,
 
     graphlettes: [
         {
             path: '/farm/graph',
-            storage: farmDB(),
+            storage: fDb,
             schema: farmGraph,
             rootConfig: {
                 singletons: [
@@ -70,7 +75,7 @@ export const config = (): Config => ({
         },
         {
             path: '/coop/graph',
-            storage: coopDB(),
+            storage: cDb,
             schema: coopGraph,
             rootConfig: {
                 singletons: [
@@ -107,7 +112,7 @@ export const config = (): Config => ({
         },
         {
             path: '/hen/graph',
-            storage: henDB(),
+            storage: hDb,
             schema: henGraph,
             rootConfig: {
                 singletons: [
@@ -141,18 +146,18 @@ export const config = (): Config => ({
     restlettes: [
         {
             path: '/farm/api',
-            storage: farmDB(),
+            storage: fDb,
             schema: farmJSONSchema,
         },
         {
             path: '/coop/api',
-            storage: coopDB(),
+            storage: cDb,
             schema: coopJSONSchema,
         },
         {
             path: '/hen/api',
-            storage: henDB(),
+            storage: hDb,
             schema: henJSONSchema,
         },
     ],
-});
+}};
