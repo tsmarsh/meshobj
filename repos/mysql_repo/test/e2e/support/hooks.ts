@@ -1,7 +1,7 @@
 import { Before, AfterAll, BeforeAll } from '@cucumber/cucumber';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import Log4js from 'log4js';
-import { FarmTestWorld, DBFactories, FarmQueries} from '@meshobj/cert';
+import { FarmTestWorld, DBFactories} from '@meshobj/cert';
 import { MongoConfig, MongoPlugin } from '../../../src';
 import { Plugin } from '@meshobj/server';
 import { Server } from 'node:http';
@@ -56,17 +56,7 @@ BeforeAll(async function() {
 
     let platformUrl = 'http://localhost:' + port;
 
-    const queries: FarmQueries = {
-        farmById: '{"id": "{{id}}"}',
-        coopById: '{"id": "{{id}}"}',
-        coopByName: '{"payload.name": "{{id}}"}',
-        coopByFarmId: '{"payload.farm_id": "{{id}}"}',
-        henById: '{"id": "{{id}}"}',
-        henByName: '{"payload.name": "{{name}}"}',
-        henByCoopId: '{"payload.coop_id": "{{id}}"}',
-    };
-
-    farmEnv = new FarmEnv(dbFactories, queries, platformUrl, port);
+    farmEnv = new FarmEnv(dbFactories, platformUrl, port);
     plugins = {"mongo": new MongoPlugin()}
     server = await farmEnv.buildService(plugins);
 

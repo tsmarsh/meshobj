@@ -1,1 +1,1 @@
-export {IntegrationWorld, FarmTestWorld, SearcherTestTemplates, FarmEnv, DBFactories} from "./support/worlds";
+export {IntegrationWorld, FarmTestWorld, SearcherTestTemplates, FarmEnv, DBFactories, FarmQueries} from "./support/worlds";

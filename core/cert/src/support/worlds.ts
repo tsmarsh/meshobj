@@ -50,6 +50,7 @@ export class FarmEnv {
 
     platform_url: string;
     port: number;
+    queries: FarmQueries;
 
     farmGraph = fs.readFileSync(`${__dirname}/../../config/graph/farm.graphql`, 'utf8');
     coopGraph = fs.readFileSync(`${__dirname}/../../config/graph/coop.graphql`, 'utf8');
@@ -66,9 +67,10 @@ export class FarmEnv {
     token?: string;
     swaggerDocs?: Document[];
 
-    constructor(dbFactories: DBFactories, platform_url: string, port: number) {
+    constructor(dbFactories: DBFactories, queries: FarmQueries, platform_url: string, port: number) {
         this.platform_url = platform_url;
         this.port = port;
+        this.queries = queries;
         this.conf = this.config(dbFactories.farmDB(), dbFactories.coopDB(), dbFactories.henDB());
     }
 
@@ -131,7 +133,7 @@ export class FarmEnv {
                         singletons: [
                             {
                                 name: 'getById',
-                                query: '{"id": "{{id}}"}',
+                                query: this.queries.farmById,
                             },
                         ],
                         vectors: [],
@@ -153,17 +155,17 @@ export class FarmEnv {
                             {
                                 name: 'getByName',
                                 id: 'name',
-                                query: '{"payload.name": "{{id}}"}',
+                                query: this.queries.coopByName,
                             },
                             {
                                 name: 'getById',
-                                query: '{"id": "{{id}}"}',
+                                query: this.queries.coopById,
                             },
                         ],
                         vectors: [
                             {
                                 name: 'getByFarm',
-                                query: '{"payload.farm_id": "{{id}}"}',
+                                query: this.queries.coopByFarmId,
                             },
                         ],
                         resolvers: [
@@ -189,17 +191,17 @@ export class FarmEnv {
                         singletons: [
                             {
                                 name: 'getById',
-                                query: '{"id": "{{id}}"}',
+                                query: this.queries.henById,
                             },
                         ],
                         vectors: [
                             {
                                 name: 'getByName',
-                                query: '{"payload.name": "{{name}}"}',
+                                query: this.queries.henByName,
                             },
                             {
                                 name: 'getByCoop',
-                                query: '{"payload.coop_id": "{{id}}"}',
+                                query: this.queries.henByCoopId,
                             },
                         ],
                         resolvers: [
@@ -239,4 +241,14 @@ export interface DBFactories {
     farmDB(): StorageConfig;
     henDB(): StorageConfig;
     coopDB(): StorageConfig;
+}
+
+export interface FarmQueries {
+    farmById: string;
+    coopById: string;
+    coopByName: string;
+    coopByFarmId: string;
+    henById: string;
+    henByName: string;
+    henByCoopId: string;
 }
