@@ -25,6 +25,10 @@
         "test:bdd": "cucumber-js"
     },
     "dependencies": {
+        "@meshobj/auth": "^0.2.0",
+        "@meshobj/common": "^0.2.0",
+        "@meshobj/graphlette": "^0.2.0",
+        "@meshobj/server": "^0.2.0",
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
         "handlebars": "^4.7.8",

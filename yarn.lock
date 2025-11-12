@@ -1168,6 +1168,10 @@ __metadata:
   resolution: "@meshobj/cert@workspace:core/cert"
   dependencies:
     "@cucumber/cucumber": "npm:^12.2.0"
+    "@meshobj/auth": "npm:^0.2.0"
+    "@meshobj/common": "npm:^0.2.0"
+    "@meshobj/graphlette": "npm:^0.2.0"
+    "@meshobj/server": "npm:^0.2.0"
     "@types/node": "npm:^22.10.6"
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:^3.0.1"
