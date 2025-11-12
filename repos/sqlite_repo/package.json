@@ -15,6 +15,7 @@
     "license": "MIT",
     "dependencies": {
         "@meshobj/auth": "^0.2.0",
+        "@meshobj/cert": "^0.2.0",
         "@meshobj/common": "^0.2.0",
         "@meshobj/graphlette": "^0.2.0",
         "@meshobj/server": "^0.2.0",
@@ -29,7 +30,9 @@
     "scripts": {
         "build": "tsc",
         "test": "vitest --run --coverage",
-        "test:bdd": "c8 --reporter=text --reporter=html --reporter=json-summary --reporter=lcov --all=false --exclude='cucumber.js' --exclude='test/**' cucumber-js"
+        "test:bdd": "c8 --reporter=text --reporter=html --reporter=json-summary --reporter=lcov --all=false --exclude='cucumber.js' --exclude='test/**' cucumber-js",
+        "test:bdd:int": "c8 --reporter=text --reporter=html --reporter=json-summary --reporter=lcov --all=false --exclude='cucumber.js' --exclude='test/**' cucumber-js -p int",
+        "test:bdd:e2e": "c8 --reporter=text --reporter=html --reporter=json-summary --reporter=lcov --all=false --exclude='cucumber.js' --exclude='test/**' cucumber-js -p e2e"
     },
     "devDependencies": {
         "@cucumber/cucumber": "^12.2.0",

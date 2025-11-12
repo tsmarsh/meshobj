@@ -1,12 +1,12 @@
-export { SQLiteRepository } from './sqliteRepo.js';
-export { SQLiteSearcher } from './sqliteSearcher.js';
+export { SQLiteRepository } from './sqliteRepo';
+export { SQLiteSearcher } from './sqliteSearcher';
 
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { StorageConfig } from '@meshobj/server';
 import { Repository } from '@meshobj/common';
-import { SQLiteSearcher } from './sqliteSearcher.js';
-import { SQLiteRepository } from './sqliteRepo.js';
+import { SQLiteSearcher } from './sqliteSearcher';
+import { SQLiteRepository } from './sqliteRepo';
 import { Auth } from '@meshobj/auth';
 import { DTOFactory } from '@meshobj/graphlette';
 import { Plugin } from '@meshobj/server';
