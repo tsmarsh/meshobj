@@ -1,55 +1,40 @@
 import { Given, When, Then, DataTable } from '@cucumber/cucumber';
 import { expect } from 'chai';
 import { callSubgraph } from '@meshobj/graphlette';
-import { Document, OpenAPIClient, OpenAPIClientAxios } from 'openapi-client-axios';
 import Handlebars from 'handlebars';
 import { FarmTestWorld } from '../support/worlds';
+import * as jwt from 'jsonwebtoken';
+
 
 Given('a MeshQL server is running with the plugin', async function(this: FarmTestWorld) {
-    const swagger_docs = await getSwaggerDocs(this.config);
-
-    const authHeaders = { Authorization: `Bearer ${this.token}` };
-
-    const apis: OpenAPIClient[] = await Promise.all(
-        swagger_docs.map(async (doc: Document) => {
-            const api = new OpenAPIClientAxios({
-                definition: doc,
-                axiosConfigDefaults: { headers: authHeaders },
-            });
-            return api.init();
-        }),
-    );
-
-    for (const api of apis) {
-        const firstPath = Object.keys(api.paths)[0];
-        if (firstPath.includes('hen')) this.apis["hen"] = api;
-        else if (firstPath.includes('coop')) this.apis["coop"] = api;
-        else if (firstPath.includes('farm')) this.apis["farm"] = api;
-    }
-
-    expect(this.app).to.exist;
-    expect(this.server).to.exist;
-    expect(this.config).to.exist;
+    // Runtime (token, apis) is initialized in BeforeAll hook
+    // This step exists for clarity in the feature file
 });
 
 Given('I have captured the first timestamp', function(this: FarmTestWorld) {
-
-    expect(this.first_stamp).to.be.greaterThan(0);
+    this.env.first_stamp = Date.now();
 });
 
 When('I query the {string} graph:', async function(this: FarmTestWorld, graphName: string, docString: string) {
-    const queryTemplate = Handlebars.compile(docString);
-    this["now"] = String(Date.now());
+    console.log(JSON.stringify(this.env.ids));
 
-    const query = queryTemplate(this);
+    const queryTemplate = Handlebars.compile(docString);
+    this.now = String(Date.now());
+
+    const query = queryTemplate({ ids: this.env.ids, first_stamp: this.env.first_stamp, now: this.now });
     const queryName= docString.match(/(get\w*)/)![1];
 
     this.queryResult = await callSubgraph(
-        new URL(`http://localhost:${this.config!.port}/${graphName}/graph`),
+        new URL(`http://localhost:${this.env.port}/${graphName}/graph`),
         query,
         queryName,
-        `Bearer ${this.token}`
+        `Bearer ${this.env.token}`
     );
+
+    if(!this.queryResult){
+        console.log("Result: \n", this.queryResult);
+        console.log("Query: \n",docString, query, JSON.stringify(this.env.ids));
+    }
 });
 
 Then('the farm name should be {string}', function(this: FarmTestWorld, expectedName: string) {
@@ -65,12 +50,12 @@ Then('the result should contain {string} {string}', function(this: FarmTestWorld
     expect(this.queryResult[0][key]).to.equal(value);
 });
 
-Then('the {string} ID should match the saved {string} ID', function(this: any, thing: string, henName: string) {
-    expect(this.queryResult.id).to.equal(this[`${thing}_ids`][henName]);
+Then('the {string} ID should match the saved {string} ID', function(this: FarmTestWorld, thing: string, henName: string) {
+    expect(this.queryResult.id).to.equal(this.env.ids[thing][henName]);
 });
 
-Then('the {int} {string} ID should match the saved {string} ID', function(this: any, index: number , thing: string, henName: string) {
-    expect(this.queryResult[index].id).to.equal(this[`${thing}_ids`][henName]);
+Then('the {int} {string} ID should match the saved {string} ID', function(this: FarmTestWorld, index: number , thing: string, henName: string) {
+    expect(this.queryResult[index].id).to.equal(this.env.ids[thing][henName]);
 });
 
 Then('there should be {int} results', function(this: FarmTestWorld, expectedCount: number) {
@@ -101,33 +86,30 @@ Then('the results should include {string}', function(this: FarmTestWorld, name: 
     expect(names).to.include(name);
 });
 
-Given("I have created {string}:", function(this: FarmTestWorld, thing: string, dataTable: DataTable) {
-    let api = this.apis[thing];
-    dataTable.hashes().map((newThing) => {
+Given("I have created {string}:", async function(this: FarmTestWorld, thing: string, dataTable: DataTable) {
+    let api = this.env.apis[thing];
+    if (!this.env.ids[thing]) {
+        this.env.ids[thing] = {};
+    }
+    for (const newThing of dataTable.hashes()) {
         const template = Handlebars.compile(newThing.data);
-        const result = api.create(null, template(this));
-        this.ids[thing][newThing.name] = result.request.path.slice(-36);
-    })
+        const dataStr = template({ ids: this.env.ids });
+        const data = eval(`(${dataStr})`);
+        const result = await api.create(null, data);
+        this.env.ids[thing][newThing.name] = result.request.path.slice(-36);
+    }
 });
 
-Given("I have updated {string}:", function(this: FarmTestWorld, thing: string, dataTable: DataTable) {
-    let api = this.apis[thing];
-    dataTable.hashes().map((updateThing) => {
+Given("I have updated {string}:", async function(this: FarmTestWorld, thing: string, dataTable: DataTable) {
+    let api = this.env.apis[thing];
+    for (const updateThing of dataTable.hashes()) {
         const template = Handlebars.compile(updateThing.data);
-        api.update({ id: this.ids[thing][updateThing.name] }, template(this));
-    })
+        const dataStr = template({ ids: this.env.ids });
+        const data = eval(`(${dataStr})`);
+        await api.update({ id: this.env.ids[thing][updateThing.name] }, data);
+    }
 });
 
 Given('I take a timestamp', async function(this: FarmTestWorld) {
-    this.first_stamp = Date.now();
+    this.env.first_stamp = Date.now();
 })
-
-async function getSwaggerDocs(config: any): Promise<Document[]> {
-    return await Promise.all(
-        config.restlettes.map(async (restlette: any) => {
-            const url = `http://localhost:${config.port}${restlette.path}/api-docs/swagger.json`;
-            const response = await fetch(url);
-            return await response.json();
-        }),
-    );
-}

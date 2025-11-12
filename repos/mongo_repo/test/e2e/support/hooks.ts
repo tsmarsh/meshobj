@@ -1,12 +1,13 @@
-import { Before, After, AfterAll, BeforeAll, setDefaultTimeout } from '@cucumber/cucumber';
-import { IntegrationWorld } from '';
-import { FarmTestWorld } from 'core/common/test/steps/farm_steps';
+import { Before, AfterAll, BeforeAll } from '@cucumber/cucumber';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { compile } from 'handlebars';
-import { init, Plugin, StorageConfig } from '@meshobj/server';
-import * as jwt from 'jsonwebtoken';
-import { config as getFarmConfig } from '../../integration/config';
 import Log4js from 'log4js';
+import { FarmTestWorld, DBFactories} from '@meshobj/cert';
+import { MongoConfig, MongoPlugin } from '../../../src';
+import { Plugin } from '@meshobj/server';
+import { Server } from 'node:http';
+import { FarmEnv } from '@meshobj/cert';
+import { Document } from 'openapi-client-axios';
+import * as jwt from 'jsonwebtoken';
 
 Log4js.configure({
     appenders: { out: { type: 'stdout' } },
@@ -14,34 +15,67 @@ Log4js.configure({
 });
 
 let mongod: MongoMemoryServer;
+let dbFactories: DBFactories;
+let config: MongoConfig;
+let plugins: Record<string, Plugin>;
+let server: Server;
+let farmEnv: FarmEnv;
 
-// Setup for farm tests
 BeforeAll(async function() {
+    mongod = new MongoMemoryServer();
+    await mongod.start();
 
-});
+    const PREFIX = "cert";
+    const ENV = "mongo";
 
-Before(async function(this: IntegrationWorld) {
-    try {
-        const app = await init(this.config, { mongo: this.plugin! });
-        const server = await app.listen(this.config.port);
-    } catch (e) {
-        console.error('Failed to setup farm server:', e);
-        throw e;
-    }
-    // Templates for searcher tests - MongoDB JSON query syntax
-    this.templates = {
-        findById: compile(`{"id": "{{id}}"}`),
-        findByName: compile(`{"payload.name": "{{id}}"}`),
-        findAllByType: compile(`{"payload.type": "{{id}}"}`),
-        findByNameAndType: compile(`{"payload.name": "{{name}}", "payload.type": "{{type}}"}`),
+    config = {
+        type: ENV,
+        uri: mongod.getUri(),
+        db: `${PREFIX}_${ENV}`,
+        collection: "CHANGE ME",
+        options: {
+            directConnection: true,
+        }
     };
 
+    dbFactories = {
+        henDB: (): MongoConfig => {
+            config.collection = `${PREFIX}-${ENV}-hen`;
+            return config;
+        },
+        coopDB: (): MongoConfig => {
+            config.collection = `${PREFIX}-${ENV}-coop`;
+            return config;
+        },
+        farmDB: (): MongoConfig => {
+            config.collection = `${PREFIX}-${ENV}-farm`;
+            return config;
+        }
+    }
+
+    let port = 3044;
+
+    let platformUrl = 'http://localhost:' + port;
+
+    farmEnv = new FarmEnv(dbFactories, platformUrl, port);
+    plugins = {"mongo": new MongoPlugin()}
+    server = await farmEnv.buildService(plugins);
+
+    // Initialize runtime properties in FarmEnv
+    farmEnv.token = jwt.sign({ sub: 'test-user' }, 'totallyASecret', { expiresIn: '1h' });
+    farmEnv.swaggerDocs = await farmEnv.getSwaggerDocs();
+    farmEnv.apis = await farmEnv.buildApi(farmEnv.swaggerDocs, farmEnv.token);
 });
 
-After(async function(this: IntegrationWorld) {
-    this.plugin!.cleanup();
+Before(async function(this: FarmTestWorld) {
+    this.server = server;
+    this.env = farmEnv;
 });
+
 
 AfterAll(async function(){
+    plugins["mongo"].cleanup;
+    server.close();
     await mongod.stop();
-} )
+});
+

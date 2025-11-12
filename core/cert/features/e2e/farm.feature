@@ -3,34 +3,34 @@ Feature: The Farm - Server Certification
   I want to verify my plugin works with the full MeshQL server
   So that farms, coops, and hens can be managed through GraphQL and REST APIs
 
-  Background:
+  Scenario:
     Given a MeshQL server is running with the plugin
     And I have created "farm":
       | name | data |
       | Emerdale  | { name: 'Emerdale' } |
     And I have created "coop":
       | name | data |
-      | red | { name: 'red', farm_id: {{ids.farm.Emerdale}} } |
-      | yellow | { name: 'yellow', farm_id: {{ids.farm.Emerdale}} }   |
+      | red | { name: 'red', farm_id: '{{ids.farm.Emerdale}}' } |
+      | yellow | { name: 'yellow', farm_id: '{{ids.farm.Emerdale}}' }   |
 
     And I have created "hen":
       | name | data |
-      | chuck | { name: 'chuck', eggs: 2, coop_id: {{ids.farm.red}} |
-      | duck  | { name: 'duck', eggs: 0, coop_id: {{ids.farm.red}} }  |
-      | euck  | { name: 'euck', eggs: 1, coop_id: {{ids.farm.yellow}} }  |
-      | fuck  | { name: 'fuck', eggs: 2, coop_id: {{ids.farm.yellow}} }  |
+      | chuck | { name: 'chuck', eggs: 2, coop_id: '{{ids.coop.red}}' } |
+      | duck  | { name: 'duck', eggs: 0, coop_id: '{{ids.coop.red}}' }  |
+      | euck  | { name: 'euck', eggs: 1, coop_id: '{{ids.coop.yellow}}' }  |
+      | fuck  | { name: 'fuck', eggs: 2, coop_id: '{{ids.coop.yellow}}' }  |
 
     And I have captured the first timestamp
 
     And I have updated "coop":
       | name | data |
-      | red  | { name: 'purple', farm_id: this.farm_id }     |
+      | red  | { name: 'purple', farm_id: '{{ids.farm.Emerdale}}' }     |
 
   Scenario: Build a server with multiple nodes
     When I query the "farm" graph:
       """
       {
-        getById(id: "{{farm_id}}") {
+        getById(id: "{{ids.farm.Emerdale}}") {
           name
           coops {
             name
@@ -43,7 +43,7 @@ Feature: The Farm - Server Certification
       }
       """
     Then the farm name should be "Emerdale"
-    And there should be 3 "coops"
+    And there should be 2 "coops"
 
   Scenario: Answer simple queries
     When I query the "hen" graph:
@@ -62,7 +62,7 @@ Feature: The Farm - Server Certification
     When I query the "hen" graph:
       """
       {
-        getByCoop(id: "{{lookup coop_ids 'red'}}") {
+        getByCoop(id: "{{ids.coop.red}}") {
           name
           eggs
           coop {
@@ -82,7 +82,7 @@ Feature: The Farm - Server Certification
     When I query the "coop" graph:
       """
       {
-        getById(id: "{{lookup coop_ids 'red'}}") {
+        getById(id: "{{ids.coop.red}}") {
           id
           name
         }
@@ -95,7 +95,7 @@ Feature: The Farm - Server Certification
     When I query the "coop" graph:
       """
       {
-        getById(id: "{{lookup coop_ids 'red'}}", at: {{first_stamp}}) {
+        getById(id: "{{ids.coop.red}}", at: {{first_stamp}}) {
           name
         }
       }
@@ -106,7 +106,7 @@ Feature: The Farm - Server Certification
     When I query the "farm" graph:
       """
       {
-        getById(id: "{{farm_id}}", at: {{first_stamp}}) {
+        getById(id: "{{ids.farm.Emerdale}}", at: {{first_stamp}}) {
           coops {
             name
           }
@@ -119,7 +119,7 @@ Feature: The Farm - Server Certification
     When I query the "farm" graph:
       """
       {
-        getById(id: "{{farm_id}}", at: {{now}}) {
+        getById(id: "{{ids.farm.Emerdale}}", at: {{now}}) {
           coops {
             name
           }
