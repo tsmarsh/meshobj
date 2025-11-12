@@ -1,54 +1,50 @@
-import { Before, AfterAll, BeforeAll } from '@cucumber/cucumber';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+.import { Before, AfterAll, BeforeAll } from '@cucumber/cucumber';
 import Log4js from 'log4js';
-import { FarmTestWorld, DBFactories} from '@meshobj/cert';
-import { MongoConfig, MongoPlugin } from '../../../src';
+import { FarmTestWorld, DBFactories, FarmQueries } from '@meshobj/cert';
+import { MySQLConfig, MySQLPlugin } from '../../../src';
 import { Plugin } from '@meshobj/server';
 import { Server } from 'node:http';
 import { FarmEnv } from '@meshobj/cert';
 import * as jwt from 'jsonwebtoken';
+import { MySqlContainer, StartedMySqlContainer } from '@testcontainers/mysql';
 
 Log4js.configure({
     appenders: { out: { type: 'stdout' } },
     categories: { default: { appenders: ['out'], level: 'error' } },
 });
 
-let mongod: MongoMemoryServer;
+let container: StartedMySqlContainer;
 let dbFactories: DBFactories;
-let config: MongoConfig;
+let config: MySQLConfig;
 let plugins: Record<string, Plugin>;
 let server: Server;
 let farmEnv: FarmEnv;
 
-BeforeAll(async function() {
-    mongod = new MongoMemoryServer();
-    await mongod.start();
+BeforeAll({ timeout: 120000 }, async function() {
+    container = await new MySqlContainer().start();
 
     const PREFIX = "cert";
-    const ENV = "mongo";
+    const ENV = "mysql";
 
     config = {
         type: ENV,
-        uri: mongod.getUri(),
-        db: `${PREFIX}_${ENV}`,
-        collection: "CHANGE ME",
-        options: {
-            directConnection: true,
-        }
+        host: container.getHost(),
+        port: container.getPort(),
+        db: container.getDatabase(),
+        user: container.getUsername(),
+        password: container.getUserPassword(),
+        table: "CHANGE ME",
     };
 
     dbFactories = {
-        henDB: (): MongoConfig => {
-            config.collection = `${PREFIX}-${ENV}-hen`;
-            return config;
+        henDB: (): MySQLConfig => {
+            return { ...config, table: `${PREFIX}_${ENV}_hen` };
         },
-        coopDB: (): MongoConfig => {
-            config.collection = `${PREFIX}-${ENV}-coop`;
-            return config;
+        coopDB: (): MySQLConfig => {
+            return { ...config, table: `${PREFIX}_${ENV}_coop` };
         },
-        farmDB: (): MongoConfig => {
-            config.collection = `${PREFIX}-${ENV}-farm`;
-            return config;
+        farmDB: (): MySQLConfig => {
+            return { ...config, table: `${PREFIX}_${ENV}_farm` };
         }
     }
 
@@ -56,8 +52,18 @@ BeforeAll(async function() {
 
     let platformUrl = 'http://localhost:' + port;
 
-    farmEnv = new FarmEnv(dbFactories, platformUrl, port);
-    plugins = {"mongo": new MongoPlugin()}
+    const queries: FarmQueries = {
+        farmById: `id = '{{id}}'`,
+        coopById: `id = '{{id}}'`,
+        coopByName: `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.name')) = '{{id}}'`,
+        coopByFarmId: `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.farm_id')) = '{{id}}'`,
+        henById: `id = '{{id}}'`,
+        henByName: `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.name')) = '{{name}}'`,
+        henByCoopId: `JSON_UNQUOTE(JSON_EXTRACT(payload, '$.coop_id')) = '{{id}}'`,
+    };
+
+    farmEnv = new FarmEnv(dbFactories, queries, platformUrl, port);
+    plugins = {"mysql": new MySQLPlugin()}
     server = await farmEnv.buildService(plugins);
 
     // Initialize runtime properties in FarmEnv
@@ -73,8 +79,8 @@ Before(async function(this: FarmTestWorld) {
 
 
 AfterAll(async function(){
-    await plugins["mongo"].cleanup();
+    await plugins["mysql"].cleanup();
     await new Promise<void>((resolve) => server.close(() => resolve()));
-    await mongod.stop();
+    await container.stop();
 });
 

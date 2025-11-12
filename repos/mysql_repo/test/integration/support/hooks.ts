@@ -1,46 +1,43 @@
-import { Before, After, AfterAll, BeforeAll } from '@cucumber/cucumber';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { Before, AfterAll, BeforeAll } from '@cucumber/cucumber';
 import { compile } from 'handlebars';
 import Log4js from 'log4js';
 import { IntegrationWorld, SearcherTestTemplates } from '@meshobj/cert';
-import { MongoConfig, MongoPlugin } from '../../../src';
-import { DTOFactory } from '@meshobj/graphlette';
-import { NoOp } from '@meshobj/auth';
+import { MySQLConfig, MySQLPlugin } from '../../../src';
+import { MySqlContainer, StartedMySqlContainer } from '@testcontainers/mysql';
 
 Log4js.configure({
     appenders: { out: { type: 'stdout' } },
     categories: { default: { appenders: ['out'], level: 'error' } },
 });
 
-let mongod: MongoMemoryServer;
+let container: StartedMySqlContainer;
 let test_id: number;
 let templates: SearcherTestTemplates;
-let plugin: MongoPlugin;
+let plugin: MySQLPlugin;
 
-BeforeAll(async function(){
-    mongod = new MongoMemoryServer();
-    await mongod.start();
+BeforeAll({ timeout: 120000 }, async function(){
+    container = await new MySqlContainer().start();
 
     test_id = 0;
 
     templates = {
-        findById: compile(`{"id": "{{id}}"}`),
-        findByName: compile(`{"payload.name": "{{id}}"}`),
-        findAllByType: compile(`{"payload.type": "{{id}}"}`),
-        findByNameAndType: compile(`{"payload.name": "{{name}}", "payload.type": "{{type}}"}`),
+        findById: compile(`id = '{{id}}'`),
+        findByName: compile(`JSON_UNQUOTE(JSON_EXTRACT(payload, '$.name')) = '{{id}}'`),
+        findAllByType: compile(`JSON_UNQUOTE(JSON_EXTRACT(payload, '$.type')) = '{{id}}'`),
+        findByNameAndType: compile(`JSON_UNQUOTE(JSON_EXTRACT(payload, '$.type')) = '{{type}}' AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$.name')) = '{{name}}'`),
     };
-    plugin = new MongoPlugin();
+    plugin = new MySQLPlugin();
 });
 
 Before(async function(this: IntegrationWorld) {
-    let config: MongoConfig = {
-        type: "mongo",
-        uri: mongod.getUri(),
-        collection: `test-${test_id++}`,
-        db: "test",
-        options: {
-            directConnection: true
-        }
+    let config: MySQLConfig = {
+        type: "mysql",
+        host: container.getHost(),
+        port: container.getPort(),
+        db: container.getDatabase(),
+        user: container.getUsername(),
+        password: container.getUserPassword(),
+        table: `test_${test_id++}`,
     }
     this.templates = templates;
     this.config = config;
@@ -52,6 +49,6 @@ Before(async function(this: IntegrationWorld) {
 
 AfterAll(async function(){
     await plugin.cleanup();
-    await mongod.stop();
+    await container.stop();
 });
 
