@@ -85,7 +85,7 @@ export class FarmEnv {
                 return await response.json();
             }),
         );
-    };
+    }
 
     async buildApi(swagger_docs: Document[], token: string): Promise<Record<string, any>> {
         const authHeaders = { Authorization: `Bearer ${token}` };

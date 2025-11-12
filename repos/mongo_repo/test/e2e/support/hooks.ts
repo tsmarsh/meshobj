@@ -6,7 +6,6 @@ import { MongoConfig, MongoPlugin } from '../../../src';
 import { Plugin } from '@meshobj/server';
 import { Server } from 'node:http';
 import { FarmEnv } from '@meshobj/cert';
-import { Document } from 'openapi-client-axios';
 import * as jwt from 'jsonwebtoken';
 
 Log4js.configure({
@@ -74,8 +73,8 @@ Before(async function(this: FarmTestWorld) {
 
 
 AfterAll(async function(){
-    plugins["mongo"].cleanup;
-    server.close();
+    await plugins["mongo"].cleanup();
+    await new Promise<void>((resolve) => server.close(() => resolve()));
     await mongod.stop();
 });
 

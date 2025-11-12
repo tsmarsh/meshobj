@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { callSubgraph } from '@meshobj/graphlette';
 import Handlebars from 'handlebars';
 import { FarmTestWorld } from '../support/worlds';
-import * as jwt from 'jsonwebtoken';
 
 
 Given('a MeshQL server is running with the plugin', async function(this: FarmTestWorld) {
@@ -16,8 +15,6 @@ Given('I have captured the first timestamp', function(this: FarmTestWorld) {
 });
 
 When('I query the {string} graph:', async function(this: FarmTestWorld, graphName: string, docString: string) {
-    console.log(JSON.stringify(this.env.ids));
-
     const queryTemplate = Handlebars.compile(docString);
     this.now = String(Date.now());
 
@@ -30,11 +27,6 @@ When('I query the {string} graph:', async function(this: FarmTestWorld, graphNam
         queryName,
         `Bearer ${this.env.token}`
     );
-
-    if(!this.queryResult){
-        console.log("Result: \n", this.queryResult);
-        console.log("Query: \n",docString, query, JSON.stringify(this.env.ids));
-    }
 });
 
 Then('the farm name should be {string}', function(this: FarmTestWorld, expectedName: string) {
