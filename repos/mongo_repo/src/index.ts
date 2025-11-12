@@ -1,8 +1,8 @@
-export { MongoSearcher } from './mongoSearcher.js';
-export { MongoRepository } from './mongoRepo.js';
+export { MongoSearcher } from './mongoSearcher';
+export { MongoRepository } from './mongoRepo';
 
-import { MongoSearcher } from './mongoSearcher.js';
-import { MongoRepository } from './mongoRepo.js';
+import { MongoSearcher } from './mongoSearcher';
+import { MongoRepository } from './mongoRepo';
 import { MongoClient, Collection } from 'mongodb';
 import { StorageConfig } from '@meshobj/server';
 import { Envelope } from '@meshobj/common';

@@ -1,0 +1,39 @@
+{
+    "name": "@meshobj/cert",
+    "version": "0.2.0",
+    "type": "commonjs",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "publishConfig": {
+        "access": "public"
+    },
+    "exports": {
+        ".": "./dist/index.js"
+    },
+    "author": "Tom Marsh",
+    "license": "MIT",
+    "devDependencies": {
+        "@cucumber/cucumber": "^12.2.0",
+        "@types/node": "^22.10.6",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.3",
+        "vitest": "^2.1.8"
+    },
+    "scripts": {
+        "build": "tsc",
+        "test": "vitest --run --passWithNoTests",
+        "test:bdd": "cucumber-js"
+    },
+    "dependencies": {
+        "@meshobj/auth": "^0.2.0",
+        "@meshobj/common": "^0.2.0",
+        "@meshobj/graphlette": "^0.2.0",
+        "@meshobj/server": "^0.2.0",
+        "ajv": "^8.17.1",
+        "ajv-formats": "^3.0.1",
+        "handlebars": "^4.7.8",
+        "log4js": "^6.9.1",
+        "zod": "^3.24.2"
+    },
+    "gitHead": "b6648bde930e8a322c8d1a966e152bc83fa0ad31"
+}

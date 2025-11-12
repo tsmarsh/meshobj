@@ -73,7 +73,7 @@ export class PostgresSearcher implements Searcher {
                 }
             }
         } catch (err) {
-            logger.error(`Error executing find query: ${err}`);
+            logger.error(`Error executing find query: ${err} for ${sql}`);
         }
 
         return {};
@@ -104,7 +104,7 @@ export class PostgresSearcher implements Searcher {
                 return row.payload;
             });
         } catch (err) {
-            logger.error(`Error executing findAll query: ${err}`);
+            logger.error(`Error executing findAll query: ${err} for ${sql}`);
         }
 
         return [];

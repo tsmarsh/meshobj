@@ -37,8 +37,8 @@ export class InMemory implements Repository {
                 const latestEnvelope = nonDeletedEnvelopes[0];
 
                 // Add the latest envelope if it hasn't been added yet
-                if (!seen.has(latestEnvelope.id)) {
-                    seen.add(latestEnvelope.id);
+                if (!seen.has(latestEnvelope.id!)) {
+                    seen.add(latestEnvelope.id!);
                     result.push(latestEnvelope);
                 }
             }

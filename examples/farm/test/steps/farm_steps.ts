@@ -1,4 +1,4 @@
-import { Given, When, Then } from '@cucumber/cucumber';
+import { Given, When, Then, DataTable } from '@cucumber/cucumber';
 import { FarmWorld } from '../support/world';
 import { callSubgraph } from '@meshobj/graphlette';
 import { expect } from 'chai';

@@ -1,10 +1,10 @@
 export { PostgresSearcher } from './postgresSearcher';
-export { PostgresRepository } from './postgresRepo.js';
+export { PostgresRepository } from './postgresRepo';
 
 import { Pool, PoolConfig } from 'pg';
 import { StorageConfig } from '@meshobj/server';
 import { PostgresSearcher } from './postgresSearcher';
-import { PostgresRepository } from './postgresRepo.js';
+import { PostgresRepository } from './postgresRepo';
 
 import { DTOFactory } from '@meshobj/graphlette';
 import { Auth } from '@meshobj/auth';

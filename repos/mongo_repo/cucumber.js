@@ -1,13 +1,24 @@
 module.exports = {
-    default: {
+    int: {
         requireModule: ['ts-node/register'],
         require: [
-            '../../core/common/test/support/**/*.ts',
-            '../../core/common/test/steps/**/*.ts',
-            'test/support/**/*.ts'
+            '../../core/cert/src/support/**/*.ts',
+            '../../core/cert/src/steps/**/*.ts',
+            'test/integration/support/**/*.ts'
         ],
-        paths: ['../../core/common/test/features/**/*.feature'],
-        format: ['progress', 'json:test-results-bdd.json'],
+        paths: ['../../core/cert/features/integration/**/*.feature'],
+        format: ['progress', 'json:test-results-bdd-int.json'],
+        formatOptions: { snippetInterface: 'async-await' },
+    },
+    e2e: {
+        requireModule: ['ts-node/register'],
+        require: [
+            '../../core/cert/src/support/**/*.ts',
+            '../../core/cert/src/steps/**/*.ts',
+            'test/e2e/support/**/*.ts'
+        ],
+        paths: ['../../core/cert/features/e2e/**/*.feature'],
+        format: ['progress', 'json:test-results-bdd-e2e.json'],
         formatOptions: { snippetInterface: 'async-await' },
     }
 };
