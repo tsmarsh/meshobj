@@ -48,7 +48,7 @@ BeforeAll({ timeout: 120000 }, async function() {
         }
     }
 
-    let port = 3044;
+    let port = 6044;
 
     let platformUrl = 'http://localhost:' + port;
 
