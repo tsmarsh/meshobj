@@ -47,7 +47,7 @@ export class MongoSearcher implements Searcher {
     async find(
         queryTemplate: Handlebars.TemplateDelegate,
         args: Record<string, any>,
-        creds: [string],
+        creds: string[] = [],
         timestamp: number = Date.now(),
     ): Promise<Record<string, any>> {
         let query = this.processQueryTemplate(args, queryTemplate);
@@ -70,7 +70,8 @@ export class MongoSearcher implements Searcher {
         if (doc.length > 0) {
             let result = doc[0];
 
-            if (await this.authorizer.isAuthorized(creds, result)) {
+            // Skip authorization check if no credentials provided (matches SQL repos behavior)
+            if (creds.length === 0 || await this.authorizer.isAuthorized(creds, result)) {
                 result.payload.id = result.id;
                 return this.dtoFactory.fillOne(result.payload, timestamp);
             } else {
@@ -115,7 +116,8 @@ export class MongoSearcher implements Searcher {
             ])
             .toArray();
 
-        if (args !== undefined) {
+        // Only apply authorization filtering if credentials are provided (matches SQL repos behavior)
+        if (args !== undefined && creds.length > 0) {
             results = results.filter((r: Document) => this.authorizer.isAuthorized(creds, r as Envelope));
         }
 
