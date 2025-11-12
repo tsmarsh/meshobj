@@ -22,7 +22,7 @@ let user = 'bob';
 let password = 'max';
 let database = 'test';
 
-BeforeAll(async function(){
+BeforeAll({ timeout: 120000 }, async function(){
     container = await new PostgreSqlContainer("postgres:17-alpine3.21")
         .withUsername(user)
         .withPassword(password)

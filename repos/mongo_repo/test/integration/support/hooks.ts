@@ -17,7 +17,7 @@ let test_id: number;
 let templates: SearcherTestTemplates;
 let plugin: MongoPlugin;
 
-BeforeAll(async function(){
+BeforeAll({ timeout: 120000 }, async function(){
     mongod = new MongoMemoryServer();
     await mongod.start();
 
