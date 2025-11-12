@@ -28,7 +28,7 @@ bun.lockb
 
 test-report.junit.xml
 test-results.json
-test-results-bdd.json
+test-results-bdd*.json
 merged-lcov.info
 
 

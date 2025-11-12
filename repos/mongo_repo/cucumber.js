@@ -7,7 +7,7 @@ module.exports = {
             'test/integration/support/**/*.ts'
         ],
         paths: ['../../core/cert/features/integration/**/*.feature'],
-        format: ['progress', 'json:test-results-bdd.json'],
+        format: ['progress', 'json:test-results-bdd-int.json'],
         formatOptions: { snippetInterface: 'async-await' },
     },
     e2e: {
@@ -18,7 +18,7 @@ module.exports = {
             'test/e2e/support/**/*.ts'
         ],
         paths: ['../../core/cert/features/e2e/**/*.feature'],
-        format: ['progress', 'json:test-results-bdd.json'],
+        format: ['progress', 'json:test-results-bdd-e2e.json'],
         formatOptions: { snippetInterface: 'async-await' },
     }
 };

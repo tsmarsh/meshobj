@@ -29,10 +29,10 @@
     },
     "scripts": {
         "build": "tsc",
-        "test": "vitest --run --coverage",
-        "test:bdd": "c8 --reporter=text --reporter=html --reporter=json-summary --reporter=lcov --all=false --exclude='cucumber.js' --exclude='test/**' cucumber-js",
-        "test:bdd:int": "c8 --reporter=text --reporter=html --reporter=json-summary --reporter=lcov --all=false --exclude='cucumber.js' --exclude='test/**' cucumber-js -p int",
-        "test:bdd:e2e": "c8 --reporter=text --reporter=html --reporter=json-summary --reporter=lcov --all=false --exclude='cucumber.js' --exclude='test/**' cucumber-js -p e2e"
+        "test": "yarn vitest --run --coverage && yarn test:bdd",
+        "test:bdd": "yarn test:bdd:int && yarn test:bdd:e2e && yarn lcov-result-merger 'coverage/lcov-*.info' coverage/lcov.info",
+        "test:bdd:e2e": "c8 --report-dir=coverage --reporter=lcov --all=false --exclude cucumber.js --exclude 'test/**' cucumber-js -p e2e && mv coverage/lcov.info coverage/lcov-e2e.info",
+        "test:bdd:int": "c8 --report-dir=coverage --reporter=lcov --all=false --exclude cucumber.js --exclude 'test/**' cucumber-js -p int && mv coverage/lcov.info coverage/lcov-int.info"
     },
     "devDependencies": {
         "@cucumber/cucumber": "^12.2.0",
@@ -43,6 +43,7 @@
         "chai": "^4.3.10",
         "js-yaml": "^4.1.0",
         "jsonwebtoken": "^9.0.2",
+        "lcov-result-merger": "^5.0.1",
         "openapi-client-axios": "^7.5.5",
         "ts-node": "^10.9.2",
         "vitest": "^2.1.8"
