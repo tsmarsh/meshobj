@@ -1,4 +1,4 @@
-.import { Before, AfterAll, BeforeAll } from '@cucumber/cucumber';
+import { Before, AfterAll, BeforeAll } from '@cucumber/cucumber';
 import Log4js from 'log4js';
 import { FarmTestWorld, DBFactories, FarmQueries } from '@meshobj/cert';
 import { MySQLConfig, MySQLPlugin } from '../../../src';
