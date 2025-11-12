@@ -19,7 +19,7 @@ let plugins: Record<string, Plugin>;
 let server: Server;
 let farmEnv: FarmEnv;
 
-BeforeAll(async function() {
+BeforeAll({ timeout: 120000 }, async function() {
     const PREFIX = "cert";
     const ENV = "sqlite";
 

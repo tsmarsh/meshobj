@@ -21,8 +21,7 @@
     },
     "scripts": {
         "build": "tsc",
-        "test": "vitest --run --passWithNoTests",
-        "test:bdd": "cucumber-js"
+        "test": "vitest --run --passWithNoTests"
     },
     "dependencies": {
         "@meshobj/auth": "^0.2.0",

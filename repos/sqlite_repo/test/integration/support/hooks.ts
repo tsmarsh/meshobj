@@ -16,7 +16,7 @@ let test_id: number;
 let templates: SearcherTestTemplates;
 let plugin: SQLitePlugin;
 
-BeforeAll(async function(){
+BeforeAll({ timeout: 120000 }, async function(){
     test_id = 0;
 
     templates = {

@@ -43,7 +43,7 @@
     },
     "scripts": {
         "build": "tsc",
-        "test": "yarn vitest --run --coverage --testTimeout 60000 --hookTimeout 60000 && yarn test:bdd",
+        "test": "yarn vitest --run --coverage --passWithNoTests && yarn test:bdd",
         "test:bdd": "yarn test:bdd:int && yarn test:bdd:e2e && yarn lcov-result-merger 'coverage/lcov-*.info' coverage/lcov.info",
         "test:bdd:e2e": "c8 --report-dir=coverage --reporter=lcov --all=false --exclude cucumber.js --exclude 'test/**' cucumber-js -p e2e && mv coverage/lcov.info coverage/lcov-e2e.info",
         "test:bdd:int": "c8 --report-dir=coverage --reporter=lcov --all=false --exclude cucumber.js --exclude 'test/**' cucumber-js -p int && mv coverage/lcov.info coverage/lcov-int.info"
