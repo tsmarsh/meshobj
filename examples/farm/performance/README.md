@@ -90,10 +90,13 @@ performance/
 }
 ```
 
-**Expected Results:**
-- Without DataLoader: ~103 HTTP calls per query, ~500-1000ms response
-- With DataLoader: ~4 HTTP calls per query, ~150-300ms response
-- **3x throughput improvement**
+**Measured Results** (10M records, 10 concurrent threads):
+- **Without DataLoader**: 102 HTTP calls per query, 865ms avg (10,951ms worst case)
+- **With DataLoader**: 3 HTTP calls per query, 655ms avg (73ms worst case)
+- **6x throughput improvement** (4.28 → 25.73 req/sec)
+- **149x better worst-case latency** under concurrent load
+
+See [DATALOADER_ANALYSIS.md](./DATALOADER_ANALYSIS.md) for detailed performance analysis.
 
 ### Other Test Scenarios
 
