@@ -23,4 +23,11 @@ type Hen {
   eggs: Int
   dob: Date
   id: ID
+  layReports: [LayReport]
+}
+
+type LayReport {
+  time_of_day: String!
+  eggs: Int!
+  id: ID
 }
