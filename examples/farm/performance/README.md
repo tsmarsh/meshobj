@@ -61,24 +61,46 @@ performance/
 
 ## Test Scenarios
 
-### GraphQL Simple
-- Baseline performance
-- Single-service queries (no resolvers)
-- Measures raw GraphQL endpoint speed
+### Full Graph Test (example-full-graph.jmx)
+**DataLoader stress test with 1M+ records**
 
-### GraphQL Resolvers
-- Cross-service resolution
-- Farm → Coops → Hens chain
-- Measures overhead of federated queries
+**Data Scale:**
+- 10 farms
+- 100 coops per farm (1,000 total)
+- 100 hens per coop (100,000 total)
+- 100 lay reports per hen (10,000,000 total)
 
-### REST CRUD
-- Create/Read/Update operations
-- Measures REST API throughput
+**Key Features:**
+- Uses bulk API (`/api/bulk`) for fast data generation
+- Tests 4-level relationship nesting: Farm → Coops → Hens → Lay Reports
+- Demonstrates DataLoader batching (100 HTTP calls → 1 batched call)
 
-### Mixed Workload
-- Realistic usage patterns
-- 70% reads, 30% writes
-- Combination of GraphQL and REST
+**Test Phases:**
+1. **Setup (5-15 min):** Creates 1M+ records using bulk operations
+2. **Load Test (60s):** 10 concurrent users querying deep relationships
+
+**Critical Query:**
+```graphql
+{
+  getById(id: "<coop_id>") {
+    hens {
+      layReports { id time_of_day eggs }  # 100 hens = 100 requests batched into 1!
+    }
+  }
+}
+```
+
+**Expected Results:**
+- Without DataLoader: ~103 HTTP calls per query, ~500-1000ms response
+- With DataLoader: ~4 HTTP calls per query, ~150-300ms response
+- **3x throughput improvement**
+
+### Other Test Scenarios
+
+The repository also supports smaller-scale tests for quick iterations:
+- GraphQL simple queries
+- REST CRUD operations
+- Mixed workloads
 
 ## Viewing Results
 
