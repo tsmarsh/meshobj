@@ -3,6 +3,7 @@ import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
 import { Searcher } from '@meshobj/common';
 import Log4js from 'log4js';
+import DataLoader from 'dataloader';
 
 const logger = Log4js.getLogger('meshobj/graphlette');
 
@@ -38,16 +39,20 @@ export function init(app: Application, schema: string, path: string, rootValue: 
 
     app.use(
         path,
-        graphqlHTTP({
+        graphqlHTTP(() => ({
             schema: graphqlSchema,
             rootValue,
             graphiql: true,
+            // Create fresh DataLoader map for each request to prevent cache leaks
+            context: {
+                dataLoaders: new Map<string, DataLoader<string, Record<string, any>>>(),
+            },
             customFormatErrorFn: (error) => ({
                 message: error.message,
                 locations: error.locations,
                 path: error.path,
             }),
-        }),
+        })),
     );
 
     return app;
